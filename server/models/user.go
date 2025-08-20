@@ -44,6 +44,8 @@ type UpdateUserRequest struct {
 	ConfirmPassword string `json:"confirm_password" validate:"omitempty,eqfield=Password"`
 	Nickname        string `json:"nickname" validate:"omitempty,max=50"`
 	Avatar          string `json:"avatar"`
+	Status          int    `json:"status" validate:"oneof=1 0"`
+	Role            string `json:"role" validate:"oneof=admin user"`
 }
 
 type UserResponse struct {

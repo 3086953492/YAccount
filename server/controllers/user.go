@@ -79,6 +79,10 @@ func UpdateHandler(c *gin.Context) {
 		return
 	}
 
+	if role != "admin" { // 防止用户将自己设置为管理员
+		req.Role = "user"
+	}
+
 	err = services.UpdateService(&req, uint(userID))
 	if err != nil {
 		response.Error(c, err)
