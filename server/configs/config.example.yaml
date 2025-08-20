@@ -1,0 +1,51 @@
+server:
+  port: 8081
+  mode: debug
+  id: 1
+Database:
+  host: localhost
+  port: 3306
+  user: root
+  password: 123456
+  dbname: yaccount
+  charset: utf8mb4
+  parseTime: true
+  loc: Local
+
+redis:
+  host: localhost
+  port: 6379
+  password: ""
+  db: 0
+
+jwt:
+  secret: "examplekey"
+  expire: 1h
+
+log:
+  level: info
+  filename: logs/example.log
+  maxSize: 10
+  maxBackups: 3
+  maxAge: 7
+  compress: true
+  rotateDaily: true
+
+middleware:
+  jwt:
+    secret: "examplekey"
+    expire: 1h
+    skip_paths:
+      - /api/admin/v1/auth/login
+      - /api/admin/v1/auth/register
+  cors:
+    allow_origins:
+      - "*"
+    allow_methods:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+      - OPTIONS
+    allow_headers:
+      - Authorization
