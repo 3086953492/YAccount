@@ -41,6 +41,8 @@ func LoginService(req *models.LoginRequest) (*models.UserResponse, string, error
 		Nickname: user.Nickname,
 		Avatar:   user.Avatar,
 		Status:   user.Status,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
 	}, token, nil
 }
 
