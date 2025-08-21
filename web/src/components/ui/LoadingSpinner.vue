@@ -56,17 +56,19 @@ const props = withDefaults(defineProps<Props>(), {
 }
 
 .spinner {
-  border: 4px solid #f3f3f3;
+  border: 4px solid #f3f4f6;
   border-top: 4px solid #667eea;
   border-radius: 50%;
-  animation: spin 1s linear infinite;
+  animation: spin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
 }
 
 .loading-text {
   margin-top: 16px;
-  color: #666;
+  color: #6b7280;
   font-size: 14px;
   text-align: center;
+  font-weight: 500;
 }
 
 @keyframes spin {
@@ -76,6 +78,23 @@ const props = withDefaults(defineProps<Props>(), {
 
   100% {
     transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 640px) {
+  .loading-spinner.small .spinner {
+    width: 14px;
+    height: 14px;
+  }
+  
+  .loading-spinner.medium .spinner {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .loading-spinner.large .spinner {
+    width: 48px;
+    height: 48px;
   }
 }
 </style>

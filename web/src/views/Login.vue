@@ -1,12 +1,12 @@
 <template>
-  <FormCard title="用户登录" subtitle="欢迎使用YAccount系统">
+  <FormCard title="欢迎回来" subtitle="登录您的YAccount账户">
     <ErrorMessage v-if="errorMessage" :message="errorMessage" type="error" @dismiss="errorMessage = ''" />
 
     <form @submit.prevent="handleLogin" class="login-form">
-      <FormInput id="username" v-model="loginForm.username" label="用户名" placeholder="请输入用户名" required
+      <FormInput id="username" v-model="loginForm.username" label="用户名" placeholder="请输入您的用户名" required
         :disabled="loading" />
 
-      <FormInput id="password" v-model="loginForm.password" label="密码" type="password" placeholder="请输入密码" required
+      <FormInput id="password" v-model="loginForm.password" label="密码" type="password" placeholder="请输入您的密码" required
         :disabled="loading" />
 
       <div class="form-actions">
@@ -75,10 +75,16 @@ const handleLogin = async () => {
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
 }
 
 .form-actions {
-  margin-top: 10px;
+  margin-top: 8px;
+}
+
+@media (max-width: 640px) {
+  .login-form {
+    gap: 20px;
+  }
 }
 </style>

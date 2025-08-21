@@ -1,27 +1,31 @@
 <template>
-  <FormCard title="用户注册" subtitle="创建您的YAccount账户">
+  <FormCard title="创建账户" subtitle="加入YAccount，开启您的数字生活">
     <ErrorMessage v-if="errorMessage" :message="errorMessage" type="error" @dismiss="errorMessage = ''" />
 
     <SuccessMessage v-if="successMessage" :message="successMessage" :dismissible="false" />
 
     <form @submit.prevent="handleRegister" class="register-form">
-      <FormInput id="username" v-model="registerForm.username" label="用户名" placeholder="请输入用户名（3-15位）" required
-        :disabled="loading" />
+      <div class="form-row">
+        <FormInput id="username" v-model="registerForm.username" label="用户名" placeholder="请输入用户名（3-15位）" required
+          :disabled="loading" />
+        
+        <FormInput id="nickname" v-model="registerForm.nickname" label="昵称" placeholder="请输入昵称" required
+          :disabled="loading" />
+      </div>
 
       <FormInput id="email" v-model="registerForm.email" label="邮箱" type="email" placeholder="请输入邮箱地址" required
         :disabled="loading" />
 
-      <FormInput id="nickname" v-model="registerForm.nickname" label="昵称" placeholder="请输入昵称" required
-        :disabled="loading" />
+      <div class="form-row">
+        <FormInput id="password" v-model="registerForm.password" label="密码" type="password" placeholder="请输入密码（至少6位）"
+          required :disabled="loading" />
 
-      <FormInput id="password" v-model="registerForm.password" label="密码" type="password" placeholder="请输入密码（至少6位）"
-        required :disabled="loading" />
-
-      <FormInput id="confirmPassword" v-model="registerForm.confirm_password" label="确认密码" type="password"
-        placeholder="请再次输入密码" required :disabled="loading" />
+        <FormInput id="confirmPassword" v-model="registerForm.confirm_password" label="确认密码" type="password"
+          placeholder="请再次输入密码" required :disabled="loading" />
+      </div>
 
       <div class="form-actions">
-        <FormButton type="submit" text="注册" :loading="loading" loading-text="注册中..." />
+        <FormButton type="submit" text="创建账户" :loading="loading" loading-text="创建中..." />
       </div>
 
       <FormFooter text="已有账号？" link-text="立即登录" link-to="/login" />
@@ -103,10 +107,27 @@ const handleRegister = async () => {
 .register-form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
 }
 
 .form-actions {
-  margin-top: 10px;
+  margin-top: 8px;
+}
+
+@media (max-width: 640px) {
+  .register-form {
+    gap: 20px;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
 }
 </style>
