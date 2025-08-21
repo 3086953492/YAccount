@@ -73,7 +73,7 @@ const handleFocus = (event: Event) => {
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .form-group label {
@@ -89,7 +89,7 @@ const handleFocus = (event: Event) => {
 
 .input-wrapper input {
   width: 100%;
-  padding: 16px 20px;
+  padding: 14px 18px;
   border: 2px solid transparent;
   border-radius: 12px;
   font-size: 16px;
@@ -154,7 +154,7 @@ const handleFocus = (event: Event) => {
 .error-message {
   color: #dc2626;
   font-size: 13px;
-  margin-top: 6px;
+  margin-top: 4px;
   margin-left: 2px;
   font-weight: 500;
 }
@@ -162,7 +162,7 @@ const handleFocus = (event: Event) => {
 .hint-text {
   color: #6b7280;
   font-size: 12px;
-  margin-top: 4px;
+  margin-top: 2px;
   margin-left: 2px;
   font-weight: 400;
 }

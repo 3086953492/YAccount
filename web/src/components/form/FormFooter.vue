@@ -18,9 +18,9 @@ defineProps<Props>()
 <style scoped>
 .form-footer {
   text-align: center;
-  padding: 20px 0 0 0;
+  padding: 16px 0 0 0;
   border-top: 1px solid #f3f4f6;
-  margin-top: 8px;
+  margin-top: 4px;
 }
 
 .footer-text {

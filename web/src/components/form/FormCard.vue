@@ -60,9 +60,9 @@ defineProps<Props>()
   box-shadow: 
     0 25px 50px -12px rgba(0, 0, 0, 0.08),
     0 0 0 1px rgba(255, 255, 255, 0.1);
-  padding: 48px;
+  padding: 36px;
   width: 100%;
-  max-width: 480px;
+  max-width: 600px;
   position: relative;
   z-index: 1;
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -92,7 +92,7 @@ defineProps<Props>()
 
 .form-header {
   text-align: center;
-  margin-bottom: 36px;
+  margin-bottom: 24px;
 }
 
 .form-header h1 {
@@ -113,7 +113,7 @@ defineProps<Props>()
 .form-content {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 16px;
 }
 
 @media (max-width: 640px) {

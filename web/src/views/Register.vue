@@ -107,7 +107,7 @@ const handleRegister = async () => {
 .register-form {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 16px;
 }
 
 .form-row {
