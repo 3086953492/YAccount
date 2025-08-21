@@ -7,7 +7,7 @@
           <span class="brand-text">YAccount</span>
         </router-link>
       </div>
-      
+
       <div class="nav-menu">
         <router-link to="/" class="nav-link" active-class="active">
           首页
@@ -19,7 +19,7 @@
           管理后台
         </router-link>
       </div>
-      
+
       <div class="nav-user">
         <div class="user-info">
           <span class="username">{{ user?.nickname || user?.username }}</span>
@@ -169,16 +169,16 @@ const handleLogout = () => {
   .nav-container {
     padding: 0 15px;
   }
-  
+
   .nav-menu {
     gap: 16px;
   }
-  
+
   .nav-link {
     padding: 6px 12px;
     font-size: 14px;
   }
-  
+
   .username {
     display: none;
   }

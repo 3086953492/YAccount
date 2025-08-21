@@ -1,39 +1,21 @@
 <template>
-  <div class="login-container">
-    <div class="login-card">
-      <div class="login-header">
-        <h1>用户登录</h1>
-        <p>欢迎使用YAccount系统</p>
+  <FormCard title="用户登录" subtitle="欢迎使用YAccount系统">
+    <ErrorMessage v-if="errorMessage" :message="errorMessage" type="error" @dismiss="errorMessage = ''" />
+
+    <form @submit.prevent="handleLogin" class="login-form">
+      <FormInput id="username" v-model="loginForm.username" label="用户名" placeholder="请输入用户名" required
+        :disabled="loading" />
+
+      <FormInput id="password" v-model="loginForm.password" label="密码" type="password" placeholder="请输入密码" required
+        :disabled="loading" />
+
+      <div class="form-actions">
+        <FormButton type="submit" text="登录" :loading="loading" loading-text="登录中..." />
       </div>
 
-      <ErrorMessage v-if="errorMessage" :message="errorMessage" type="error" @dismiss="errorMessage = ''" />
-
-      <form @submit.prevent="handleLogin" class="login-form">
-        <div class="form-group">
-          <label for="username">用户名</label>
-          <input id="username" v-model="loginForm.username" type="text" placeholder="请输入用户名" required
-            :disabled="loading" />
-        </div>
-
-        <div class="form-group">
-          <label for="password">密码</label>
-          <input id="password" v-model="loginForm.password" type="password" placeholder="请输入密码" required
-            :disabled="loading" />
-        </div>
-
-        <div class="form-actions">
-          <button type="submit" :disabled="loading" class="login-btn">
-            <span v-if="loading">登录中...</span>
-            <span v-else>登录</span>
-          </button>
-        </div>
-
-        <div class="form-footer">
-          <p>还没有账号？ <router-link to="/register">立即注册</router-link></p>
-        </div>
-      </form>
-    </div>
-  </div>
+      <FormFooter text="还没有账号？" link-text="立即注册" link-to="/register" />
+    </form>
+  </FormCard>
 </template>
 
 <script setup lang="ts">
@@ -41,7 +23,11 @@ import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { login } from '@/api/auth'
-import ErrorMessage from '@/components/ErrorMessage.vue'
+import ErrorMessage from '@/components/ui/ErrorMessage.vue'
+import FormCard from '@/components/form/FormCard.vue'
+import FormInput from '@/components/form/FormInput.vue'
+import FormButton from '@/components/form/FormButton.vue'
+import FormFooter from '@/components/form/FormFooter.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -86,124 +72,13 @@ const handleLogin = async () => {
 </script>
 
 <style scoped>
-.login-container {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 20px;
-}
-
-.login-card {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-  padding: 40px;
-  width: 100%;
-  max-width: 400px;
-}
-
-.login-header {
-  text-align: center;
-  margin-bottom: 30px;
-}
-
-.login-header h1 {
-  color: #333;
-  margin: 0 0 10px 0;
-  font-size: 28px;
-  font-weight: 600;
-}
-
-.login-header p {
-  color: #666;
-  margin: 0;
-  font-size: 16px;
-}
-
 .login-form {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.form-group label {
-  color: #333;
-  font-weight: 500;
-  font-size: 14px;
-}
-
-.form-group input {
-  padding: 12px 16px;
-  border: 2px solid #e1e5e9;
-  border-radius: 8px;
-  font-size: 16px;
-  transition: border-color 0.3s ease;
-}
-
-.form-group input:focus {
-  outline: none;
-  border-color: #667eea;
-}
-
-.form-group input:disabled {
-  background-color: #f5f5f5;
-  cursor: not-allowed;
-}
-
 .form-actions {
   margin-top: 10px;
-}
-
-.login-btn {
-  width: 100%;
-  padding: 14px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.login-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
-}
-
-.login-btn:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.form-footer {
-  text-align: center;
-  margin-top: 20px;
-}
-
-.form-footer p {
-  color: #666;
-  margin: 0;
-  font-size: 14px;
-}
-
-.form-footer a {
-  color: #667eea;
-  text-decoration: none;
-  font-weight: 500;
-}
-
-.form-footer a:hover {
-  text-decoration: underline;
 }
 </style>
