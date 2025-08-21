@@ -119,3 +119,28 @@ func UserListHandler(c *gin.Context) {
 	}
 	response.Success(c, "获取用户列表成功", users)
 }
+
+func UserProfileHandler(c *gin.Context) {
+	userIDStr := c.Param("user_id")
+	userID, err := strconv.ParseUint(userIDStr, 10, 32)
+	if err != nil || userID < 1 {
+		response.Error(c, apperrors.ErrInvalidInput)
+		return
+	}
+	currentUserID := c.GetUint("user_id")
+	role := c.GetString("role")
+
+	if uint(userID) != currentUserID && role != "admin" {
+		response.Error(c, apperrors.ErrPermissionDenied)
+		return
+	}
+
+	user, err := services.GetUserProfile(uint(userID))
+
+	if err != nil {
+		response.Error(c, err)
+		return
+	}
+
+	response.Success(c, "获取用户信息成功", user)
+}

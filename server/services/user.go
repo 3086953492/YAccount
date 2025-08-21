@@ -116,3 +116,32 @@ func ListUsersPage(query string, page, pageSize int) (models.PaginationResponse,
 	}
 	return paginationResponse, nil
 }
+
+func GetUserProfile(userID uint) (*models.UserResponse, error) {
+	var user models.UserResponse
+	if err := global.Cache.Once(&cache.Item{
+		Key:   fmt.Sprintf("user:profile:%d", userID),
+		Value: &user,
+		Do: func(*cache.Item) (any, error) {
+			user, err := repositories.GetUserByID(userID)
+			if err != nil {
+				if apperrors.IsNotFoundError(err) {
+					logger.LogError("GetUserProfile", "database query", "从数据库中获取用户信息失败", err, zap.Uint("userID", userID))
+				}
+				return nil, err
+			}
+			return &models.UserResponse{
+				ID:       user.ID,
+				Username: user.Username,
+				Email:    user.Email,
+				Role:     user.Role,
+				Nickname: user.Nickname,
+				Avatar:   user.Avatar,
+				Status:   user.Status,
+			}, nil
+		},
+	}); err != nil {
+		return nil, apperrors.ErrUserNotFound
+	}
+	return &user, nil
+}

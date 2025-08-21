@@ -56,6 +56,8 @@ type UserResponse struct {
 	Nickname string `json:"nickname"`
 	Avatar   string `json:"avatar"`
 	Status   int    `json:"status"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 type UserList struct {

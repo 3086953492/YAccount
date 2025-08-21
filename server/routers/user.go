@@ -13,5 +13,6 @@ func LoadUserRouters(router *gin.Engine) {
 	{
 		userRouters.PUT("/:user_id", m.Auth(), controllers.UpdateHandler)
 		userRouters.GET("", m.Auth(), m.AdminPermission(), controllers.UserListHandler)
+		userRouters.GET("/:user_id", m.Auth(), controllers.UserProfileHandler)
 	}
 }
