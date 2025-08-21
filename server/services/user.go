@@ -101,13 +101,13 @@ func ListUsersPage(query string, page, pageSize int) (models.PaginationResponse,
 					Email:    user.Email,
 					Nickname: user.Nickname,
 					Avatar:   user.Avatar,
-				}	
+				}
 			}
 			return models.PaginationResponse{
-				Items: userList,
-				Total: total,
-				Page:  page,
-				PageSize: pageSize,
+				Items:      userList,
+				Total:      total,
+				Page:       page,
+				PageSize:   pageSize,
 				TotalPages: int(total / int64(pageSize)),
 			}, nil
 		},
