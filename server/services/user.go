@@ -37,7 +37,6 @@ func LoginService(req *models.LoginRequest) (*models.UserResponse, string, error
 	return &models.UserResponse{
 		ID:       user.ID,
 		Username: user.Username,
-		Email:    user.Email,
 		Role:     user.Role,
 		Nickname: user.Nickname,
 		Avatar:   user.Avatar,
@@ -47,12 +46,12 @@ func LoginService(req *models.LoginRequest) (*models.UserResponse, string, error
 
 func RegisterService(req *models.RegisterRequest) (*models.User, error) {
 
-	// 对用户名和邮箱加锁
-	lockKey := fmt.Sprintf("user:register:%s:%s", req.Username, req.Email)
+	// 对用户名加锁
+	lockKey := fmt.Sprintf("user:register:%s", req.Username)
 	lock := redis.NewDistributedLock(lockKey, 10*time.Second)
 
 	if err := lock.Acquire(); err != nil {
-		return nil, apperrors.ErrUsernameOrEmailExists
+		return nil, apperrors.ErrUsernameExists
 	}
 	defer lock.Release()
 
@@ -98,7 +97,6 @@ func ListUsersPage(query string, page, pageSize int) (models.PaginationResponse,
 				userList[i] = models.UserList{
 					ID:       user.ID,
 					Username: user.Username,
-					Email:    user.Email,
 					Nickname: user.Nickname,
 					Avatar:   user.Avatar,
 				}
@@ -133,7 +131,6 @@ func GetUserProfile(userID uint) (*models.UserResponse, error) {
 			return &models.UserResponse{
 				ID:       user.ID,
 				Username: user.Username,
-				Email:    user.Email,
 				Role:     user.Role,
 				Nickname: user.Nickname,
 				Avatar:   user.Avatar,

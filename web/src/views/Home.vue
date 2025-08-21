@@ -13,7 +13,6 @@
         <div class="user-details">
           <h2>{{ user?.nickname || user?.username }}</h2>
           <p class="username">@{{ user?.username }}</p>
-          <p class="email">{{ user?.email }}</p>
           <div class="role-badge" :class="user?.role">
             {{ user?.role === 'admin' ? '管理员' : '普通用户' }}
           </div>
@@ -124,12 +123,6 @@ onMounted(() => {
 .username {
   color: #666;
   margin: 0 0 8px 0;
-  font-size: 16px;
-}
-
-.email {
-  color: #666;
-  margin: 0 0 16px 0;
   font-size: 16px;
 }
 

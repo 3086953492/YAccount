@@ -5,7 +5,6 @@ import { config } from '@/config'
 export interface User {
   id: number
   username: string
-  email: string
   role: string
   nickname: string
   avatar: string

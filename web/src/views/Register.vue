@@ -13,9 +13,6 @@
           hint="将显示在个人资料中" required :disabled="loading" />
       </div>
 
-      <FormInput id="email" v-model="registerForm.email" label="邮箱" type="email" placeholder="请输入邮箱地址" 
-        hint="用于账号验证和密码重置" required :disabled="loading" />
-
       <div class="form-row">
         <FormInput id="password" v-model="registerForm.password" label="密码" type="password" placeholder="至少6位密码"
           hint="建议包含字母、数字和特殊字符" required :disabled="loading" />
@@ -51,7 +48,6 @@ const successMessage = ref('')
 
 const registerForm = reactive({
   username: '',
-  email: '',
   nickname: '',
   password: '',
   confirm_password: ''
@@ -59,7 +55,7 @@ const registerForm = reactive({
 
 const handleRegister = async () => {
   // 表单验证
-  if (!registerForm.username || !registerForm.email || !registerForm.nickname || !registerForm.password || !registerForm.confirm_password) {
+  if (!registerForm.username || !registerForm.nickname || !registerForm.password || !registerForm.confirm_password) {
     errorMessage.value = '请填写完整的注册信息'
     return
   }

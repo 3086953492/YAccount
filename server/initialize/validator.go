@@ -15,9 +15,5 @@ func InitValidator() error {
 		return err
 	}
 
-	if err := global.Validate.RegisterValidation("emailUnique", validator_pkg.VerifyEmailUnique); err != nil {
-		return err
-	}
-
 	return nil
 }

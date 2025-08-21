@@ -97,15 +97,12 @@ func UserListHandler(c *gin.Context) {
 	var query string
 
 	username := c.Query("username")
-	email := c.Query("email")
 	nickname := c.Query("nickname")
 
 	if username != "" {
 		query += " AND username LIKE '%" + username + "%'"
 	}
-	if email != "" {
-		query += " AND email LIKE '%" + email + "%'"
-	}
+
 	if nickname != "" {
 		query += " AND nickname LIKE '%" + nickname + "%'"
 	}

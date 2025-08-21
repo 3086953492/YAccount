@@ -14,7 +14,7 @@ const (
 	TypeUserDisabled            = "USER_DISABLED"
 	TypeOperationFailed         = "OPERATION_FAILED"
 	TypeUsernameOrPasswordError = "USERNAME_OR_PASSWORD_ERROR"
-	TypeUsernameOrEmailExists   = "USERNAME_OR_EMAIL_EXISTS"
+	TypeUsernameExists          = "USERNAME_EXISTS"
 	TypeUserRegisterFailed      = "USER_REGISTER_FAILED"
 	TypeUserListNotFound        = "USER_LIST_NOT_FOUND"
 )
@@ -29,7 +29,7 @@ var (
 	ErrUpdateFailed            = New(TypeOperationFailed, "更新失败")
 	ErrDeleteFailed            = New(TypeOperationFailed, "删除失败")
 	ErrUsernameOrPasswordError = New(TypeUsernameOrPasswordError, "用户名或密码错误")
-	ErrUsernameOrEmailExists   = New(TypeUsernameOrEmailExists, "用户名或邮箱已存在")
+	ErrUsernameExists          = New(TypeUsernameExists, "用户名已存在")
 	ErrUserRegisterFailed      = New(TypeUserRegisterFailed, "用户注册失败")
 	ErrUserListNotFound        = New(TypeUserListNotFound, "用户列表不存在")
 )

@@ -19,7 +19,6 @@ func Register(req *models.RegisterRequest) (*models.User, error) {
 
 	user := &models.User{
 		Username: req.Username,
-		Email:    req.Email,
 		Password: string(hashedPassword),
 		Status:   1,
 		Nickname: req.Nickname,
@@ -70,9 +69,6 @@ func UpdateUser(id uint, req *models.UpdateUserRequest) (*models.User, error) {
 	if req.Username != "" {
 		userUpdates["username"] = req.Username
 	}
-	if req.Email != "" {
-		userUpdates["email"] = req.Email
-	}
 	if req.Password != "" {
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 		if err != nil {
@@ -121,14 +117,6 @@ func GetUsers(page, pageSize int) ([]*models.User, int64, error) {
 func GetUserByUsername(username string) (*models.User, error) {
 	var user models.User
 	if err := global.DB.Where("username =? AND status = 1", username).First(&user).Error; err != nil {
-		return nil, err
-	}
-	return &user, nil
-}
-
-func GetUserByEmail(email string) (*models.User, error) {
-	var user models.User
-	if err := global.DB.Where("email =? AND status = 1", email).First(&user).Error; err != nil {
 		return nil, err
 	}
 	return &user, nil
