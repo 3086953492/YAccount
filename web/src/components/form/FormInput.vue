@@ -8,6 +8,7 @@
       <div class="input-border"></div>
     </div>
     <span v-if="errorMessage" class="error-message">{{ errorMessage }}</span>
+    <span v-if="hint" class="hint-text">{{ hint }}</span>
   </div>
 </template>
 
@@ -23,6 +24,7 @@ interface Props {
   required?: boolean
   disabled?: boolean
   errorMessage?: string
+  hint?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -30,7 +32,8 @@ const props = withDefaults(defineProps<Props>(), {
   placeholder: '',
   required: false,
   disabled: false,
-  errorMessage: ''
+  errorMessage: '',
+  hint: ''
 })
 
 const emit = defineEmits<{
@@ -99,6 +102,7 @@ const handleFocus = (event: Event) => {
 .input-wrapper input::placeholder {
   color: #9ca3af;
   font-weight: 400;
+  opacity: 1;
 }
 
 .input-wrapper input:focus {
@@ -153,6 +157,14 @@ const handleFocus = (event: Event) => {
   margin-top: 6px;
   margin-left: 2px;
   font-weight: 500;
+}
+
+.hint-text {
+  color: #6b7280;
+  font-size: 12px;
+  margin-top: 4px;
+  margin-left: 2px;
+  font-weight: 400;
 }
 
 @media (max-width: 640px) {

@@ -3,10 +3,10 @@
     <ErrorMessage v-if="errorMessage" :message="errorMessage" type="error" @dismiss="errorMessage = ''" />
 
     <form @submit.prevent="handleLogin" class="login-form">
-      <FormInput id="username" v-model="loginForm.username" label="用户名" placeholder="请输入您的用户名" required
+      <FormInput id="username" v-model="loginForm.username" label="用户名" placeholder="请输入用户名" required
         :disabled="loading" />
 
-      <FormInput id="password" v-model="loginForm.password" label="密码" type="password" placeholder="请输入您的密码" required
+      <FormInput id="password" v-model="loginForm.password" label="密码" type="password" placeholder="请输入密码" required
         :disabled="loading" />
 
       <div class="form-actions">

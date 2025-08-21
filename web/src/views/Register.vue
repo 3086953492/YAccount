@@ -6,22 +6,22 @@
 
     <form @submit.prevent="handleRegister" class="register-form">
       <div class="form-row">
-        <FormInput id="username" v-model="registerForm.username" label="用户名" placeholder="请输入用户名（3-15位）" required
-          :disabled="loading" />
+        <FormInput id="username" v-model="registerForm.username" label="用户名" placeholder="3-15位字符" 
+          hint="支持字母、数字、下划线" required :disabled="loading" />
         
-        <FormInput id="nickname" v-model="registerForm.nickname" label="昵称" placeholder="请输入昵称" required
-          :disabled="loading" />
+        <FormInput id="nickname" v-model="registerForm.nickname" label="昵称" placeholder="请输入昵称" 
+          hint="将显示在个人资料中" required :disabled="loading" />
       </div>
 
-      <FormInput id="email" v-model="registerForm.email" label="邮箱" type="email" placeholder="请输入邮箱地址" required
-        :disabled="loading" />
+      <FormInput id="email" v-model="registerForm.email" label="邮箱" type="email" placeholder="请输入邮箱地址" 
+        hint="用于账号验证和密码重置" required :disabled="loading" />
 
       <div class="form-row">
-        <FormInput id="password" v-model="registerForm.password" label="密码" type="password" placeholder="请输入密码（至少6位）"
-          required :disabled="loading" />
+        <FormInput id="password" v-model="registerForm.password" label="密码" type="password" placeholder="至少6位密码"
+          hint="建议包含字母、数字和特殊字符" required :disabled="loading" />
 
         <FormInput id="confirmPassword" v-model="registerForm.confirm_password" label="确认密码" type="password"
-          placeholder="请再次输入密码" required :disabled="loading" />
+          placeholder="请再次输入密码" hint="确保两次输入一致" required :disabled="loading" />
       </div>
 
       <div class="form-actions">
