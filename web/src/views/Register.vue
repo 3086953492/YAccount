@@ -5,88 +5,49 @@
         <h1>用户注册</h1>
         <p>创建您的YAccount账户</p>
       </div>
-      
-      <ErrorMessage 
-        v-if="errorMessage" 
-        :message="errorMessage" 
-        type="error"
-        @dismiss="errorMessage = ''"
-      />
-      
-      <SuccessMessage 
-        v-if="successMessage" 
-        :message="successMessage" 
-        :dismissible="false"
-      />
-      
+
+      <ErrorMessage v-if="errorMessage" :message="errorMessage" type="error" @dismiss="errorMessage = ''" />
+
+      <SuccessMessage v-if="successMessage" :message="successMessage" :dismissible="false" />
+
       <form @submit.prevent="handleRegister" class="register-form">
         <div class="form-group">
           <label for="username">用户名</label>
-          <input
-            id="username"
-            v-model="registerForm.username"
-            type="text"
-            placeholder="请输入用户名（3-15位）"
-            required
-            :disabled="loading"
-          />
+          <input id="username" v-model="registerForm.username" type="text" placeholder="请输入用户名（3-15位）" required
+            :disabled="loading" />
         </div>
-        
+
         <div class="form-group">
           <label for="email">邮箱</label>
-          <input
-            id="email"
-            v-model="registerForm.email"
-            type="email"
-            placeholder="请输入邮箱地址"
-            required
-            :disabled="loading"
-          />
+          <input id="email" v-model="registerForm.email" type="email" placeholder="请输入邮箱地址" required
+            :disabled="loading" />
         </div>
-        
+
         <div class="form-group">
           <label for="nickname">昵称</label>
-          <input
-            id="nickname"
-            v-model="registerForm.nickname"
-            type="text"
-            placeholder="请输入昵称"
-            required
-            :disabled="loading"
-          />
+          <input id="nickname" v-model="registerForm.nickname" type="text" placeholder="请输入昵称" required
+            :disabled="loading" />
         </div>
-        
+
         <div class="form-group">
           <label for="password">密码</label>
-          <input
-            id="password"
-            v-model="registerForm.password"
-            type="password"
-            placeholder="请输入密码（至少6位）"
-            required
-            :disabled="loading"
-          />
+          <input id="password" v-model="registerForm.password" type="password" placeholder="请输入密码（至少6位）" required
+            :disabled="loading" />
         </div>
-        
+
         <div class="form-group">
           <label for="confirmPassword">确认密码</label>
-          <input
-            id="confirmPassword"
-            v-model="registerForm.confirm_password"
-            type="password"
-            placeholder="请再次输入密码"
-            required
-            :disabled="loading"
-          />
+          <input id="confirmPassword" v-model="registerForm.confirm_password" type="password" placeholder="请再次输入密码"
+            required :disabled="loading" />
         </div>
-        
+
         <div class="form-actions">
           <button type="submit" :disabled="loading" class="register-btn">
             <span v-if="loading">注册中...</span>
             <span v-else>注册</span>
           </button>
         </div>
-        
+
         <div class="form-footer">
           <p>已有账号？ <router-link to="/login">立即登录</router-link></p>
         </div>
@@ -121,28 +82,28 @@ const handleRegister = async () => {
     errorMessage.value = '请填写完整的注册信息'
     return
   }
-  
+
   if (registerForm.username.length < 3 || registerForm.username.length > 15) {
     errorMessage.value = '用户名长度必须在3-15位之间'
     return
   }
-  
+
   if (registerForm.password.length < 6) {
     errorMessage.value = '密码长度至少6位'
     return
   }
-  
+
   if (registerForm.password !== registerForm.confirm_password) {
     errorMessage.value = '两次输入的密码不一致'
     return
   }
-  
+
   loading.value = true
   errorMessage.value = ''
-  
+
   try {
     const response = await register(registerForm)
-    
+
     if (response.data.success) {
       // 显示成功消息并跳转
       successMessage.value = '注册成功！正在跳转到登录页面...'

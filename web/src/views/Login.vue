@@ -5,46 +5,29 @@
         <h1>用户登录</h1>
         <p>欢迎使用YAccount系统</p>
       </div>
-      
-      <ErrorMessage 
-        v-if="errorMessage" 
-        :message="errorMessage" 
-        type="error"
-        @dismiss="errorMessage = ''"
-      />
-      
+
+      <ErrorMessage v-if="errorMessage" :message="errorMessage" type="error" @dismiss="errorMessage = ''" />
+
       <form @submit.prevent="handleLogin" class="login-form">
         <div class="form-group">
           <label for="username">用户名</label>
-          <input
-            id="username"
-            v-model="loginForm.username"
-            type="text"
-            placeholder="请输入用户名"
-            required
-            :disabled="loading"
-          />
+          <input id="username" v-model="loginForm.username" type="text" placeholder="请输入用户名" required
+            :disabled="loading" />
         </div>
-        
+
         <div class="form-group">
           <label for="password">密码</label>
-          <input
-            id="password"
-            v-model="loginForm.password"
-            type="password"
-            placeholder="请输入密码"
-            required
-            :disabled="loading"
-          />
+          <input id="password" v-model="loginForm.password" type="password" placeholder="请输入密码" required
+            :disabled="loading" />
         </div>
-        
+
         <div class="form-actions">
           <button type="submit" :disabled="loading" class="login-btn">
             <span v-if="loading">登录中...</span>
             <span v-else>登录</span>
           </button>
         </div>
-        
+
         <div class="form-footer">
           <p>还没有账号？ <router-link to="/register">立即注册</router-link></p>
         </div>
@@ -76,18 +59,18 @@ const handleLogin = async () => {
     errorMessage.value = '请填写完整的登录信息'
     return
   }
-  
+
   loading.value = true
   errorMessage.value = ''
-  
+
   try {
     const response = await login(loginForm)
-    
+
     if (response.data.success) {
       // 保存用户信息和token
       authStore.setUser(response.data.data.user)
       authStore.setToken(response.data.data.token)
-      
+
       // 跳转到首页
       router.push('/')
     } else {

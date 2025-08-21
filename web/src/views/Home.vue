@@ -1,7 +1,7 @@
 <template>
   <div class="home-container">
     <Navigation />
-    
+
     <div class="main-content">
       <div class="user-card">
         <div class="avatar-section">
@@ -9,7 +9,7 @@
             {{ user?.nickname?.charAt(0) || user?.username?.charAt(0) }}
           </div>
         </div>
-        
+
         <div class="user-details">
           <h2>{{ user?.nickname || user?.username }}</h2>
           <p class="username">@{{ user?.username }}</p>
@@ -19,7 +19,7 @@
           </div>
         </div>
       </div>
-      
+
       <div class="info-cards">
         <div class="info-card">
           <h3>账户状态</h3>
@@ -27,12 +27,12 @@
             {{ user?.status === 1 ? '正常' : '已禁用' }}
           </p>
         </div>
-        
+
         <div class="info-card">
           <h3>注册时间</h3>
           <p>{{ formatDate(user?.created_at) }}</p>
         </div>
-        
+
         <div class="info-card">
           <h3>最后更新</h3>
           <p>{{ formatDate(user?.updated_at) }}</p>
@@ -192,13 +192,13 @@ onMounted(() => {
   .main-content {
     padding: 20px 15px;
   }
-  
+
   .user-card {
     flex-direction: column;
     text-align: center;
     padding: 30px 20px;
   }
-  
+
   .info-cards {
     grid-template-columns: 1fr;
   }
