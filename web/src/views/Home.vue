@@ -3,39 +3,61 @@
     <Navigation />
 
     <div class="main-content">
-      <div class="user-card">
-        <div class="avatar-section">
-          <div class="avatar">
+      <el-card class="user-card" shadow="hover">
+        <div class="user-info">
+          <el-avatar :size="80" class="user-avatar"
+            :style="{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }">
             {{ user?.nickname?.charAt(0) || user?.username?.charAt(0) }}
-          </div>
-        </div>
+          </el-avatar>
 
-        <div class="user-details">
-          <h2>{{ user?.nickname || user?.username }}</h2>
-          <p class="username">@{{ user?.username }}</p>
-          <div class="role-badge" :class="user?.role">
-            {{ user?.role === 'admin' ? '管理员' : '普通用户' }}
+          <div class="user-details">
+            <h2>{{ user?.nickname || user?.username }}</h2>
+            <p class="username">@{{ user?.username }}</p>
+            <el-tag :type="user?.role === 'admin' ? 'danger' : 'success'" size="large" effect="dark">
+              {{ user?.role === 'admin' ? '管理员' : '普通用户' }}
+            </el-tag>
           </div>
         </div>
-      </div>
+      </el-card>
 
       <div class="info-cards">
-        <div class="info-card">
-          <h3>账户状态</h3>
-          <p class="status" :class="{ active: user?.status === 1, inactive: user?.status === 0 }">
+        <el-card class="info-card" shadow="hover">
+          <template #header>
+            <div class="card-header">
+              <el-icon>
+                <User />
+              </el-icon>
+              <span>账户状态</span>
+            </div>
+          </template>
+          <el-tag :type="user?.status === 1 ? 'success' : 'danger'" size="large" effect="light">
             {{ user?.status === 1 ? '正常' : '已禁用' }}
-          </p>
-        </div>
+          </el-tag>
+        </el-card>
 
-        <div class="info-card">
-          <h3>注册时间</h3>
-          <p>{{ formatDate(user?.created_at) }}</p>
-        </div>
+        <el-card class="info-card" shadow="hover">
+          <template #header>
+            <div class="card-header">
+              <el-icon>
+                <Calendar />
+              </el-icon>
+              <span>注册时间</span>
+            </div>
+          </template>
+          <p class="info-text">{{ formatDate(user?.created_at) }}</p>
+        </el-card>
 
-        <div class="info-card">
-          <h3>最后更新</h3>
-          <p>{{ formatDate(user?.updated_at) }}</p>
-        </div>
+        <el-card class="info-card" shadow="hover">
+          <template #header>
+            <div class="card-header">
+              <el-icon>
+                <Clock />
+              </el-icon>
+              <span>最后更新</span>
+            </div>
+          </template>
+          <p class="info-text">{{ formatDate(user?.updated_at) }}</p>
+        </el-card>
       </div>
     </div>
   </div>
@@ -46,6 +68,7 @@ import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import Navigation from '@/components/layout/Navigation.vue'
+import { User, Calendar, Clock } from '@element-plus/icons-vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -72,7 +95,7 @@ onMounted(() => {
 <style scoped>
 .home-container {
   min-height: 100vh;
-  background: #f5f7fa;
+  background: var(--el-bg-color-page);
 }
 
 .main-content {
@@ -82,31 +105,21 @@ onMounted(() => {
 }
 
 .user-card {
-  background: white;
+  margin-bottom: 30px;
   border-radius: 16px;
-  padding: 40px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.user-info {
   display: flex;
   align-items: center;
   gap: 30px;
-  margin-bottom: 30px;
 }
 
-.avatar-section {
+.user-avatar {
   flex-shrink: 0;
-}
-
-.avatar {
-  width: 80px;
-  height: 80px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
   font-size: 32px;
   font-weight: 600;
+  color: white;
 }
 
 .user-details {
@@ -115,34 +128,15 @@ onMounted(() => {
 
 .user-details h2 {
   margin: 0 0 8px 0;
-  color: #333;
+  color: var(--el-text-color-primary);
   font-size: 28px;
   font-weight: 600;
 }
 
 .username {
-  color: #666;
-  margin: 0 0 8px 0;
+  color: var(--el-text-color-regular);
+  margin: 0 0 16px 0;
   font-size: 16px;
-}
-
-.role-badge {
-  display: inline-block;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 14px;
-  font-weight: 500;
-  text-transform: uppercase;
-}
-
-.role-badge.admin {
-  background: #ff6b6b;
-  color: white;
-}
-
-.role-badge.user {
-  background: #4ecdc4;
-  color: white;
 }
 
 .info-cards {
@@ -152,33 +146,21 @@ onMounted(() => {
 }
 
 .info-card {
-  background: white;
   border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
-.info-card h3 {
-  margin: 0 0 16px 0;
-  color: #333;
-  font-size: 18px;
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-weight: 600;
+  color: var(--el-text-color-primary);
 }
 
-.info-card p {
+.info-text {
   margin: 0;
-  color: #666;
+  color: var(--el-text-color-regular);
   font-size: 16px;
-}
-
-.status.active {
-  color: #4caf50;
-  font-weight: 600;
-}
-
-.status.inactive {
-  color: #f44336;
-  font-weight: 600;
 }
 
 @media (max-width: 768px) {
@@ -186,10 +168,10 @@ onMounted(() => {
     padding: 20px 15px;
   }
 
-  .user-card {
+  .user-info {
     flex-direction: column;
     text-align: center;
-    padding: 30px 20px;
+    gap: 20px;
   }
 
   .info-cards {
