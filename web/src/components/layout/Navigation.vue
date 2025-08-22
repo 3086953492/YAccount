@@ -18,7 +18,7 @@
           </el-icon>
           <span>首页</span>
         </el-menu-item>
-        <el-menu-item index="/profile">
+        <el-menu-item :index="`/user/${user?.id}`">
           <el-icon>
             <User />
           </el-icon>
@@ -88,7 +88,7 @@ const isAdmin = computed(() => authStore.isAdmin())
 const handleUserCommand = async (command: string) => {
   switch (command) {
     case 'profile':
-      router.push('/profile')
+      router.push(`/user/${user.value?.id}`)
       break
     case 'logout':
       try {

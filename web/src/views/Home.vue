@@ -57,6 +57,7 @@
           <p class="info-text">{{ formatDate(user?.updated_at) }}</p>
         </el-card>
       </div>
+
     </div>
   </div>
 </template>
@@ -80,6 +81,15 @@ const formatDate = (dateString?: string) => {
     return new Date(dateString).toLocaleString('zh-CN')
   } catch {
     return '未知'
+  }
+}
+
+// 查看自己的资料
+const viewMyProfile = () => {
+  if (user.value?.id) {
+    router.push(`/user/${user.value.id}`)
+  } else {
+    console.error('用户ID不存在，无法查看资料')
   }
 }
 
@@ -142,6 +152,7 @@ onMounted(() => {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 20px;
+  margin-bottom: 30px;
 }
 
 .info-card {

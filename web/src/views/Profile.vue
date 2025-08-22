@@ -6,10 +6,23 @@
             <el-card class="profile-card" shadow="hover">
                 <template #header>
                     <div class="card-header">
-                        <el-icon>
-                            <UserFilled />
-                        </el-icon>
-                        <span>个人信息</span>
+                        <div class="header-left">
+                            <el-icon>
+                                <UserFilled />
+                            </el-icon>
+                            <span>{{ isOwnProfile ? '个人信息' : `${userInfo.nickname || userInfo.username} 的个人资料` }}</span>
+                            <el-tag v-if="!isOwnProfile" type="info" size="small" class="view-mode-tag">
+                                查看模式
+                            </el-tag>
+                        </div>
+                        <div class="header-actions">
+                            <el-button @click="goBack" size="small">
+                                <el-icon>
+                                    <ArrowLeft />
+                                </el-icon>
+                                返回
+                            </el-button>
+                        </div>
                     </div>
                 </template>
 
@@ -26,7 +39,7 @@
                         <UserAvatar :size="120" :avatar="userInfo.avatar" :username="userInfo.username"
                             :nickname="userInfo.nickname" class="profile-avatar" />
                     </div>
-                    <div class="avatar-input">
+                    <div v-if="isOwnProfile" class="avatar-input">
                         <el-input v-model="avatarUrl" placeholder="请输入头像链接" :prefix-icon="Link" clearable
                             class="avatar-url-input" />
                         <p class="avatar-hint">支持 JPG、PNG、GIF 格式的图片链接</p>
@@ -52,7 +65,7 @@
 
                         <el-form-item label="昵称" prop="nickname">
                             <el-input v-model="profileForm.nickname" placeholder="请输入昵称" :prefix-icon="UserFilled"
-                                :disabled="loading" clearable />
+                                :disabled="loading || !isOwnProfile" clearable />
                             <template #label>
                                 <span>昵称</span>
                                 <el-tooltip content="将显示在个人资料中" placement="top">
@@ -93,40 +106,43 @@
                         </el-form-item>
                     </div>
 
-                    <!-- 密码修改区域 -->
-                    <el-divider content-position="left">
-                        <span class="divider-title">修改密码（可选）</span>
-                    </el-divider>
+                    <!-- 密码修改区域 - 仅自己的资料显示 -->
+                    <template v-if="isOwnProfile">
+                        <el-divider content-position="left">
+                            <span class="divider-title">修改密码（可选）</span>
+                        </el-divider>
 
-                    <div class="form-row">
-                        <el-form-item label="新密码" prop="password">
-                            <el-input v-model="passwordForm.password" type="password" placeholder="留空则不修改密码"
-                                :prefix-icon="Lock" :disabled="loading" show-password clearable />
-                            <template #label>
-                                <span>新密码</span>
-                                <el-tooltip content="留空则不修改密码" placement="top">
-                                    <el-icon class="hint-icon">
-                                        <QuestionFilled />
-                                    </el-icon>
-                                </el-tooltip>
-                            </template>
-                        </el-form-item>
+                        <div class="form-row">
+                            <el-form-item label="新密码" prop="password">
+                                <el-input v-model="passwordForm.password" type="password" placeholder="留空则不修改密码"
+                                    :prefix-icon="Lock" :disabled="loading" show-password clearable />
+                                <template #label>
+                                    <span>新密码</span>
+                                    <el-tooltip content="留空则不修改密码" placement="top">
+                                        <el-icon class="hint-icon">
+                                            <QuestionFilled />
+                                        </el-icon>
+                                    </el-tooltip>
+                                </template>
+                            </el-form-item>
 
-                        <el-form-item label="确认新密码" prop="confirm_password">
-                            <el-input v-model="passwordForm.confirm_password" type="password" placeholder="请再次输入新密码"
-                                :prefix-icon="Lock" :disabled="loading" show-password clearable />
-                            <template #label>
-                                <span>确认新密码</span>
-                                <el-tooltip content="确保两次输入一致" placement="top">
-                                    <el-icon class="hint-icon">
-                                        <QuestionFilled />
-                                    </el-icon>
-                                </el-tooltip>
-                            </template>
-                        </el-form-item>
-                    </div>
+                            <el-form-item label="确认新密码" prop="confirm_password">
+                                <el-input v-model="passwordForm.confirm_password" type="password" placeholder="请再次输入新密码"
+                                    :prefix-icon="Lock" :disabled="loading" show-password clearable />
+                                <template #label>
+                                    <span>确认新密码</span>
+                                    <el-tooltip content="确保两次输入一致" placement="top">
+                                        <el-icon class="hint-icon">
+                                            <QuestionFilled />
+                                        </el-icon>
+                                    </el-tooltip>
+                                </template>
+                            </el-form-item>
+                        </div>
+                    </template>
 
-                    <el-form-item>
+                    <!-- 更新按钮 - 仅自己的资料显示 -->
+                    <el-form-item v-if="isOwnProfile">
                         <el-button type="primary" native-type="submit" :loading="loading" class="update-button"
                             size="large">
                             {{ loading ? '更新中...' : '保存修改' }}
@@ -155,14 +171,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
-import { getUserInfo, updateUserInfo } from '@/api/user'
+import { ref, reactive, onMounted, computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { getUserInfoById, getCurrentUserInfo, updateUserInfo } from '@/api/user'
 import { useAuthStore } from '@/stores/auth'
-import { User, UserFilled, Lock, QuestionFilled, Link } from '@element-plus/icons-vue'
+import { User, UserFilled, Lock, QuestionFilled, Link, ArrowLeft } from '@element-plus/icons-vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import { ElMessage } from 'element-plus'
 import Navigation from '@/components/layout/Navigation.vue'
 import UserAvatar from '@/components/ui/UserAvatar.vue'
+
+// 路由和认证状态
+const route = useRoute()
+const router = useRouter()
+const authStore = useAuthStore()
 
 // 响应式数据
 const loading = ref(false)
@@ -171,8 +193,17 @@ const errorMessage = ref('')
 const profileFormRef = ref<FormInstance>()
 const avatarUrl = ref('')
 
-// 认证状态管理
-const authStore = useAuthStore()
+// 计算属性：是否为查看自己的资料
+const isOwnProfile = computed(() => {
+    const targetUserId = Number(route.params.id)
+    const currentUserId = authStore.user?.id
+    return targetUserId === currentUserId
+})
+
+// 获取目标用户ID
+const getTargetUserId = () => {
+    return Number(route.params.id)
+}
 
 // 用户信息
 const userInfo = reactive({
@@ -233,7 +264,13 @@ const profileRules: FormRules = {
 // 获取用户信息
 const fetchUserInfo = async () => {
     try {
-        const response = await getUserInfo()
+        const targetUserId = getTargetUserId()
+        if (!targetUserId) {
+            errorMessage.value = '无法获取用户ID'
+            return
+        }
+
+        const response = await getUserInfoById(targetUserId)
         if (response.data.success) {
             const data = response.data.data
             Object.assign(userInfo, data)
@@ -246,19 +283,25 @@ const fetchUserInfo = async () => {
             // 设置头像链接输入框的初始值
             avatarUrl.value = data.avatar || ''
 
-            // 同步更新认证状态中的用户信息
-            authStore.updateUser({
-                id: data.id,
-                username: data.username,
-                nickname: data.nickname,
-                avatar: data.avatar,
-                role: data.role,
-                status: data.status
-            })
+            // 如果是查看自己的资料，同步更新认证状态中的用户信息
+            if (isOwnProfile.value) {
+                authStore.updateUser({
+                    id: data.id,
+                    username: data.username,
+                    nickname: data.nickname,
+                    avatar: data.avatar,
+                    role: data.role,
+                    status: data.status
+                })
+            }
         }
     } catch (error: any) {
         console.error('获取用户信息失败:', error)
-        errorMessage.value = '获取用户信息失败，请稍后重试'
+        if (error.response?.status === 404) {
+            errorMessage.value = '用户不存在'
+        } else {
+            errorMessage.value = '获取用户信息失败，请稍后重试'
+        }
     }
 }
 
@@ -327,8 +370,6 @@ const handleUpdateProfile = async () => {
     }
 }
 
-
-
 // 格式化日期
 const formatDate = (date: Date | string) => {
     if (!date) return '未知'
@@ -340,6 +381,11 @@ const formatDate = (date: Date | string) => {
         hour: '2-digit',
         minute: '2-digit'
     })
+}
+
+// 返回首页
+const goBack = () => {
+    router.push('/')
 }
 
 // 组件挂载时获取用户信息
@@ -367,10 +413,27 @@ onMounted(() => {
 .card-header {
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    /* Added for header-actions */
     gap: 8px;
     font-weight: 600;
     color: var(--el-text-color-primary);
     font-size: 18px;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.header-actions {
+    margin-left: auto;
+    /* Push actions to the right */
+}
+
+.view-mode-tag {
+    margin-left: auto;
 }
 
 .message-alert {
