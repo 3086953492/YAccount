@@ -42,7 +42,7 @@ type UpdateUserRequest struct {
 	Nickname        string `json:"nickname" validate:"omitempty,max=50"`
 	Avatar          string `json:"avatar"`
 	Status          int    `json:"status" validate:"oneof=1 0"`
-	Role            string `json:"role" validate:"oneof=admin user"`
+	Role            string `json:"role" validate:"omitempty,oneof=admin user"`
 }
 
 type UserResponse struct {
