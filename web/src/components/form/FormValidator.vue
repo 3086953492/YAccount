@@ -1,18 +1,22 @@
 <template>
-  <div class="form-validator">
+  <el-form ref="formRef" :model="formModel" :rules="formRules" :label-position="labelPosition" :label-width="labelWidth"
+    :size="size" class="form-validator">
     <slot />
-  </div>
+  </el-form>
 </template>
 
 <script setup lang="ts">
-import { provide, reactive } from 'vue'
+import { ref, provide, reactive, watch } from 'vue'
+import type { FormInstance, FormRules } from 'element-plus'
 
 interface ValidationRule {
   required?: boolean
-  minLength?: number
-  maxLength?: number
+  min?: number
+  max?: number
   pattern?: RegExp
-  custom?: (value: any) => boolean | string
+  validator?: (rule: any, value: any, callback: any) => void
+  message?: string
+  trigger?: string | string[]
 }
 
 interface ValidationField {
@@ -24,95 +28,123 @@ interface ValidationField {
 interface ValidationState {
   fields: Record<string, ValidationField>
   isValid: boolean
-  validateField: (fieldName: string) => boolean
-  validateAll: () => boolean
+  validateField: (fieldName: string) => Promise<boolean>
+  validateAll: () => Promise<boolean>
   clearErrors: () => void
+  resetFields: () => void
 }
+
+interface Props {
+  modelValue?: Record<string, any>
+  rules?: FormRules
+  labelPosition?: 'left' | 'right' | 'top'
+  labelWidth?: string | number
+  size?: 'large' | 'default' | 'small'
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: () => ({}),
+  rules: () => ({}),
+  labelPosition: 'top',
+  labelWidth: 'auto',
+  size: 'large'
+})
+
+const emit = defineEmits<{
+  'update:modelValue': [value: Record<string, any>]
+  'validate': [isValid: boolean]
+}>()
+
+const formRef = ref<FormInstance>()
+const formModel = ref(props.modelValue)
+const formRules = ref(props.rules)
 
 const validationState = reactive<ValidationState>({
   fields: {},
   isValid: true,
   validateField,
   validateAll,
-  clearErrors
+  clearErrors,
+  resetFields
 })
 
 provide('formValidator', validationState)
 
-function validateField(fieldName: string): boolean {
-  const field = validationState.fields[fieldName]
-  if (!field) return true
+// 监听modelValue变化
+watch(() => props.modelValue, (newValue) => {
+  formModel.value = newValue
+}, { deep: true })
 
-  field.errors = []
-  const { value, rules } = field
+// 监听rules变化
+watch(() => props.rules, (newRules) => {
+  formRules.value = newRules
+}, { deep: true })
 
-  for (const rule of rules) {
-    // 必填验证
-    if (rule.required && (!value || value.trim() === '')) {
-      field.errors.push('此字段为必填项')
-      continue
-    }
+async function validateField(fieldName: string): Promise<boolean> {
+  if (!formRef.value) return true
 
-    // 长度验证
-    if (rule.minLength && value && value.length < rule.minLength) {
-      field.errors.push(`最少需要 ${rule.minLength} 个字符`)
-    }
-
-    if (rule.maxLength && value && value.length > rule.maxLength) {
-      field.errors.push(`最多允许 ${rule.maxLength} 个字符`)
-    }
-
-    // 正则验证
-    if (rule.pattern && value && !rule.pattern.test(value)) {
-      field.errors.push('格式不正确')
-    }
-
-    // 自定义验证
-    if (rule.custom && value) {
-      const result = rule.custom(value)
-      if (typeof result === 'string') {
-        field.errors.push(result)
-      } else if (!result) {
-        field.errors.push('验证失败')
-      }
-    }
+  try {
+    await formRef.value.validateField(fieldName)
+    return true
+  } catch {
+    return false
   }
-
-  // 更新整体验证状态
-  validationState.isValid = Object.values(validationState.fields).every(
-    field => field.errors.length === 0
-  )
-
-  return field.errors.length === 0
 }
 
-function validateAll(): boolean {
-  let isValid = true
-  for (const fieldName in validationState.fields) {
-    if (!validateField(fieldName)) {
-      isValid = false
-    }
+async function validateAll(): Promise<boolean> {
+  if (!formRef.value) return true
+
+  try {
+    await formRef.value.validate()
+    validationState.isValid = true
+    emit('validate', true)
+    return true
+  } catch {
+    validationState.isValid = false
+    emit('validate', false)
+    return false
   }
-  return isValid
 }
 
 function clearErrors(): void {
-  for (const fieldName in validationState.fields) {
-    validationState.fields[fieldName].errors = []
+  if (formRef.value) {
+    formRef.value.clearValidate()
   }
   validationState.isValid = true
 }
 
-// 暴露给子组件使用的方法
+function resetFields(): void {
+  if (formRef.value) {
+    formRef.value.resetFields()
+  }
+  validationState.isValid = true
+}
+
+// 暴露给父组件使用的方法
 defineExpose({
   validateField,
   validateAll,
-  clearErrors
+  clearErrors,
+  resetFields,
+  formRef
 })
 </script>
 
 <style scoped>
 .form-validator {
   width: 100%;
+}
+
+:deep(.el-form-item__label) {
+  color: var(--el-text-color-primary);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+:deep(.el-form-item__error) {
+  color: var(--el-color-danger);
+  font-size: 13px;
+  margin-top: 4px;
+  font-weight: 500;
 }
 </style>

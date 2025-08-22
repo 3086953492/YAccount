@@ -1,39 +1,46 @@
 <template>
-  <div class="form-group">
-    <label :for="id">{{ label }}</label>
-    <div class="input-wrapper">
-      <input :id="id" v-model="inputValue" :type="type" :placeholder="placeholder" :required="required"
-        :disabled="disabled" @input="handleInput" @blur="handleBlur" @focus="handleFocus" 
-        :class="{ 'error': hasError, 'focused': isFocused }" />
-      <div class="input-border"></div>
-    </div>
-    <span v-if="errorMessage" class="error-message">{{ errorMessage }}</span>
-    <span v-if="hint" class="hint-text">{{ hint }}</span>
-  </div>
+  <el-form-item :label="label" :prop="prop" :error="errorMessage">
+    <el-input v-model="inputValue" :type="type" :placeholder="placeholder" :disabled="disabled" :clearable="clearable"
+      :show-password="type === 'password'" :prefix-icon="prefixIcon" :suffix-icon="suffixIcon" @input="handleInput"
+      @blur="handleBlur" @focus="handleFocus" @clear="handleClear" size="large" />
+    <template #label v-if="hint">
+      <span>{{ label }}</span>
+      <el-tooltip v-if="hint" :content="hint" placement="top">
+        <el-icon class="hint-icon">
+          <QuestionFilled />
+        </el-icon>
+      </el-tooltip>
+    </template>
+  </el-form-item>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
+import { QuestionFilled } from '@element-plus/icons-vue'
 
 interface Props {
   modelValue: string
-  id: string
   label: string
+  prop?: string
   type?: string
   placeholder?: string
-  required?: boolean
   disabled?: boolean
   errorMessage?: string
   hint?: string
+  clearable?: boolean
+  prefixIcon?: string
+  suffixIcon?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
   type: 'text',
   placeholder: '',
-  required: false,
   disabled: false,
   errorMessage: '',
-  hint: ''
+  hint: '',
+  clearable: true,
+  prefixIcon: '',
+  suffixIcon: ''
 })
 
 const emit = defineEmits<{
@@ -41,6 +48,7 @@ const emit = defineEmits<{
   'input': [value: string]
   'blur': [value: string]
   'focus': [value: string]
+  'clear': []
 }>()
 
 const inputValue = computed({
@@ -48,127 +56,65 @@ const inputValue = computed({
   set: (value: string) => emit('update:modelValue', value)
 })
 
-const hasError = computed(() => !!props.errorMessage)
-const isFocused = ref(false)
-
-const handleInput = (event: Event) => {
-  const target = event.target as HTMLInputElement
-  emit('input', target.value)
+const handleInput = (value: string) => {
+  emit('input', value)
 }
 
-const handleBlur = (event: Event) => {
+const handleBlur = (event: FocusEvent) => {
   const target = event.target as HTMLInputElement
-  isFocused.value = false
   emit('blur', target.value)
 }
 
-const handleFocus = (event: Event) => {
+const handleFocus = (event: FocusEvent) => {
   const target = event.target as HTMLInputElement
-  isFocused.value = true
   emit('focus', target.value)
+}
+
+const handleClear = () => {
+  emit('clear')
 }
 </script>
 
 <style scoped>
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+.hint-icon {
+  margin-left: 4px;
+  color: var(--el-text-color-secondary);
+  cursor: help;
 }
 
-.form-group label {
-  color: #374151;
+:deep(.el-form-item__label) {
+  color: var(--el-text-color-primary);
   font-weight: 600;
   font-size: 14px;
-  margin-left: 2px;
 }
 
-.input-wrapper {
-  position: relative;
-}
-
-.input-wrapper input {
-  width: 100%;
-  padding: 14px 18px;
-  border: 2px solid transparent;
+:deep(.el-input__wrapper) {
   border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:deep(.el-input__wrapper:hover) {
+  box-shadow: 0 0 0 1px var(--el-border-color-hover);
+}
+
+:deep(.el-input__wrapper.is-focus) {
+  box-shadow: 0 0 0 1px var(--el-color-primary);
+}
+
+:deep(.el-input__inner) {
   font-size: 16px;
-  background: #f9fafb;
-  color: #111827;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-sizing: border-box;
+  padding: 14px 18px;
 }
 
-.input-wrapper input::placeholder {
-  color: #9ca3af;
-  font-weight: 400;
-  opacity: 1;
-}
-
-.input-wrapper input:focus {
-  outline: none;
-  background: #ffffff;
-  box-shadow: 
-    0 0 0 4px rgba(99, 102, 241, 0.1),
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
-}
-
-.input-wrapper input:hover:not(:focus):not(:disabled) {
-  background: #f3f4f6;
-}
-
-.input-wrapper input:disabled {
-  background-color: #f3f4f6;
-  color: #9ca3af;
-  cursor: not-allowed;
-}
-
-.input-wrapper input.error {
-  background: #fef2f2;
-  border-color: #ef4444;
-}
-
-.input-wrapper input.error:focus {
-  box-shadow: 
-    0 0 0 4px rgba(239, 68, 68, 0.1),
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
-}
-
-.input-wrapper input.focused {
-  background: #ffffff;
-}
-
-.input-border {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  border-radius: 12px;
-  pointer-events: none;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.error-message {
-  color: #dc2626;
+:deep(.el-form-item__error) {
+  color: var(--el-color-danger);
   font-size: 13px;
   margin-top: 4px;
-  margin-left: 2px;
   font-weight: 500;
 }
 
-.hint-text {
-  color: #6b7280;
-  font-size: 12px;
-  margin-top: 2px;
-  margin-left: 2px;
-  font-weight: 400;
-}
-
 @media (max-width: 640px) {
-  .input-wrapper input {
+  :deep(.el-input__inner) {
     padding: 14px 16px;
     font-size: 16px;
   }

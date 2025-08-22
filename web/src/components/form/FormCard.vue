@@ -1,28 +1,28 @@
 <template>
   <div class="form-container">
-    <div class="form-card">
-      <div class="form-header">
-        <div class="logo-container">
-          <div class="logo-icon">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+    <el-card class="form-card" shadow="hover">
+      <template #header>
+        <div class="form-header">
+          <div class="logo-container">
+            <el-icon class="logo-icon" size="32">
+              <Lock />
+            </el-icon>
           </div>
+          <h1 class="title">{{ title }}</h1>
+          <p v-if="subtitle" class="subtitle">{{ subtitle }}</p>
         </div>
-        <h1>{{ title }}</h1>
-        <p v-if="subtitle">{{ subtitle }}</p>
-      </div>
+      </template>
 
       <div class="form-content">
         <slot />
       </div>
-    </div>
+    </el-card>
   </div>
 </template>
 
 <script setup lang="ts">
+import { Lock } from '@element-plus/icons-vue'
+
 interface Props {
   title: string
   subtitle?: string
@@ -37,7 +37,7 @@ defineProps<Props>()
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: var(--el-bg-color-page);
   padding: 20px;
   position: relative;
 }
@@ -51,21 +51,28 @@ defineProps<Props>()
   bottom: 0;
   background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="%23ffffff" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="%23ffffff" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="%23ffffff" opacity="0.1"/><circle cx="10" cy="60" r="0.5" fill="%23ffffff" opacity="0.1"/><circle cx="90" cy="40" r="0.5" fill="%23ffffff" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
   pointer-events: none;
+  opacity: 0.3;
 }
 
 .form-card {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
-  border-radius: 24px;
-  box-shadow: 
-    0 25px 50px -12px rgba(0, 0, 0, 0.08),
-    0 0 0 1px rgba(255, 255, 255, 0.1);
-  padding: 36px;
   width: 100%;
   max-width: 600px;
+  border-radius: 24px;
   position: relative;
   z-index: 1;
+  backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.95);
   border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.form-card :deep(.el-card__header) {
+  padding: 36px 36px 24px 36px;
+  border-bottom: none;
+  background: transparent;
+}
+
+.form-card :deep(.el-card__body) {
+  padding: 0 36px 36px 36px;
 }
 
 .logo-container {
@@ -85,26 +92,20 @@ defineProps<Props>()
   margin-bottom: 16px;
 }
 
-.logo-icon svg {
-  width: 32px;
-  height: 32px;
-}
-
 .form-header {
   text-align: center;
-  margin-bottom: 24px;
 }
 
-.form-header h1 {
-  color: #1a202c;
+.title {
+  color: var(--el-text-color-primary);
   margin: 0 0 12px 0;
   font-size: 32px;
   font-weight: 700;
   letter-spacing: -0.025em;
 }
 
-.form-header p {
-  color: #718096;
+.subtitle {
+  color: var(--el-text-color-regular);
   margin: 0;
   font-size: 16px;
   line-height: 1.5;
@@ -117,24 +118,48 @@ defineProps<Props>()
 }
 
 @media (max-width: 640px) {
-  .form-card {
-    padding: 32px 24px;
-    margin: 16px;
-    border-radius: 20px;
+  .form-container {
+    padding: 15px;
   }
-  
-  .form-header h1 {
+
+  .form-card {
+    max-width: 100%;
+    margin: 0;
+  }
+
+  .form-card :deep(.el-card__header) {
+    padding: 32px 24px 20px 24px;
+  }
+
+  .form-card :deep(.el-card__body) {
+    padding: 0 24px 32px 24px;
+  }
+
+  .title {
     font-size: 28px;
   }
-  
+
   .logo-icon {
     width: 56px;
     height: 56px;
   }
-  
-  .logo-icon svg {
-    width: 28px;
-    height: 28px;
+}
+
+@media (max-width: 480px) {
+  .form-card :deep(.el-card__header) {
+    padding: 24px 20px 16px 20px;
+  }
+
+  .form-card :deep(.el-card__body) {
+    padding: 0 20px 24px 20px;
+  }
+
+  .title {
+    font-size: 24px;
+  }
+
+  .subtitle {
+    font-size: 14px;
   }
 }
 </style>
