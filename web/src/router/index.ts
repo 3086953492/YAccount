@@ -21,6 +21,12 @@ const router = createRouter({
       name: 'register',
       component: () => import('@/views/Register.vue'),
       meta: { requiresAuth: false }
+    },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: () => import('@/views/Profile.vue'),
+      meta: { requiresAuth: true }
     }
   ],
 })
@@ -28,10 +34,10 @@ const router = createRouter({
 // 路由守卫
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
-  
+
   // 初始化认证状态
   authStore.initAuth()
-  
+
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     // 需要认证但未登录，跳转到登录页
     next('/login')

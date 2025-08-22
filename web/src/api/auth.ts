@@ -15,7 +15,7 @@ api.interceptors.request.use(
   (axiosConfig) => {
     const token = localStorage.getItem(config.storageKeys.token)
     if (token) {
-      axiosConfig.headers.Authorization = token
+      axiosConfig.headers.Authorization = 'Bearer ' + token
     }
     return axiosConfig
   },
