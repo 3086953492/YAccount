@@ -1,21 +1,43 @@
 <template>
-  <FormCard title="欢迎回来" subtitle="登录您的YAccount账户">
-    <ErrorMessage v-if="errorMessage" :message="errorMessage" type="error" @dismiss="errorMessage = ''" />
+  <div class="login-container">
+    <el-card class="login-card" shadow="hover">
+      <template #header>
+        <div class="card-header">
+          <h2 class="title">欢迎回来</h2>
+          <p class="subtitle">登录您的YAccount账户</p>
+        </div>
+      </template>
 
-    <form @submit.prevent="handleLogin" class="login-form">
-      <FormInput id="username" v-model="loginForm.username" label="用户名" placeholder="请输入用户名" required
-        :disabled="loading" />
+      <el-alert v-if="errorMessage" :title="errorMessage" type="error" :closable="true" @close="errorMessage = ''"
+        show-icon class="error-alert" />
 
-      <FormInput id="password" v-model="loginForm.password" label="密码" type="password" placeholder="请输入密码" required
-        :disabled="loading" />
+      <el-form ref="loginFormRef" :model="loginForm" :rules="loginRules" @submit.prevent="handleLogin"
+        class="login-form" label-position="top" size="large">
+        <el-form-item label="用户名" prop="username">
+          <el-input v-model="loginForm.username" placeholder="请输入用户名" :prefix-icon="User" :disabled="loading"
+            clearable />
+        </el-form-item>
 
-      <div class="form-actions">
-        <FormButton type="submit" text="登录" :loading="loading" loading-text="登录中..." />
+        <el-form-item label="密码" prop="password">
+          <el-input v-model="loginForm.password" type="password" placeholder="请输入密码" :prefix-icon="Lock"
+            :disabled="loading" show-password clearable />
+        </el-form-item>
+
+        <el-form-item>
+          <el-button type="primary" native-type="submit" :loading="loading" class="login-button" size="large">
+            {{ loading ? '登录中...' : '登录' }}
+          </el-button>
+        </el-form-item>
+      </el-form>
+
+      <div class="form-footer">
+        <span class="footer-text">还没有账号？</span>
+        <el-link type="primary" @click="$router.push('/register')" :underline="false">
+          立即注册
+        </el-link>
       </div>
-
-      <FormFooter text="还没有账号？" link-text="立即注册" link-to="/register" />
-    </form>
-  </FormCard>
+    </el-card>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -23,26 +45,39 @@ import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { login } from '@/api/auth'
-import ErrorMessage from '@/components/ui/ErrorMessage.vue'
-import FormCard from '@/components/form/FormCard.vue'
-import FormInput from '@/components/form/FormInput.vue'
-import FormButton from '@/components/form/FormButton.vue'
-import FormFooter from '@/components/form/FormFooter.vue'
+import { User, Lock } from '@element-plus/icons-vue'
+import type { FormInstance, FormRules } from 'element-plus'
+import { ElMessage } from 'element-plus'
 
 const router = useRouter()
 const authStore = useAuthStore()
 
 const loading = ref(false)
 const errorMessage = ref('')
+const loginFormRef = ref<FormInstance>()
 
 const loginForm = reactive({
   username: '',
   password: ''
 })
 
+const loginRules: FormRules = {
+  username: [
+    { required: true, message: '请输入用户名', trigger: 'blur' },
+    { min: 3, max: 20, message: '用户名长度应在3-20个字符之间', trigger: 'blur' }
+  ],
+  password: [
+    { required: true, message: '请输入密码', trigger: 'blur' },
+    { min: 6, message: '密码长度不能少于6个字符', trigger: 'blur' }
+  ]
+}
+
 const handleLogin = async () => {
-  if (!loginForm.username || !loginForm.password) {
-    errorMessage.value = '请填写完整的登录信息'
+  if (!loginFormRef.value) return
+
+  try {
+    await loginFormRef.value.validate()
+  } catch {
     return
   }
 
@@ -56,6 +91,9 @@ const handleLogin = async () => {
       // 保存用户信息和token
       authStore.setUser(response.data.data.user)
       authStore.setToken(response.data.data.token)
+
+      // 显示成功消息
+      ElMessage.success('登录成功')
 
       // 跳转到首页
       router.push('/')
@@ -72,19 +110,71 @@ const handleLogin = async () => {
 </script>
 
 <style scoped>
-.login-form {
+.login-container {
+  min-height: 100vh;
   display: flex;
-  flex-direction: column;
-  gap: 24px;
+  align-items: center;
+  justify-content: center;
+  background: var(--el-bg-color-page);
+  padding: 20px;
 }
 
-.form-actions {
-  margin-top: 8px;
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  border-radius: 16px;
+}
+
+.card-header {
+  text-align: center;
+}
+
+.title {
+  margin: 0 0 8px 0;
+  color: var(--el-text-color-primary);
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--el-text-color-regular);
+  font-size: 14px;
+}
+
+.error-alert {
+  margin-bottom: 20px;
+}
+
+.login-form {
+  margin-bottom: 20px;
+}
+
+.login-button {
+  width: 100%;
+  height: 44px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.form-footer {
+  text-align: center;
+  padding-top: 20px;
+  border-top: 1px solid var(--el-border-color-lighter);
+}
+
+.footer-text {
+  color: var(--el-text-color-regular);
+  margin-right: 8px;
 }
 
 @media (max-width: 640px) {
-  .login-form {
-    gap: 20px;
+  .login-container {
+    padding: 15px;
+  }
+
+  .login-card {
+    max-width: 100%;
   }
 }
 </style>
