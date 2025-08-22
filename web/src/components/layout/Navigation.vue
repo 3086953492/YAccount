@@ -1,44 +1,84 @@
 <template>
-  <nav class="navigation">
+  <el-header class="navigation">
     <div class="nav-container">
       <div class="nav-brand">
         <router-link to="/" class="brand-link">
-          <span class="brand-icon">🔐</span>
+          <el-icon class="brand-icon" size="24">
+            <Lock />
+          </el-icon>
           <span class="brand-text">YAccount</span>
         </router-link>
       </div>
 
-      <div class="nav-menu">
-        <router-link to="/" class="nav-link" active-class="active">
-          首页
-        </router-link>
-        <router-link to="/profile" class="nav-link" active-class="active">
-          个人资料
-        </router-link>
-        <router-link v-if="isAdmin" to="/admin" class="nav-link" active-class="active">
-          管理后台
-        </router-link>
-      </div>
+      <el-menu :default-active="$route.path" mode="horizontal" class="nav-menu" router background-color="transparent"
+        text-color="var(--el-text-color-regular)" active-text-color="var(--el-color-primary)">
+        <el-menu-item index="/">
+          <el-icon>
+            <House />
+          </el-icon>
+          <span>首页</span>
+        </el-menu-item>
+        <el-menu-item index="/profile">
+          <el-icon>
+            <User />
+          </el-icon>
+          <span>个人资料</span>
+        </el-menu-item>
+        <el-menu-item v-if="isAdmin" index="/admin">
+          <el-icon>
+            <Setting />
+          </el-icon>
+          <span>管理后台</span>
+        </el-menu-item>
+      </el-menu>
 
       <div class="nav-user">
-        <div class="user-info">
-          <span class="username">{{ user?.nickname || user?.username }}</span>
-          <div class="user-avatar">
-            {{ user?.nickname?.charAt(0) || user?.username?.charAt(0) }}
+        <el-dropdown trigger="click" @command="handleUserCommand">
+          <div class="user-info">
+            <span class="username">{{ user?.nickname || user?.username }}</span>
+            <el-avatar :size="32" class="user-avatar"
+              :style="{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }">
+              {{ user?.nickname?.charAt(0) || user?.username?.charAt(0) }}
+            </el-avatar>
+            <el-icon class="dropdown-icon">
+              <ArrowDown />
+            </el-icon>
           </div>
-        </div>
-        <button @click="handleLogout" class="logout-btn">
-          登出
-        </button>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item command="profile">
+                <el-icon>
+                  <User />
+                </el-icon>
+                个人资料
+              </el-dropdown-item>
+              <el-dropdown-item command="logout" divided>
+                <el-icon>
+                  <SwitchButton />
+                </el-icon>
+                退出登录
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
       </div>
     </div>
-  </nav>
+  </el-header>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import {
+  Lock,
+  House,
+  User,
+  Setting,
+  ArrowDown,
+  SwitchButton
+} from '@element-plus/icons-vue'
+import { ElMessageBox } from 'element-plus'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -46,19 +86,35 @@ const authStore = useAuthStore()
 const user = computed(() => authStore.user)
 const isAdmin = computed(() => authStore.isAdmin())
 
-const handleLogout = () => {
-  if (confirm('确定要登出吗？')) {
-    authStore.logout()
-    router.push('/login')
+const handleUserCommand = async (command: string) => {
+  switch (command) {
+    case 'profile':
+      router.push('/profile')
+      break
+    case 'logout':
+      try {
+        await ElMessageBox.confirm('确定要退出登录吗？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+        authStore.logout()
+        router.push('/login')
+      } catch {
+        // 用户取消操作
+      }
+      break
   }
 }
 </script>
 
 <style scoped>
 .navigation {
-  background: white;
-  border-bottom: 1px solid #e5e7eb;
+  background: var(--el-bg-color);
+  border-bottom: 1px solid var(--el-border-color-light);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 0;
+  height: auto;
 }
 
 .nav-container {
@@ -81,13 +137,13 @@ const handleLogout = () => {
   align-items: center;
   gap: 8px;
   text-decoration: none;
-  color: #333;
+  color: var(--el-text-color-primary);
   font-weight: 600;
   font-size: 20px;
 }
 
 .brand-icon {
-  font-size: 24px;
+  color: var(--el-color-primary);
 }
 
 .brand-text {
@@ -95,74 +151,65 @@ const handleLogout = () => {
 }
 
 .nav-menu {
-  display: flex;
-  align-items: center;
-  gap: 32px;
+  border-bottom: none;
+  flex: 1;
+  justify-content: center;
 }
 
-.nav-link {
-  text-decoration: none;
-  color: #666;
+.nav-menu :deep(.el-menu-item) {
+  height: 64px;
+  line-height: 64px;
+  border-bottom: none;
   font-weight: 500;
-  padding: 8px 16px;
-  border-radius: 6px;
-  transition: all 0.2s ease;
 }
 
-.nav-link:hover {
-  color: #333;
-  background-color: #f3f4f6;
+.nav-menu :deep(.el-menu-item.is-active) {
+  background-color: var(--el-color-primary-light-9);
+  border-bottom: 2px solid var(--el-color-primary);
 }
 
-.nav-link.active {
-  color: #667eea;
-  background-color: #eff6ff;
+.nav-menu :deep(.el-menu-item:hover) {
+  background-color: var(--el-fill-color-light);
 }
 
 .nav-user {
   display: flex;
   align-items: center;
-  gap: 16px;
 }
 
 .user-info {
   display: flex;
   align-items: center;
   gap: 12px;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.user-info:hover {
+  background-color: var(--el-fill-color-light);
 }
 
 .username {
-  color: #333;
+  color: var(--el-text-color-primary);
   font-weight: 500;
 }
 
 .user-avatar {
-  width: 32px;
-  height: 32px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
   font-size: 14px;
   font-weight: 600;
-}
-
-.logout-btn {
-  background: #ef4444;
   color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
 }
 
-.logout-btn:hover {
-  background: #dc2626;
+.dropdown-icon {
+  color: var(--el-text-color-secondary);
+  font-size: 12px;
+  transition: transform 0.2s ease;
+}
+
+.user-info:hover .dropdown-icon {
+  transform: rotate(180deg);
 }
 
 @media (max-width: 768px) {
@@ -174,13 +221,27 @@ const handleLogout = () => {
     gap: 16px;
   }
 
-  .nav-link {
-    padding: 6px 12px;
+  .nav-menu :deep(.el-menu-item) {
+    padding: 0 12px;
     font-size: 14px;
   }
 
   .username {
     display: none;
+  }
+
+  .brand-text {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 640px) {
+  .nav-menu :deep(.el-menu-item span) {
+    display: none;
+  }
+
+  .nav-menu :deep(.el-menu-item) {
+    padding: 0 8px;
   }
 }
 </style>
