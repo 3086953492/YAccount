@@ -10,8 +10,13 @@
                             <el-icon>
                                 <UserFilled />
                             </el-icon>
-                            <span>{{ isOwnProfile ? '个人信息' : `${userInfo.nickname || userInfo.username} 的个人资料` }}</span>
-                            <el-tag v-if="!isOwnProfile" type="info" size="small" class="view-mode-tag">
+                            <span v-if="isOwnProfile">个人信息</span>
+                            <span v-else-if="isAdmin">{{ userInfo.nickname || userInfo.username }} 的个人资料</span>
+                            <span v-else>用户资料</span>
+                            <el-tag v-if="!isOwnProfile && isAdmin" type="warning" size="small" class="view-mode-tag">
+                                管理员编辑模式
+                            </el-tag>
+                            <el-tag v-else-if="!isOwnProfile" type="info" size="small" class="view-mode-tag">
                                 查看模式
                             </el-tag>
                         </div>
@@ -33,8 +38,19 @@
                 <el-alert v-if="errorMessage" :title="errorMessage" type="error" :closable="true"
                     @close="errorMessage = ''" show-icon class="message-alert" />
 
-                <!-- 头像设置区域 -->
-                <div class="avatar-section">
+                <!-- 权限检查 -->
+                <el-alert v-if="!hasPermission" title="权限不足" type="error" show-icon class="message-alert">
+                    <template #default>
+                        <p>您没有权限查看该用户的资料。</p>
+                        <p>只有管理员才能查看其他用户的资料，或者您可以查看自己的资料。</p>
+                        <el-button type="primary" @click="goToMyProfile" size="small" class="mt-2">
+                            查看我的资料
+                        </el-button>
+                    </template>
+                </el-alert>
+
+                <!-- 头像设置区域 - 仅在有权限时显示 -->
+                <div v-if="hasPermission" class="avatar-section">
                     <div class="avatar-wrapper">
                         <UserAvatar :size="120" :avatar="userInfo.avatar" :username="userInfo.username"
                             :nickname="userInfo.nickname" class="profile-avatar" />
@@ -65,7 +81,7 @@
 
                         <el-form-item label="昵称" prop="nickname">
                             <el-input v-model="profileForm.nickname" placeholder="请输入昵称" :prefix-icon="UserFilled"
-                                :disabled="loading || !isOwnProfile" clearable />
+                                :disabled="loading || (!isOwnProfile && !isAdmin)" clearable />
                             <template #label>
                                 <span>昵称</span>
                                 <el-tooltip content="将显示在个人资料中" placement="top">
@@ -106,19 +122,21 @@
                         </el-form-item>
                     </div>
 
-                    <!-- 密码修改区域 - 仅自己的资料显示 -->
-                    <template v-if="isOwnProfile">
+                    <!-- 密码修改区域 - 仅自己的资料或管理员编辑时显示 -->
+                    <template v-if="isOwnProfile || isAdmin">
                         <el-divider content-position="left">
-                            <span class="divider-title">修改密码（可选）</span>
+                            <span class="divider-title">{{ isOwnProfile ? '修改密码（可选）' : '修改密码' }}</span>
                         </el-divider>
 
                         <div class="form-row">
                             <el-form-item label="新密码" prop="password">
-                                <el-input v-model="passwordForm.password" type="password" placeholder="留空则不修改密码"
+                                <el-input v-model="passwordForm.password" type="password" 
+                                    :placeholder="isOwnProfile ? '留空则不修改密码' : '请输入新密码'"
                                     :prefix-icon="Lock" :disabled="loading" show-password clearable />
                                 <template #label>
                                     <span>新密码</span>
-                                    <el-tooltip content="留空则不修改密码" placement="top">
+                                    <span v-if="!isOwnProfile && isAdmin" class="required-mark">*</span>
+                                    <el-tooltip :content="isOwnProfile ? '留空则不修改密码' : '请输入新密码'" placement="top">
                                         <el-icon class="hint-icon">
                                             <QuestionFilled />
                                         </el-icon>
@@ -127,10 +145,12 @@
                             </el-form-item>
 
                             <el-form-item label="确认新密码" prop="confirm_password">
-                                <el-input v-model="passwordForm.confirm_password" type="password" placeholder="请再次输入新密码"
+                                <el-input v-model="passwordForm.confirm_password" type="password" 
+                                    :placeholder="isOwnProfile ? '请再次输入新密码' : '请再次输入新密码'"
                                     :prefix-icon="Lock" :disabled="loading" show-password clearable />
                                 <template #label>
                                     <span>确认新密码</span>
+                                    <span v-if="!isOwnProfile && isAdmin" class="required-mark">*</span>
                                     <el-tooltip content="确保两次输入一致" placement="top">
                                         <el-icon class="hint-icon">
                                             <QuestionFilled />
@@ -141,11 +161,11 @@
                         </div>
                     </template>
 
-                    <!-- 更新按钮 - 仅自己的资料显示 -->
-                    <el-form-item v-if="isOwnProfile">
+                    <!-- 更新按钮 - 有权限时显示 -->
+                    <el-form-item v-if="hasPermission">
                         <el-button type="primary" native-type="submit" :loading="loading" class="update-button"
                             size="large">
-                            {{ loading ? '更新中...' : '保存修改' }}
+                            {{ loading ? '更新中...' : (isOwnProfile ? '保存修改' : '保存用户信息') }}
                         </el-button>
                     </el-form-item>
                 </el-form>
@@ -173,7 +193,7 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { getUserInfoById, getCurrentUserInfo, updateUserInfo } from '@/api/user'
+import { getUserInfoById, getCurrentUserInfo, updateUserInfo, updateUserInfoById } from '@/api/user'
 import { useAuthStore } from '@/stores/auth'
 import { User, UserFilled, Lock, QuestionFilled, Link, ArrowLeft } from '@element-plus/icons-vue'
 import type { FormInstance, FormRules } from 'element-plus'
@@ -198,6 +218,30 @@ const isOwnProfile = computed(() => {
     const targetUserId = Number(route.params.id)
     const currentUserId = authStore.user?.id
     return targetUserId === currentUserId
+})
+
+// 计算属性：是否为管理员
+const isAdmin = computed(() => {
+    return authStore.user?.role === 'admin'
+})
+
+// 计算属性：是否有权限查看该用户资料
+const hasPermission = computed(() => {
+    const targetUserId = Number(route.params.id)
+    const currentUserId = authStore.user?.id
+    
+    // 如果是查看自己的资料，允许
+    if (targetUserId === currentUserId) {
+        return true
+    }
+    
+    // 如果是管理员，允许查看其他用户资料
+    if (isAdmin.value) {
+        return true
+    }
+    
+    // 普通用户不能查看其他用户资料
+    return false
 })
 
 // 获取目标用户ID
@@ -233,7 +277,15 @@ const passwordForm = reactive({
 
 // 表单验证规则
 const validateConfirmPassword = (rule: any, value: string, callback: any) => {
-    // 如果密码为空，则确认密码也可以为空
+    // 如果是管理员编辑其他用户，密码是必填的
+    if (!isOwnProfile.value && isAdmin.value) {
+        if (passwordForm.password === '') {
+            callback(new Error('请输入密码'))
+            return
+        }
+    }
+    
+    // 如果密码为空，则确认密码也可以为空（仅适用于自己的资料）
     if (passwordForm.password === '') {
         callback()
         return
@@ -254,6 +306,11 @@ const profileRules: FormRules = {
         { min: 2, max: 20, message: '昵称长度必须在2-20位之间', trigger: 'blur' }
     ],
     password: [
+        { 
+            required: !isOwnProfile.value && isAdmin.value, 
+            message: '请输入密码', 
+            trigger: 'blur' 
+        },
         { min: 6, message: '密码长度至少6位', trigger: 'blur' }
     ],
     confirm_password: [
@@ -263,6 +320,11 @@ const profileRules: FormRules = {
 
 // 获取用户信息
 const fetchUserInfo = async () => {
+    // 如果没有权限，不获取用户信息
+    if (!hasPermission.value) {
+        return
+    }
+
     try {
         const targetUserId = getTargetUserId()
         if (!targetUserId) {
@@ -309,6 +371,12 @@ const fetchUserInfo = async () => {
 const handleUpdateProfile = async () => {
     if (!profileFormRef.value) return
 
+    // 如果没有权限，不允许更新
+    if (!hasPermission.value) {
+        errorMessage.value = '权限不足，无法更新用户信息'
+        return
+    }
+
     try {
         await profileFormRef.value.validate()
     } catch {
@@ -336,11 +404,21 @@ const handleUpdateProfile = async () => {
             updateData.confirm_password = passwordForm.confirm_password.trim()
         }
 
-        const response = await updateUserInfo(updateData)
+        let response
+        if (isOwnProfile.value) {
+            // 更新自己的信息
+            response = await updateUserInfo(updateData)
+        } else if (isAdmin.value) {
+            // 管理员更新其他用户信息
+            const targetUserId = getTargetUserId()
+            response = await updateUserInfoById(targetUserId, updateData)
+        } else {
+            throw new Error('权限不足')
+        }
 
         if (response.data.success) {
-            successMessage.value = '个人信息更新成功！'
-            ElMessage.success('个人信息更新成功！')
+            successMessage.value = '用户信息更新成功！'
+            ElMessage.success('用户信息更新成功！')
 
             // 清空密码表单
             passwordForm.password = ''
@@ -350,15 +428,17 @@ const handleUpdateProfile = async () => {
             // 重新获取用户信息
             await fetchUserInfo()
 
-            // 同步更新认证状态中的用户信息
-            authStore.updateUser({
-                id: userInfo.id,
-                username: userInfo.username,
-                nickname: userInfo.nickname,
-                avatar: userInfo.avatar,
-                role: userInfo.role,
-                status: userInfo.status
-            })
+            // 如果是更新自己的信息，同步更新认证状态
+            if (isOwnProfile.value) {
+                authStore.updateUser({
+                    id: userInfo.id,
+                    username: userInfo.username,
+                    nickname: userInfo.nickname,
+                    avatar: userInfo.avatar,
+                    role: userInfo.role,
+                    status: userInfo.status
+                })
+            }
         } else {
             errorMessage.value = response.data.message || '更新失败'
         }
@@ -386,6 +466,13 @@ const formatDate = (date: Date | string) => {
 // 返回首页
 const goBack = () => {
     router.push('/')
+}
+
+// 跳转到自己的资料页面
+const goToMyProfile = () => {
+    if (authStore.user?.id) {
+        router.push(`/user/${authStore.user.id}`)
+    }
 }
 
 // 组件挂载时获取用户信息
@@ -527,6 +614,11 @@ onMounted(() => {
     margin-left: 4px;
     color: var(--el-text-color-secondary);
     cursor: help;
+}
+
+.required-mark {
+    color: var(--el-color-danger);
+    margin-left: 4px;
 }
 
 @media (max-width: 768px) {
