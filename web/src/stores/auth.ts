@@ -22,7 +22,7 @@ export const useAuthStore = defineStore('auth', () => {
   const initAuth = () => {
     const storedToken = localStorage.getItem(config.storageKeys.token)
     const storedUser = localStorage.getItem(config.storageKeys.user)
-    
+
     if (storedToken && storedUser) {
       try {
         token.value = storedToken
@@ -40,6 +40,14 @@ export const useAuthStore = defineStore('auth', () => {
     user.value = userData
     localStorage.setItem(config.storageKeys.user, JSON.stringify(userData))
     isAuthenticated.value = true
+  }
+
+  // 更新用户信息（用于同步更新）
+  const updateUser = (userData: Partial<User>) => {
+    if (user.value) {
+      user.value = { ...user.value, ...userData }
+      localStorage.setItem(config.storageKeys.user, JSON.stringify(user.value))
+    }
   }
 
   // 设置token
@@ -79,6 +87,7 @@ export const useAuthStore = defineStore('auth', () => {
     initAuth,
     setUser,
     setToken,
+    updateUser,
     clearAuth,
     logout,
     hasRole,

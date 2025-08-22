@@ -157,6 +157,7 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
 import { getUserInfo, updateUserInfo } from '@/api/user'
+import { useAuthStore } from '@/stores/auth'
 import { User, UserFilled, Lock, QuestionFilled, Link } from '@element-plus/icons-vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import { ElMessage } from 'element-plus'
@@ -170,7 +171,8 @@ const errorMessage = ref('')
 const profileFormRef = ref<FormInstance>()
 const avatarUrl = ref('')
 
-
+// 认证状态管理
+const authStore = useAuthStore()
 
 // 用户信息
 const userInfo = reactive({
@@ -243,6 +245,16 @@ const fetchUserInfo = async () => {
             })
             // 设置头像链接输入框的初始值
             avatarUrl.value = data.avatar || ''
+
+            // 同步更新认证状态中的用户信息
+            authStore.updateUser({
+                id: data.id,
+                username: data.username,
+                nickname: data.nickname,
+                avatar: data.avatar,
+                role: data.role,
+                status: data.status
+            })
         }
     } catch (error: any) {
         console.error('获取用户信息失败:', error)
@@ -294,6 +306,16 @@ const handleUpdateProfile = async () => {
 
             // 重新获取用户信息
             await fetchUserInfo()
+
+            // 同步更新认证状态中的用户信息
+            authStore.updateUser({
+                id: userInfo.id,
+                username: userInfo.username,
+                nickname: userInfo.nickname,
+                avatar: userInfo.avatar,
+                role: userInfo.role,
+                status: userInfo.status
+            })
         } else {
             errorMessage.value = response.data.message || '更新失败'
         }
