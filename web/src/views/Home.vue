@@ -5,10 +5,8 @@
     <div class="main-content">
       <el-card class="user-card" shadow="hover">
         <div class="user-info">
-          <el-avatar :size="80" class="user-avatar"
-            :style="{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }">
-            {{ user?.nickname?.charAt(0) || user?.username?.charAt(0) }}
-          </el-avatar>
+          <UserAvatar :size="80" :avatar="user?.avatar" :username="user?.username" :nickname="user?.nickname"
+            class="user-avatar" />
 
           <div class="user-details">
             <h2>{{ user?.nickname || user?.username }}</h2>
@@ -68,6 +66,7 @@ import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import Navigation from '@/components/layout/Navigation.vue'
+import UserAvatar from '@/components/ui/UserAvatar.vue'
 import { User, Calendar, Clock } from '@element-plus/icons-vue'
 
 const router = useRouter()

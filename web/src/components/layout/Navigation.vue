@@ -36,10 +36,8 @@
         <el-dropdown trigger="click" @command="handleUserCommand">
           <div class="user-info">
             <span class="username">{{ user?.nickname || user?.username }}</span>
-            <el-avatar :size="32" class="user-avatar"
-              :style="{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }">
-              {{ user?.nickname?.charAt(0) || user?.username?.charAt(0) }}
-            </el-avatar>
+            <UserAvatar :size="32" :avatar="user?.avatar" :username="user?.username" :nickname="user?.nickname"
+              class="user-avatar" />
             <el-icon class="dropdown-icon">
               <ArrowDown />
             </el-icon>
@@ -70,6 +68,7 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import UserAvatar from '@/components/ui/UserAvatar.vue'
 import {
   Lock,
   House,

@@ -23,10 +23,8 @@
                 <!-- 头像设置区域 -->
                 <div class="avatar-section">
                     <div class="avatar-wrapper">
-                        <el-avatar :size="120" class="user-avatar"
-                            :style="{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }">
-                            {{ userInfo.nickname?.charAt(0) || userInfo.username?.charAt(0) }}
-                        </el-avatar>
+                        <UserAvatar :size="120" :avatar="userInfo.avatar" :username="userInfo.username"
+                            :nickname="userInfo.nickname" class="profile-avatar" />
                     </div>
                     <div class="avatar-input">
                         <el-input v-model="avatarUrl" placeholder="请输入头像链接" :prefix-icon="Link" clearable
@@ -163,6 +161,7 @@ import { User, UserFilled, Lock, QuestionFilled, Link } from '@element-plus/icon
 import type { FormInstance, FormRules } from 'element-plus'
 import { ElMessage } from 'element-plus'
 import Navigation from '@/components/layout/Navigation.vue'
+import UserAvatar from '@/components/ui/UserAvatar.vue'
 
 // 响应式数据
 const loading = ref(false)
@@ -368,12 +367,8 @@ onMounted(() => {
     margin-bottom: 20px;
 }
 
-.user-avatar {
-    font-size: 48px;
-    font-weight: 600;
-    color: white;
+.profile-avatar {
     border: 4px solid var(--el-border-color-lighter);
-    transition: all 0.3s ease;
 }
 
 .avatar-input {
@@ -467,10 +462,9 @@ onMounted(() => {
         padding: 15px;
     }
 
-    .user-avatar {
+    .profile-avatar {
         width: 100px !important;
         height: 100px !important;
-        font-size: 36px !important;
     }
 }
 </style>
