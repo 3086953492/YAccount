@@ -11,12 +11,15 @@ onMounted(() => {
 </script>
 
 <template>
-  <div id="app">
-    <router-view />
-  </div>
+  <el-config-provider>
+    <div id="app">
+      <router-view />
+    </div>
+  </el-config-provider>
 </template>
 
 <style>
+/* 重置样式 */
 * {
   margin: 0;
   padding: 0;
@@ -30,6 +33,8 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.6;
+  background-color: var(--el-bg-color);
+  color: var(--el-text-color-primary);
 }
 
 #app {
@@ -48,5 +53,23 @@ body {
   .container {
     padding: 0 15px;
   }
+}
+
+/* Element Plus 主题变量覆盖 */
+:root {
+  --el-color-primary: #409eff;
+  --el-color-success: #67c23a;
+  --el-color-warning: #e6a23c;
+  --el-color-danger: #f56c6c;
+  --el-color-info: #909399;
+}
+
+/* 暗色主题支持 */
+html.dark {
+  --el-bg-color: #141414;
+  --el-bg-color-overlay: #1d1e1f;
+  --el-text-color-primary: #e5eaf3;
+  --el-text-color-regular: #cfd3dc;
+  --el-text-color-secondary: #a3a6ad;
 }
 </style>
