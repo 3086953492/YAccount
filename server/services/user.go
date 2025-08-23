@@ -35,12 +35,12 @@ func LoginService(req *models.LoginRequest) (*models.UserResponse, string, error
 	logger.Info("用户登录成功", zap.String("username", user.Username))
 
 	return &models.UserResponse{
-		ID:       user.ID,
-		Username: user.Username,
-		Role:     user.Role,
-		Nickname: user.Nickname,
-		Avatar:   user.Avatar,
-		Status:   user.Status,
+		ID:        user.ID,
+		Username:  user.Username,
+		Role:      user.Role,
+		Nickname:  user.Nickname,
+		Avatar:    user.Avatar,
+		Status:    user.Status,
 		CreatedAt: user.CreatedAt,
 		UpdatedAt: user.UpdatedAt,
 	}, token, nil
