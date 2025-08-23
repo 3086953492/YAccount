@@ -125,7 +125,7 @@ func GetUserByUsername(username string) (*models.User, error) {
 func GetUserList(page, pageSize int, query string) ([]models.User, int64, error) {
 	var users []models.User
 	if err := global.DB.Where("status = 1 " + query).
-		Order("id DESC").
+		Order("id ASC").
 		Offset((page - 1) * pageSize).
 		Limit(pageSize).
 		Find(&users).Error; err != nil {
