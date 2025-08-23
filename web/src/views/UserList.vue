@@ -33,16 +33,16 @@
 
     <!-- 用户列表 -->
     <div class="user-table-section">
-      <el-table :data="userList" v-loading="loading" stripe border class="user-table">
-        <el-table-column prop="id" label="ID" width="80" />
-        <el-table-column label="头像" width="80">
+      <el-table :data="userList" v-loading="loading" stripe border class="user-table" fit>
+        <el-table-column prop="id" label="ID" min-width="60" align="center" />
+        <el-table-column label="头像" min-width="80" align="center">
           <template #default="{ row }">
             <UserAvatar :size="40" :avatar="row.avatar" :username="row.username" :nickname="row.nickname" />
           </template>
         </el-table-column>
-        <el-table-column prop="username" label="用户名" width="150" />
-        <el-table-column prop="nickname" label="昵称" width="150" />
-        <el-table-column label="操作" width="200" fixed="right">
+        <el-table-column prop="username" label="用户名" min-width="100" show-overflow-tooltip />
+        <el-table-column prop="nickname" label="昵称" min-width="120" show-overflow-tooltip />
+        <el-table-column label="操作" min-width="100" align="center">
           <template #default="{ row }">
             <el-button type="primary" size="small" @click="handleViewUser(row)">
               查看详情
@@ -199,10 +199,12 @@ onMounted(() => {
   border-radius: 8px;
   border: 1px solid var(--el-border-color-light);
   overflow: hidden;
+  position: relative;
 }
 
 .user-table {
   width: 100%;
+  table-layout: auto;
 }
 
 .pagination-section {
@@ -213,17 +215,56 @@ onMounted(() => {
   border-top: 1px solid var(--el-border-color-light);
 }
 
+/* 确保表格内容在小屏幕上可以水平滚动 */
 @media (max-width: 768px) {
-  .user-list-container {
-    padding: 16px;
+  .user-table-section {
+    overflow-x: auto;
+  }
+
+  .user-table {
+    min-width: 500px;
   }
 
   .search-section {
     padding: 16px;
   }
 
+  .user-list-container {
+    padding: 16px;
+  }
+
   .page-header h1 {
     font-size: 24px;
+  }
+
+  .pagination-section {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .user-table {
+    min-width: 450px;
+  }
+
+  .search-section {
+    padding: 12px;
+  }
+
+  .user-list-container {
+    padding: 12px;
+  }
+
+  .page-header h1 {
+    font-size: 20px;
+  }
+
+  .page-description {
+    font-size: 14px;
+  }
+
+  .pagination-section {
+    padding: 12px;
   }
 }
 </style>
