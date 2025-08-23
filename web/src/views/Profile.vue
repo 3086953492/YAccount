@@ -1,7 +1,5 @@
 <template>
     <div class="profile-container">
-        <Navigation />
-
         <div class="main-content">
             <el-card class="profile-card" shadow="hover">
                 <template #header>
@@ -130,9 +128,9 @@
 
                         <div class="form-row">
                             <el-form-item label="新密码" prop="password">
-                                <el-input v-model="passwordForm.password" type="password" 
-                                    :placeholder="isOwnProfile ? '留空则不修改密码' : '请输入新密码'"
-                                    :prefix-icon="Lock" :disabled="loading" show-password clearable />
+                                <el-input v-model="passwordForm.password" type="password"
+                                    :placeholder="isOwnProfile ? '留空则不修改密码' : '请输入新密码'" :prefix-icon="Lock"
+                                    :disabled="loading" show-password clearable />
                                 <template #label>
                                     <span>新密码</span>
                                     <span v-if="!isOwnProfile && isAdmin" class="required-mark">*</span>
@@ -145,9 +143,9 @@
                             </el-form-item>
 
                             <el-form-item label="确认新密码" prop="confirm_password">
-                                <el-input v-model="passwordForm.confirm_password" type="password" 
-                                    :placeholder="isOwnProfile ? '请再次输入新密码' : '请再次输入新密码'"
-                                    :prefix-icon="Lock" :disabled="loading" show-password clearable />
+                                <el-input v-model="passwordForm.confirm_password" type="password"
+                                    :placeholder="isOwnProfile ? '请再次输入新密码' : '请再次输入新密码'" :prefix-icon="Lock"
+                                    :disabled="loading" show-password clearable />
                                 <template #label>
                                     <span>确认新密码</span>
                                     <span v-if="!isOwnProfile && isAdmin" class="required-mark">*</span>
@@ -198,7 +196,6 @@ import { useAuthStore } from '@/stores/auth'
 import { User, UserFilled, Lock, QuestionFilled, Link, ArrowLeft } from '@element-plus/icons-vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import { ElMessage } from 'element-plus'
-import Navigation from '@/components/layout/Navigation.vue'
 import UserAvatar from '@/components/ui/UserAvatar.vue'
 
 // 路由和认证状态
@@ -229,17 +226,17 @@ const isAdmin = computed(() => {
 const hasPermission = computed(() => {
     const targetUserId = Number(route.params.id)
     const currentUserId = authStore.user?.id
-    
+
     // 如果是查看自己的资料，允许
     if (targetUserId === currentUserId) {
         return true
     }
-    
+
     // 如果是管理员，允许查看其他用户资料
     if (isAdmin.value) {
         return true
     }
-    
+
     // 普通用户不能查看其他用户资料
     return false
 })
@@ -284,7 +281,7 @@ const validateConfirmPassword = (rule: any, value: string, callback: any) => {
             return
         }
     }
-    
+
     // 如果密码为空，则确认密码也可以为空（仅适用于自己的资料）
     if (passwordForm.password === '') {
         callback()
@@ -306,10 +303,10 @@ const profileRules: FormRules = {
         { min: 2, max: 20, message: '昵称长度必须在2-20位之间', trigger: 'blur' }
     ],
     password: [
-        { 
-            required: !isOwnProfile.value && isAdmin.value, 
-            message: '请输入密码', 
-            trigger: 'blur' 
+        {
+            required: !isOwnProfile.value && isAdmin.value,
+            message: '请输入密码',
+            trigger: 'blur'
         },
         { min: 6, message: '密码长度至少6位', trigger: 'blur' }
     ],

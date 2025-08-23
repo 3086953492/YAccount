@@ -1,8 +1,16 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, computed } from 'vue'
+import { useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import MainLayout from '@/components/layout/MainLayout.vue'
 
+const route = useRoute()
 const authStore = useAuthStore()
+
+// 判断当前页面是否需要导航栏
+const needsNavigation = computed(() => {
+  return route.meta.requiresAuth !== false
+})
 
 onMounted(() => {
   // 初始化认证状态
@@ -13,7 +21,10 @@ onMounted(() => {
 <template>
   <el-config-provider>
     <div id="app">
-      <router-view />
+      <MainLayout v-if="needsNavigation">
+        <router-view />
+      </MainLayout>
+      <router-view v-else />
     </div>
   </el-config-provider>
 </template>

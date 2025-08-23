@@ -1,7 +1,5 @@
 <template>
   <div class="home-container">
-    <Navigation />
-
     <div class="main-content">
       <el-card class="user-card" shadow="hover">
         <div class="user-info">
@@ -66,7 +64,6 @@
 import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import Navigation from '@/components/layout/Navigation.vue'
 import UserAvatar from '@/components/ui/UserAvatar.vue'
 import { User, Calendar, Clock } from '@element-plus/icons-vue'
 

@@ -165,6 +165,7 @@ onMounted(() => {
   max-width: 1200px;
   margin: 0 auto;
   padding: 24px;
+  margin-top: 24px;
 }
 
 .page-header {
