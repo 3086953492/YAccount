@@ -5,21 +5,21 @@
       <p class="page-description">管理系统中的所有用户账户</p>
     </div>
 
-    <!-- 搜索区域 -->
-    <div class="search-section">
-      <el-form :model="searchForm" inline>
+    <!-- 筛选区域 -->
+    <div class="filter-section">
+      <el-form :model="filterForm" inline>
         <el-form-item label="用户名">
-          <el-input v-model="searchForm.username" placeholder="请输入用户名" clearable @keyup.enter="handleSearch" />
+          <el-input v-model="filterForm.username" placeholder="请输入用户名进行筛选" clearable @keyup.enter="handleFilter" />
         </el-form-item>
         <el-form-item label="昵称">
-          <el-input v-model="searchForm.nickname" placeholder="请输入昵称" clearable @keyup.enter="handleSearch" />
+          <el-input v-model="filterForm.nickname" placeholder="请输入昵称进行筛选" clearable @keyup.enter="handleFilter" />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleSearch" :loading="loading">
+          <el-button type="primary" @click="handleFilter" :loading="loading">
             <el-icon>
-              <Search />
+              <Filter />
             </el-icon>
-            搜索
+            筛选
           </el-button>
           <el-button @click="handleReset">
             <el-icon>
@@ -65,7 +65,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { Search, Refresh } from '@element-plus/icons-vue'
+import { Filter, Refresh } from '@element-plus/icons-vue'
 import { getUserList } from '@/api/user'
 import UserAvatar from '@/components/ui/UserAvatar.vue'
 
@@ -88,7 +88,7 @@ const router = useRouter()
 // 响应式数据
 const loading = ref(false)
 const userList = ref<User[]>([])
-const searchForm = reactive({
+const filterForm = reactive({
   username: '',
   nickname: ''
 })
@@ -106,8 +106,8 @@ const fetchUserList = async () => {
     const params = {
       page: pagination.page,
       pageSize: pagination.pageSize,
-      username: searchForm.username || undefined,
-      nickname: searchForm.nickname || undefined
+      username: filterForm.username || undefined,
+      nickname: filterForm.nickname || undefined
     }
 
     const response = await getUserList(params)
@@ -122,16 +122,16 @@ const fetchUserList = async () => {
   }
 }
 
-// 搜索
-const handleSearch = () => {
+// 筛选
+const handleFilter = () => {
   pagination.page = 1
   fetchUserList()
 }
 
-// 重置搜索
+// 重置筛选
 const handleReset = () => {
-  searchForm.username = ''
-  searchForm.nickname = ''
+  filterForm.username = ''
+  filterForm.nickname = ''
   pagination.page = 1
   fetchUserList()
 }
@@ -186,7 +186,7 @@ onMounted(() => {
   margin: 0;
 }
 
-.search-section {
+.filter-section {
   background: var(--el-bg-color-page);
   padding: 24px;
   border-radius: 8px;
@@ -225,7 +225,7 @@ onMounted(() => {
     min-width: 500px;
   }
 
-  .search-section {
+  .filter-section {
     padding: 16px;
   }
 
@@ -247,7 +247,7 @@ onMounted(() => {
     min-width: 450px;
   }
 
-  .search-section {
+  .filter-section {
     padding: 12px;
   }
 
