@@ -81,8 +81,8 @@ func UpdateService(req *models.UpdateUserRequest, userID uint) error {
 	return nil
 }
 
-func ListUsersPage(query string, page, pageSize int) (models.PaginationResponse, error) {
-	var paginationResponse models.PaginationResponse
+func ListUsersPage(query string, page, pageSize int) (models.PaginationResponse[models.UserList], error) {
+	var paginationResponse models.PaginationResponse[models.UserList]
 	if err := global.Cache.Once(&cache.Item{
 		Key:   fmt.Sprintf("users:list:%s:%d:%d", query, page, pageSize),
 		Value: &paginationResponse,
@@ -103,7 +103,7 @@ func ListUsersPage(query string, page, pageSize int) (models.PaginationResponse,
 					Avatar:   user.Avatar,
 				}
 			}
-			return models.PaginationResponse{
+			return models.PaginationResponse[models.UserList]{
 				Items:      userList,
 				Total:      total,
 				Page:       page,
@@ -112,7 +112,7 @@ func ListUsersPage(query string, page, pageSize int) (models.PaginationResponse,
 			}, nil
 		},
 	}); err != nil {
-		return models.PaginationResponse{}, apperrors.ErrUserListNotFound
+		return models.PaginationResponse[models.UserList]{}, apperrors.ErrUserListNotFound
 	}
 	return paginationResponse, nil
 }
