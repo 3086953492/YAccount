@@ -24,11 +24,11 @@
           </el-icon>
           <span>个人资料</span>
         </el-menu-item>
-        <el-menu-item v-if="isAdmin" index="/admin">
+        <el-menu-item v-if="isAdmin" index="/admin/users">
           <el-icon>
-            <Setting />
+            <UserFilled />
           </el-icon>
-          <span>管理后台</span>
+          <span>用户列表</span>
         </el-menu-item>
       </el-menu>
 
@@ -75,7 +75,8 @@ import {
   User,
   Setting,
   ArrowDown,
-  SwitchButton
+  SwitchButton,
+  UserFilled
 } from '@element-plus/icons-vue'
 import { ElMessageBox } from 'element-plus'
 

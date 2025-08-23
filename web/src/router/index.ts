@@ -27,6 +27,12 @@ const router = createRouter({
       name: 'user-profile',
       component: () => import('@/views/Profile.vue'),
       meta: { requiresAuth: true }
+    },
+    {
+      path: '/admin/users',
+      name: 'user-list',
+      component: () => import('@/views/UserList.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true }
     }
   ],
 })
@@ -41,6 +47,9 @@ router.beforeEach((to, from, next) => {
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     // 需要认证但未登录，跳转到登录页
     next('/login')
+  } else if (to.meta.requiresAdmin && !authStore.isAdmin()) {
+    // 需要管理员权限但用户不是管理员，跳转到首页
+    next('/')
   } else if (to.name === 'login' && authStore.isAuthenticated) {
     // 已登录用户访问登录页，跳转到首页
     next('/')

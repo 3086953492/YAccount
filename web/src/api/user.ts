@@ -55,3 +55,13 @@ export const updateUserInfoById = (userId: number, data: {
 
     return api.put(`/users/${userId}`, requestData)
 }
+
+// 获取用户列表接口（管理员权限）
+export const getUserList = (params: {
+    page?: number
+    pageSize?: number
+    username?: string
+    nickname?: string
+}) => {
+    return api.get('/users', { params })
+}
