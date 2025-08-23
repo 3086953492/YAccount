@@ -189,7 +189,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, computed } from 'vue'
+import { ref, reactive, onMounted, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getUserInfoById, getCurrentUserInfo, updateUserInfo, updateUserInfoById } from '@/api/user'
 import { useAuthStore } from '@/stores/auth'
@@ -476,6 +476,31 @@ const goToMyProfile = () => {
 onMounted(() => {
     fetchUserInfo()
 })
+
+// 监听路由参数变化，当用户ID改变时重新获取用户信息
+watch(() => route.params.id, (newId, oldId) => {
+    if (newId !== oldId) {
+        // 清空之前的表单数据
+        Object.assign(profileForm, {
+            username: '',
+            nickname: '',
+            role: '',
+            status: 1
+        })
+        Object.assign(passwordForm, {
+            password: '',
+            confirm_password: ''
+        })
+        avatarUrl.value = ''
+
+        // 清空消息
+        successMessage.value = ''
+        errorMessage.value = ''
+
+        // 重新获取用户信息
+        fetchUserInfo()
+    }
+}, { immediate: false })
 </script>
 
 <style scoped>
