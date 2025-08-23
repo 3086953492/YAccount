@@ -46,12 +46,12 @@ type UpdateUserRequest struct {
 }
 
 type UserResponse struct {
-	ID       uint   `json:"id"`
-	Username string `json:"username"`
-	Role     string `json:"role"`
-	Nickname string `json:"nickname"`
-	Avatar   string `json:"avatar"`
-	Status   int    `json:"status"`
+	ID        uint      `json:"id"`
+	Username  string    `json:"username"`
+	Role      string    `json:"role"`
+	Nickname  string    `json:"nickname"`
+	Avatar    string    `json:"avatar"`
+	Status    int       `json:"status"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
