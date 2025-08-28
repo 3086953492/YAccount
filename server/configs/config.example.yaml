@@ -36,8 +36,8 @@ middleware:
     secret: "examplekey"
     expire: 1h
     skip_paths:
-      - /api/admin/v1/auth/login
-      - /api/admin/v1/auth/register
+      - /api/account/v1/auth/login
+      - /api/account/v1/auth/register
   cors:
     allow_origins:
       - "*"
