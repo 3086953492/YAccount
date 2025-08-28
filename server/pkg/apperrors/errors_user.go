@@ -10,7 +10,6 @@ import "fmt"
 const (
 	TypeUserNotFound            = "USER_NOT_FOUND"
 	TypeUserExists              = "USER_EXISTS"
-	TypeInvalidInput            = "INVALID_INPUT"
 	TypeUserDisabled            = "USER_DISABLED"
 	TypeOperationFailed         = "OPERATION_FAILED"
 	TypeUsernameOrPasswordError = "USERNAME_OR_PASSWORD_ERROR"
@@ -23,7 +22,6 @@ const (
 var (
 	ErrUserNotFound            = New(TypeUserNotFound, "用户不存在")
 	ErrUserExists              = New(TypeUserExists, "用户已存在")
-	ErrInvalidInput            = New(TypeInvalidInput, "输入参数错误")
 	ErrUserDisabled            = New(TypeUserDisabled, "账户已被禁用")
 	ErrCreateFailed            = New(TypeOperationFailed, "创建失败")
 	ErrUpdateFailed            = New(TypeOperationFailed, "更新失败")
