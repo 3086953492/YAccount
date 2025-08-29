@@ -13,5 +13,5 @@ func SystemInfoListHandler(c *gin.Context) {
 		response.Error(c, err)
 		return
 	}
-	response.Success(c, "获取系统配置列表成功", systemInfoList)
+	response.Success(c, "获取系统信息列表成功", systemInfoList)
 }
