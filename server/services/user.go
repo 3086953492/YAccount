@@ -20,7 +20,7 @@ func LoginService(req *models.LoginRequest) (*models.UserResponse, string, error
 
 	user, err := repositories.Login(req)
 	if err != nil {
-		if apperrors.IsNotFoundError(err) {
+		if !apperrors.IsNotFoundError(err) {
 			logger.LogError("LoginService", "database query", "从数据库中获取用户失败", err, zap.String("username", req.Username))
 		}
 		return nil, "", apperrors.ErrUsernameOrPasswordError
@@ -89,7 +89,7 @@ func ListUsersPage(query string, page, pageSize int) (models.PaginationResponse[
 		Do: func(*cache.Item) (any, error) {
 			users, total, err := repositories.GetUserList(page, pageSize, query)
 			if err != nil {
-				if apperrors.IsNotFoundError(err) {
+				if !apperrors.IsNotFoundError(err) {
 					logger.LogError("ListUsersPage", "database query", "从数据库中获取用户列表失败", err, zap.String("query", query), zap.Int("page", page), zap.Int("pageSize", pageSize))
 				}
 				return nil, err
@@ -125,7 +125,7 @@ func GetUserProfile(userID uint) (*models.UserResponse, error) {
 		Do: func(*cache.Item) (any, error) {
 			user, err := repositories.GetUserByID(userID)
 			if err != nil {
-				if apperrors.IsNotFoundError(err) {
+				if !apperrors.IsNotFoundError(err) {
 					logger.LogError("GetUserProfile", "database query", "从数据库中获取用户信息失败", err, zap.Uint("userID", userID))
 				}
 				return nil, err

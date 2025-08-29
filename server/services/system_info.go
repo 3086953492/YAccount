@@ -19,7 +19,7 @@ func GetSystemInfoList() ([]models.SystemInfoList, error) {
 		Do: func(*cache.Item) (any, error) {
 			systemInfo, err := repositories.GetSystemInfoList()
 			if err != nil {
-				if apperrors.IsNotFoundError(err) {
+				if !apperrors.IsNotFoundError(err) {
 					logger.LogError("GetSystemInfoList", "database query", "从数据库中获取系统配置列表失败", err)
 				}
 				return nil, err
