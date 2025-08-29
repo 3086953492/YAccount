@@ -63,3 +63,38 @@ func GetSystemInfoByKey(key string) (*models.SystemInfo, error) {
 	}
 	return &systemInfo, nil
 }
+
+func BatchUpdateSystemInfo(req *models.BatchUpdateSystemInfoRequest) error {
+	// 开启数据库事务
+	tx := global.DB.Begin()
+	if tx.Error != nil {
+		return tx.Error
+	}
+
+	// 确保在函数返回时处理事务
+	defer func() {
+		if r := recover(); r != nil {
+			// 发生 panic 时回滚事务
+			tx.Rollback()
+			logger.LogError("BatchUpdateSystemInfo", "panic recovery", "批量更新系统配置时发生 panic，事务已回滚", nil)
+		}
+	}()
+
+	// 批量更新系统配置
+	for _, systemInfo := range req.SystemInfos {
+		if err := repositories.UpdateSystemInfo(&systemInfo, tx); err != nil {
+			// 更新失败时回滚事务
+			tx.Rollback()
+			logger.LogError("BatchUpdateSystemInfo", "database update", "批量更新系统配置失败，事务已回滚", err)
+			return err
+		}
+	}
+
+	// 提交事务
+	if err := tx.Commit().Error; err != nil {
+		logger.LogError("BatchUpdateSystemInfo", "transaction commit", "提交事务失败", err)
+		return err
+	}
+
+	return nil
+}

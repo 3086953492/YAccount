@@ -27,3 +27,12 @@ type SystemInfoList struct {
 	Description string `json:"description"`
 	Status      int    `json:"status"`
 }
+
+type UpdateSystemInfoRequest struct {
+	ID          uint   `json:"id"`
+	ConfigValue string `json:"config_value"`
+}
+
+type BatchUpdateSystemInfoRequest struct {
+	SystemInfos []UpdateSystemInfoRequest `json:"system_infos"`
+}

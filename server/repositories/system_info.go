@@ -3,6 +3,8 @@ package repositories
 import (
 	"YAccount/global"
 	"YAccount/models"
+
+	"gorm.io/gorm"
 )
 
 func GetSystemInfo(key string) (*models.SystemInfo, error) {
@@ -19,4 +21,14 @@ func GetSystemInfoList() ([]models.SystemInfo, error) {
 		return nil, err
 	}
 	return system, nil
+}
+
+func UpdateSystemInfo(req *models.UpdateSystemInfoRequest, tx *gorm.DB) error {
+	if tx == nil {
+		tx = global.DB
+	}
+	if err := tx.Model(&models.SystemInfo{}).Where("id = ?", req.ID).Updates(req).Error; err != nil {
+		return err
+	}
+	return nil
 }

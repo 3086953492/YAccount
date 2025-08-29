@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"YAccount/models"
 	"YAccount/pkg/response"
 	"YAccount/services"
 
@@ -24,4 +25,17 @@ func SystemInfoByKeyHandler(c *gin.Context) {
 		return
 	}
 	response.Success(c, "获取系统信息成功", systemInfo)
+}
+
+func BatchUpdateSystemInfoHandler(c *gin.Context) {
+	var req models.BatchUpdateSystemInfoRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.Error(c, err)
+		return
+	}
+	if err := services.BatchUpdateSystemInfo(&req); err != nil {
+		response.Error(c, err)
+		return
+	}
+	response.Success(c, "批量更新系统信息成功", nil)
 }
