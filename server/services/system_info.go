@@ -41,3 +41,25 @@ func GetSystemInfoList() ([]models.SystemInfoList, error) {
 	}
 	return systemInfoList, nil
 }
+
+func GetSystemInfoByKey(key string) (*models.SystemInfo, error) {
+	var systemInfo models.SystemInfo
+
+	if err := global.Cache.Once(&cache.Item{
+		Key:   "system:info:" + key,
+		Value: &systemInfo,
+		Do: func(*cache.Item) (any, error) {
+			systemInfo, err := repositories.GetSystemInfo(key)
+			if err != nil {
+				if !apperrors.IsNotFoundError(err) {
+					logger.LogError("GetSystemInfoByKey", "database query", "从数据库中获取系统配置失败", err)
+				}
+				return nil, err
+			}
+			return systemInfo, nil
+		},
+	}); err != nil {
+		return nil, apperrors.ErrSystemInfoNotFound
+	}
+	return &systemInfo, nil
+}

@@ -15,3 +15,13 @@ func SystemInfoListHandler(c *gin.Context) {
 	}
 	response.Success(c, "获取系统信息列表成功", systemInfoList)
 }
+
+func SystemInfoByKeyHandler(c *gin.Context) {
+	key := c.Param("key")
+	systemInfo, err := services.GetSystemInfoByKey(key)
+	if err != nil {
+		response.Error(c, err)
+		return
+	}
+	response.Success(c, "获取系统信息成功", systemInfo)
+}
