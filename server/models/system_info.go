@@ -20,10 +20,10 @@ func (SystemInfo) TableName() string {
 }
 
 type SystemInfoList struct {
-	ID          uint      `json:"id"`
-	ConfigKey   string    `json:"config_key"`
-	ConfigValue string    `json:"config_value"`
-	ConfigType  string    `json:"config_type"`
-	Description string    `json:"description"`
-	Status      int       `json:"status"`
+	ID          uint   `json:"id"`
+	ConfigKey   string `json:"config_key"`
+	ConfigValue string `json:"config_value"`
+	ConfigType  string `json:"config_type"`
+	Description string `json:"description"`
+	Status      int    `json:"status"`
 }
