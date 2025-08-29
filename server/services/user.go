@@ -137,6 +137,8 @@ func GetUserProfile(userID uint) (*models.UserResponse, error) {
 				Nickname: user.Nickname,
 				Avatar:   user.Avatar,
 				Status:   user.Status,
+				CreatedAt: user.CreatedAt,
+				UpdatedAt: user.UpdatedAt,
 			}, nil
 		},
 	}); err != nil {
