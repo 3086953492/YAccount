@@ -4,7 +4,7 @@
       <template #header>
         <div class="card-header">
           <h2 class="title">创建账户</h2>
-          <p class="subtitle">加入YAccount，开启您的数字生活</p>
+          <p class="subtitle">加入{{ systemStore.getConfig('system_name', 'YAccount') }}，开启您的数字生活</p>
         </div>
       </template>
 
@@ -90,14 +90,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useSystemStore } from '@/stores/system'
 import { register } from '@/api/auth'
 import { User, UserFilled, Lock, QuestionFilled } from '@element-plus/icons-vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import { ElMessage } from 'element-plus'
 
 const router = useRouter()
+const systemStore = useSystemStore()
 const loading = ref(false)
 const errorMessage = ref('')
 const successMessage = ref('')
@@ -171,6 +173,11 @@ const handleRegister = async () => {
     loading.value = false
   }
 }
+
+onMounted(async () => {
+  // 获取系统信息
+  await systemStore.fetchSystemInfo()
+})
 </script>
 
 <style scoped>

@@ -2,19 +2,32 @@
 import { onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useSystemStore } from '@/stores/system'
+import { usePageMeta } from '@/composables/usePageMeta'
 import MainLayout from '@/components/layout/MainLayout.vue'
 
 const route = useRoute()
 const authStore = useAuthStore()
+const systemStore = useSystemStore()
+
+// 使用页面meta管理
+const { updatePageMeta } = usePageMeta()
 
 // 判断当前页面是否需要导航栏
 const needsNavigation = computed(() => {
   return route.meta.requiresAuth !== false
 })
 
-onMounted(() => {
+onMounted(async () => {
   // 初始化认证状态
   authStore.initAuth()
+  
+  // 初始化系统信息
+  systemStore.init()
+  
+  // 获取系统信息并更新页面meta
+  await systemStore.fetchSystemInfo()
+  updatePageMeta()
 })
 </script>
 

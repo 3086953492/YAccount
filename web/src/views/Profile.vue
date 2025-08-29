@@ -189,19 +189,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, computed, watch } from 'vue'
+import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getUserInfoById, getCurrentUserInfo, updateUserInfo, updateUserInfoById } from '@/api/user'
 import { useAuthStore } from '@/stores/auth'
+import { useSystemStore } from '@/stores/system'
 import { User, UserFilled, Lock, QuestionFilled, Link, ArrowLeft } from '@element-plus/icons-vue'
 import type { FormInstance, FormRules } from 'element-plus'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import UserAvatar from '@/components/ui/UserAvatar.vue'
 
 // 路由和认证状态
 const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
+const systemStore = useSystemStore()
 
 // 响应式数据
 const loading = ref(false)
@@ -473,8 +475,12 @@ const goToMyProfile = () => {
 }
 
 // 组件挂载时获取用户信息
-onMounted(() => {
-    fetchUserInfo()
+onMounted(async () => {
+    // 获取系统信息
+    await systemStore.fetchSystemInfo()
+    
+    // 获取用户信息
+    await fetchUserInfo()
 })
 
 // 监听路由参数变化，当用户ID改变时重新获取用户信息

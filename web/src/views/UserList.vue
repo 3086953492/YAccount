@@ -2,7 +2,7 @@
   <div class="user-list-container">
     <div class="page-header">
       <h1>用户列表</h1>
-      <p class="page-description">管理系统中的所有用户账户</p>
+      <p class="page-description">管理{{ systemStore.getConfig('system_name', 'YAccount') }}中的所有用户账户</p>
     </div>
 
     <!-- 筛选区域 -->
@@ -64,6 +64,7 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useSystemStore } from '@/stores/system'
 import { ElMessage } from 'element-plus'
 import { Filter, Refresh } from '@element-plus/icons-vue'
 import { getUserList } from '@/api/user'
@@ -84,6 +85,7 @@ interface Pagination {
 }
 
 const router = useRouter()
+const systemStore = useSystemStore()
 
 // 响应式数据
 const loading = ref(false)
@@ -155,8 +157,12 @@ const handleViewUser = (user: User) => {
 }
 
 // 组件挂载时获取数据
-onMounted(() => {
-  fetchUserList()
+onMounted(async () => {
+  // 获取系统信息
+  await systemStore.fetchSystemInfo()
+  
+  // 获取用户列表
+  await fetchUserList()
 })
 </script>
 

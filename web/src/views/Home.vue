@@ -56,6 +56,9 @@
         </el-card>
       </div>
 
+      <!-- 系统信息展示 -->
+      <SystemInfoDisplay />
+
     </div>
   </div>
 </template>
@@ -64,11 +67,14 @@
 import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useSystemStore } from '@/stores/system'
 import UserAvatar from '@/components/ui/UserAvatar.vue'
+import SystemInfoDisplay from '@/components/ui/SystemInfoDisplay.vue'
 import { User, Calendar, Clock } from '@element-plus/icons-vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
+const systemStore = useSystemStore()
 
 const user = computed(() => authStore.user)
 
@@ -90,11 +96,15 @@ const viewMyProfile = () => {
   }
 }
 
-onMounted(() => {
+onMounted(async () => {
   // 检查是否已登录
   if (!authStore.isAuthenticated) {
     router.push('/login')
+    return
   }
+  
+  // 获取系统信息
+  await systemStore.fetchSystemInfo()
 })
 </script>
 

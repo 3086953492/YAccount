@@ -8,31 +8,31 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: () => import('@/views/Home.vue'),
-      meta: { requiresAuth: true }
+      meta: { requiresAuth: true, title: '首页' }
     },
     {
       path: '/login',
       name: 'login',
       component: () => import('@/views/Login.vue'),
-      meta: { requiresAuth: false }
+      meta: { requiresAuth: false, title: '登录' }
     },
     {
       path: '/register',
       name: 'register',
       component: () => import('@/views/Register.vue'),
-      meta: { requiresAuth: false }
+      meta: { requiresAuth: false, title: '注册' }
     },
     {
       path: '/user/:id',
       name: 'user-profile',
       component: () => import('@/views/Profile.vue'),
-      meta: { requiresAuth: true }
+      meta: { requiresAuth: true, title: '用户资料' }
     },
     {
       path: '/admin/users',
       name: 'user-list',
       component: () => import('@/views/UserList.vue'),
-      meta: { requiresAuth: true, requiresAdmin: true }
+      meta: { requiresAuth: true, requiresAdmin: true, title: '用户管理' }
     }
   ],
 })

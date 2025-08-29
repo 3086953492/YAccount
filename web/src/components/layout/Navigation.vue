@@ -6,7 +6,7 @@
           <el-icon class="brand-icon" size="24">
             <Lock />
           </el-icon>
-          <span class="brand-text">YAccount</span>
+          <span class="brand-text">{{ systemStore.getConfig('system_name', 'YAccount') }}</span>
         </router-link>
       </div>
 
@@ -65,9 +65,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useSystemStore } from '@/stores/system'
 import UserAvatar from '@/components/ui/UserAvatar.vue'
 import {
   Lock,
@@ -82,6 +83,7 @@ import { ElMessageBox } from 'element-plus'
 
 const router = useRouter()
 const authStore = useAuthStore()
+const systemStore = useSystemStore()
 
 const user = computed(() => authStore.user)
 const isAdmin = computed(() => authStore.isAdmin())
@@ -106,6 +108,11 @@ const handleUserCommand = async (command: string) => {
       break
   }
 }
+
+onMounted(async () => {
+  // 获取系统信息
+  await systemStore.fetchSystemInfo()
+})
 </script>
 
 <style scoped>

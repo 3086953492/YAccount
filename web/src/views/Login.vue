@@ -4,7 +4,7 @@
       <template #header>
         <div class="card-header">
           <h2 class="title">欢迎回来</h2>
-          <p class="subtitle">登录您的YAccount账户</p>
+          <p class="subtitle">登录您的{{ systemStore.getConfig('system_name', 'YAccount') }}账户</p>
         </div>
       </template>
 
@@ -41,9 +41,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useSystemStore } from '@/stores/system'
 import { login } from '@/api/auth'
 import { User, Lock } from '@element-plus/icons-vue'
 import type { FormInstance, FormRules } from 'element-plus'
@@ -51,6 +52,7 @@ import { ElMessage } from 'element-plus'
 
 const router = useRouter()
 const authStore = useAuthStore()
+const systemStore = useSystemStore()
 
 const loading = ref(false)
 const errorMessage = ref('')
@@ -107,6 +109,11 @@ const handleLogin = async () => {
     loading.value = false
   }
 }
+
+onMounted(async () => {
+  // 获取系统信息
+  await systemStore.fetchSystemInfo()
+})
 </script>
 
 <style scoped>
