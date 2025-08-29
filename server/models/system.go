@@ -2,7 +2,7 @@ package models
 
 import "time"
 
-type System struct {
+type SystemConfig struct {
 	ID          uint      `gorm:"primarykey" json:"id"`
 	ConfigKey   string    `gorm:"not null;size:100" json:"config_key"`
 	ConfigValue string    `gorm:"not null" json:"config_value"`
@@ -15,6 +15,15 @@ type System struct {
 	UpdatedBy   uint      `json:"updated_by"`
 }
 
-func (System) TableName() string {
-	return "system"
+func (SystemConfig) TableName() string {
+	return "system_configs"
+}
+
+type SystemConfigList struct {
+	ID          uint      `json:"id"`
+	ConfigKey   string    `json:"config_key"`
+	ConfigValue string    `json:"config_value"`
+	ConfigType  string    `json:"config_type"`
+	Description string    `json:"description"`
+	Status      int       `json:"status"`
 }

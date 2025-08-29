@@ -16,7 +16,7 @@ CREATE TABLE `users` (
 
 insert into users (username, password, nickname, avatar,role) values ('admin', '$2a$10$u/T1M5H89WQ8/dnukU.fz.7z9CHgy5H8MWdiM1xPruuwVZ7redpEy', 'admin', 'https://example.com/avatar.jpg','admin');    -- 此密码为admin123的加密值
 
-CREATE TABLE `system` (
+CREATE TABLE `system_configs` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `config_key` varchar(100) NOT NULL COMMENT '配置键名',
   `config_value` text COMMENT '配置值',
@@ -30,12 +30,12 @@ CREATE TABLE `system` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `idx_config_key` (`config_key`),
   KEY `idx_status` (`status`),
-  CONSTRAINT `fk_system_created_by` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
-  CONSTRAINT `fk_system_updated_by` FOREIGN KEY (`updated_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
+  CONSTRAINT `fk_system_configs_created_by` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_system_configs_updated_by` FOREIGN KEY (`updated_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='系统配置表';
 
 -- 插入系统基础配置示例
-INSERT INTO `system` (`config_key`, `config_value`, `config_type`, `description`, `status`, `created_by`) VALUES
+INSERT INTO `system_configs` (`config_key`, `config_value`, `config_type`, `description`, `status`, `created_by`) VALUES
 ('system_name', 'YAccount', 'string', '系统名称', 1, 1),
 ('system_icon', 'https://example.com/icon.png', 'string', '系统图标URL', 1, 1),
 ('system_logo', 'https://example.com/logo.png', 'string', '系统Logo URL', 1, 1),
