@@ -221,11 +221,12 @@ const handleSubmit = async () => {
       system_infos: changedFields
     }
     
-    console.log('只更新变更的字段:', changedFields)
+    console.log('准备更新系统信息，变更字段:', changedFields)
     
     const success = await systemStore.updateSystemInfo(updateData)
     
     if (success) {
+      console.log('系统信息更新成功，开始刷新缓存')
       ElMessage.success(`系统信息更新成功，共更新了 ${changedFields.length} 个配置项`)
       emit('success')
       dialogVisible.value = false
