@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { getSystemInfoList } from '@/api/system'
-import type { SystemInfo, SystemConfig } from '@/types/system'
+import { getSystemInfoList, batchUpdateSystemInfo } from '@/api/system'
+import type { SystemInfo, SystemConfig, BatchUpdateSystemInfoRequest } from '@/types/system'
 
 export const useSystemStore = defineStore('system', () => {
   // 系统信息列表
@@ -104,6 +104,24 @@ export const useSystemStore = defineStore('system', () => {
     return systemConfig.value[key] || defaultValue
   }
   
+  // 批量更新系统信息
+  const updateSystemInfo = async (updateData: BatchUpdateSystemInfoRequest) => {
+    try {
+      const response = await batchUpdateSystemInfo(updateData)
+      if (response.data.success) {
+        // 更新成功后清除缓存，强制重新获取
+        clearCache()
+        // 重新获取系统信息
+        await fetchSystemInfo(true)
+        return true
+      }
+      return false
+    } catch (error) {
+      console.error('更新系统信息失败:', error)
+      return false
+    }
+  }
+  
   // 清除缓存
   const clearCache = () => {
     systemConfig.value = {}
@@ -122,6 +140,7 @@ export const useSystemStore = defineStore('system', () => {
     config,
     fetchSystemInfo,
     getConfig,
+    updateSystemInfo,
     clearCache,
     init,
     isCacheExpired

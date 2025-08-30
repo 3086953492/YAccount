@@ -33,6 +33,12 @@ const router = createRouter({
       name: 'user-list',
       component: () => import('@/views/UserList.vue'),
       meta: { requiresAuth: true, requiresAdmin: true, title: '用户管理' }
+    },
+    {
+      path: '/admin/system',
+      name: 'system-management',
+      component: () => import('@/views/SystemManagement.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true, title: '系统管理' }
     }
   ],
 })

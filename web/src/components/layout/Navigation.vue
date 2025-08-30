@@ -30,6 +30,12 @@
           </el-icon>
           <span>用户列表</span>
         </el-menu-item>
+        <el-menu-item v-if="isAdmin" index="/admin/system">
+          <el-icon>
+            <Setting />
+          </el-icon>
+          <span>系统管理</span>
+        </el-menu-item>
       </el-menu>
 
       <div class="nav-user">

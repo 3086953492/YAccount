@@ -28,3 +28,14 @@ export interface SystemConfig {
   system_description?: string
   [key: string]: string | undefined
 }
+
+// 更新系统信息请求类型
+export interface UpdateSystemInfoRequest {
+  id: number
+  config_value: string
+}
+
+// 批量更新系统信息请求类型
+export interface BatchUpdateSystemInfoRequest {
+  system_infos: UpdateSystemInfoRequest[]
+}
