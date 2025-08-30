@@ -4,6 +4,7 @@ import (
 	"YAccount/global"
 	"YAccount/pkg/apperrors"
 	"YAccount/utils/logger"
+	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -44,6 +45,19 @@ func ParseToken(tokenString string) (*Claims, error) {
 	})
 
 	if err != nil {
+		// 检查是否是token过期错误
+		if strings.Contains(err.Error(), "token is expired") {
+			logger.LogError("ParseToken", "jwt.ParseWithClaims", "token已过期", err, zap.String("token", tokenString))
+			return nil, apperrors.ErrTokenExpired
+		}
+
+		// 检查是否是其他JWT相关错误
+		if strings.Contains(err.Error(), "token") {
+			logger.LogError("ParseToken", "jwt.ParseWithClaims", "token格式无效", err, zap.String("token", tokenString))
+			return nil, apperrors.ErrTokenInvalid
+		}
+
+		// 其他未知错误
 		logger.LogError("ParseToken", "jwt.ParseWithClaims", "解析token失败", err, zap.String("token", tokenString))
 		return nil, apperrors.ErrTokenInvalid
 	}

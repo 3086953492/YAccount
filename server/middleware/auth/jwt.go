@@ -30,6 +30,7 @@ func NewAuthMiddleware(config *configs.MiddlewareConfig) gin.HandlerFunc {
 		// 验证token
 		claims, err := auth.ParseToken(token)
 		if err != nil {
+			// 直接使用response.Error处理，它会根据错误类型返回正确的HTTP状态码
 			response.Error(c, err)
 			c.Abort() // 终止请求链
 			return
