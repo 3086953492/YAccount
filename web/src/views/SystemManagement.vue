@@ -166,12 +166,11 @@ const handleEditSingle = (item: SystemInfoList) => {
 // 编辑成功回调
 const handleEditSuccess = async () => {
   ElMessage.success('系统信息更新成功')
-  console.log('编辑成功，强制刷新系统信息')
+
   
   // 强制刷新数据
   try {
     await systemStore.forceRefresh()
-    console.log('系统信息刷新完成')
   } catch (error) {
     console.error('刷新系统信息失败:', error)
   }

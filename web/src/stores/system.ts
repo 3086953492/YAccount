@@ -57,15 +57,15 @@ export const useSystemStore = defineStore('system', () => {
   
   // 获取系统信息列表
   const fetchSystemInfo = async (force = false) => {
-    console.log(`获取系统信息，强制刷新: ${force}`)
+
     
     // 如果是强制刷新，完全跳过缓存逻辑
     if (force) {
-      console.log('强制刷新模式，跳过所有缓存')
+
       try {
         const response = await getSystemInfoList()
         if (response.data.success) {
-          console.log('强制刷新获取到新数据:', response.data.data)
+
           systemInfoList.value = response.data.data
           
           // 转换为配置对象
@@ -81,7 +81,7 @@ export const useSystemStore = defineStore('system', () => {
           
           // 保存到缓存
           saveToCache()
-          console.log('强制刷新完成，新配置:', config)
+
           
           return config
         }
@@ -93,18 +93,18 @@ export const useSystemStore = defineStore('system', () => {
     
     // 非强制刷新时的正常缓存逻辑
     if (!isCacheExpired() && Object.keys(systemConfig.value).length > 0) {
-      console.log('使用现有缓存数据')
+
       return systemConfig.value
     }
     
     // 尝试从缓存加载
     if (loadFromCache()) {
-      console.log('从本地存储加载缓存数据')
+
       return systemConfig.value
     }
     
     try {
-      console.log('从API获取系统信息')
+
       const response = await getSystemInfoList()
       if (response.data.success) {
         systemInfoList.value = response.data.data
@@ -144,12 +144,11 @@ export const useSystemStore = defineStore('system', () => {
   // 批量更新系统信息
   const updateSystemInfo = async (updateData: BatchUpdateSystemInfoRequest) => {
     try {
-      console.log('开始更新系统信息，更新字段数量:', updateData.system_infos.length)
-      console.log('更新的字段详情:', updateData.system_infos)
+
       
       const response = await batchUpdateSystemInfo(updateData)
       if (response.data.success) {
-        console.log('系统信息更新成功，已更新', updateData.system_infos.length, '个字段')
+
         
         // 立即清除所有缓存
         clearCache()
@@ -159,7 +158,7 @@ export const useSystemStore = defineStore('system', () => {
         
         // 确保数据已更新
         if (Object.keys(freshData).length > 0) {
-          console.log('缓存刷新成功，新数据:', freshData)
+
         } else {
           console.warn('缓存刷新后数据为空，可能存在异常')
         }
@@ -175,7 +174,7 @@ export const useSystemStore = defineStore('system', () => {
   
   // 清除缓存
   const clearCache = () => {
-    console.log('清除系统信息缓存')
+
     systemConfig.value = {}
     systemInfoList.value = []
     lastFetchTime.value = 0
@@ -184,20 +183,9 @@ export const useSystemStore = defineStore('system', () => {
   
   // 强制刷新系统信息（清除缓存并重新获取）
   const forceRefresh = async () => {
-    console.log('强制刷新系统信息')
+
     clearCache()
     return await fetchSystemInfo(true)
-  }
-  
-  // 调试方法：显示当前缓存状态
-  const debugCacheStatus = () => {
-    console.log('=== 系统信息缓存状态 ===')
-    console.log('systemConfig:', systemConfig.value)
-    console.log('systemInfoList:', systemInfoList.value)
-    console.log('lastFetchTime:', lastFetchTime.value)
-    console.log('缓存是否过期:', isCacheExpired())
-    console.log('本地存储缓存:', localStorage.getItem('system_config_cache'))
-    console.log('========================')
   }
   
   // 初始化时尝试加载缓存
@@ -216,6 +204,5 @@ export const useSystemStore = defineStore('system', () => {
     init,
     isCacheExpired,
     forceRefresh,
-    debugCacheStatus
   }
 })

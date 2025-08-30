@@ -99,18 +99,12 @@ const handleEdit = () => {
 
 // 处理编辑成功
 const handleEditSuccess = async () => {
-  // 编辑成功后，强制刷新系统信息
-  console.log('编辑成功，强制刷新系统信息')
+
   
-  // 显示刷新前的缓存状态
-  systemStore.debugCacheStatus()
+
   
   try {
     await systemStore.forceRefresh()
-    console.log('系统信息刷新完成')
-    
-    // 显示刷新后的缓存状态
-    systemStore.debugCacheStatus()
   } catch (error) {
     console.error('刷新系统信息失败:', error)
   }
