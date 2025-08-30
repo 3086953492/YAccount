@@ -6,6 +6,7 @@ import (
 	"YAccount/pkg/apperrors"
 	"YAccount/repositories"
 	"YAccount/utils/logger"
+	cache_utils "YAccount/utils/cache"
 
 	"github.com/go-redis/cache/v9"
 )
@@ -95,6 +96,9 @@ func BatchUpdateSystemInfo(req *models.BatchUpdateSystemInfoRequest) error {
 		logger.LogError("BatchUpdateSystemInfo", "transaction commit", "提交事务失败", err)
 		return err
 	}
+
+	// 清空缓存
+	cache_utils.DeleteCacheKeysByPrefix("system:info")
 
 	return nil
 }
