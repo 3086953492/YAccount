@@ -24,7 +24,7 @@
               :icon="Edit"
               :disabled="!hasEditableItems"
             >
-              编辑配置
+              编辑配置{{ hasEditableItems ? ` (${systemStore.systemInfoList.filter(item => item.status === 1).length})` : '' }}
             </el-button>
           </div>
         </div>

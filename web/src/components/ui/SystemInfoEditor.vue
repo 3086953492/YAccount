@@ -2,7 +2,7 @@
   <div class="system-info-editor">
     <el-dialog
       v-model="dialogVisible"
-      title="编辑系统信息"
+      :title="`编辑系统信息${hasChanges ? ` (${getChangedFields().length} 项已修改)` : ''}`"
       width="600px"
       :close-on-click-modal="false"
       :close-on-press-escape="false"
@@ -17,7 +17,7 @@
         <el-form-item
           v-for="item in editableItems"
           :key="item.id"
-          :label="item.description || item.config_key"
+          :label="`${item.description || item.config_key}${isFieldChanged(item.id) ? ' *' : ''}`"
           :prop="`items.${item.id}.config_value`"
         >
           <el-input
@@ -55,8 +55,13 @@
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="handleCancel">取消</el-button>
-          <el-button type="primary" @click="handleSubmit" :loading="loading">
-            保存
+          <el-button 
+            type="primary" 
+            @click="handleSubmit" 
+            :loading="loading"
+            :disabled="!hasChanges"
+          >
+            保存{{ hasChanges ? ` (${getChangedFields().length})` : '' }}
           </el-button>
         </div>
       </template>
@@ -105,6 +110,9 @@ const formData = reactive<{
   items: {}
 })
 
+// 原始值记录，用于检测变更
+const originalValues = ref<Record<number, string>>({})
+
 // 表单验证规则
 const formRules: FormRules = {
   items: {} as Record<string, any>
@@ -113,9 +121,12 @@ const formRules: FormRules = {
 // 初始化表单数据
 const initFormData = () => {
   editableItems.value.forEach(item => {
+    const originalValue = item.config_value
+    originalValues.value[item.id] = originalValue
+    
     formData.items[item.id] = {
       id: item.id,
-      config_value: item.config_value
+      config_value: originalValue
     }
     
     // 为每个字段添加验证规则
@@ -142,6 +153,39 @@ const initFormData = () => {
   })
 }
 
+// 检测字段是否有变更
+const hasChanges = computed(() => {
+  return Object.keys(formData.items).some(id => {
+    const itemId = parseInt(id)
+    return formData.items[itemId].config_value !== originalValues.value[itemId]
+  })
+})
+
+// 获取变更的字段
+const getChangedFields = () => {
+  const changedFields: UpdateSystemInfoRequest[] = []
+  
+  Object.keys(formData.items).forEach(id => {
+    const itemId = parseInt(id)
+    const currentValue = formData.items[itemId].config_value
+    const originalValue = originalValues.value[itemId]
+    
+    if (currentValue !== originalValue) {
+      changedFields.push({
+        id: itemId,
+        config_value: currentValue
+      })
+    }
+  })
+  
+  return changedFields
+}
+
+// 检测单个字段是否变更
+const isFieldChanged = (itemId: number) => {
+  return formData.items[itemId]?.config_value !== originalValues.value[itemId]
+}
+
 // 监听系统信息列表变化，重新初始化表单
 watch(() => props.systemInfoList, () => {
   if (props.visible) {
@@ -163,17 +207,26 @@ const handleSubmit = async () => {
   try {
     await formRef.value.validate()
     
+    // 检查是否有变更
+    if (!hasChanges.value) {
+      ElMessage.warning('没有检测到任何变更，无需保存')
+      return
+    }
+    
     loading.value = true
     
-    // 转换为后端需要的格式
+    // 只获取变更的字段
+    const changedFields = getChangedFields()
     const updateData = {
-      system_infos: Object.values(formData.items)
+      system_infos: changedFields
     }
+    
+    console.log('只更新变更的字段:', changedFields)
     
     const success = await systemStore.updateSystemInfo(updateData)
     
     if (success) {
-      ElMessage.success('系统信息更新成功')
+      ElMessage.success(`系统信息更新成功，共更新了 ${changedFields.length} 个配置项`)
       emit('success')
       dialogVisible.value = false
     } else {

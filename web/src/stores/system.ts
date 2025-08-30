@@ -107,8 +107,12 @@ export const useSystemStore = defineStore('system', () => {
   // 批量更新系统信息
   const updateSystemInfo = async (updateData: BatchUpdateSystemInfoRequest) => {
     try {
+      console.log('开始更新系统信息，更新字段数量:', updateData.system_infos.length)
+      console.log('更新的字段详情:', updateData.system_infos)
+      
       const response = await batchUpdateSystemInfo(updateData)
       if (response.data.success) {
+        console.log('系统信息更新成功，已更新', updateData.system_infos.length, '个字段')
         // 更新成功后清除缓存，强制重新获取
         clearCache()
         // 重新获取系统信息
