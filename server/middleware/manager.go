@@ -4,6 +4,7 @@ import (
 	"YAccount/configs"
 	"YAccount/global"
 	"YAccount/middleware/auth"
+	"YAccount/middleware/oauth"
 	"YAccount/middleware/permission"
 	"YAccount/middleware/security"
 
@@ -54,4 +55,9 @@ func (m *Manager) CORS() gin.HandlerFunc {
 		AllowMethods: m.config.CORS.AllowMethods,
 		AllowHeaders: m.config.CORS.AllowHeaders,
 	})
+}
+
+// 获取 OAuth 中间件
+func (m *Manager) OAuth(requiredScopes ...string) gin.HandlerFunc {
+	return oauth.OAuthTokenMiddleware(requiredScopes...)
 }
