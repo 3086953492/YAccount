@@ -116,3 +116,13 @@ type OAuthScope struct {
 func (OAuthScope) TableName() string {
 	return "oauth_scopes"
 }
+
+type OAuthAuthorizeConfirmRequest struct {
+	ClientID            string `json:"client_id" binding:"required"`
+	RedirectURI         string `json:"redirect_uri" binding:"required"`
+	Scope               string `json:"scope"`
+	State               string `json:"state"`
+	CodeChallenge       string `json:"code_challenge"`
+	CodeChallengeMethod string `json:"code_challenge_method"`
+	Approved            bool   `json:"approved" binding:"required"`
+}
