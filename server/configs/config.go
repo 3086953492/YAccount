@@ -7,4 +7,5 @@ type Config struct {
 	JWT        JWTConfig        `mapstructure:"jwt"`
 	Log        LogConfig        `mapstructure:"log"`
 	Middleware MiddlewareConfig `mapstructure:"middleware"`
+	OAuth      OAuthConfig      `mapstructure:"oauth"`
 }
