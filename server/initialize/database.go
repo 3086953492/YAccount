@@ -4,16 +4,17 @@ import (
 	"YAccount/global"
 	"YAccount/models"
 	"YAccount/pkg/apperrors"
+	"YAccount/utils/logger"
 	"fmt"
 	"time"
 
 	"go.uber.org/zap"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 )
 
 func InitDB() error {
+
 	userCfg := global.Cfg.Database
 
 	userDsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s&parseTime=%t&loc=%s",
@@ -28,15 +29,23 @@ func InitDB() error {
 	)
 
 	var err error
-	global.DB, err = gorm.Open(mysql.Open(userDsn), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Info),
-	})
+	global.DB, err = gorm.Open(mysql.Open(userDsn), &gorm.Config{})
 	if err != nil {
+		logger.Error("数据库连接失败",
+			zap.String("operation", "database_connection"),
+			zap.Error(err),
+			zap.String("host", userCfg.Host),
+			zap.Int("port", userCfg.Port),
+		)
 		return fmt.Errorf("failed to connect database: %w", err)
 	}
 
 	sqlDB, err := global.DB.DB()
 	if err != nil {
+		logger.Error("获取底层数据库连接失败",
+			zap.String("operation", "get_sql_db"),
+			zap.Error(err),
+		)
 		return fmt.Errorf("failed to get sql.DB: %w", err)
 	}
 
@@ -46,7 +55,10 @@ func InitDB() error {
 	sqlDB.SetConnMaxLifetime(time.Hour)
 
 	if err := AutoMigrate(); err != nil {
-		global.Logger.Error("failed to auto migrate", zap.Error(err))
+		logger.Error("数据库自动迁移失败",
+			zap.String("operation", "auto_migrate"),
+			zap.Error(err),
+		)
 		return apperrors.ErrAutoMigrate
 	}
 
@@ -54,7 +66,7 @@ func InitDB() error {
 }
 
 func AutoMigrate() error {
-	return global.DB.AutoMigrate(
+	modelsList := []any{
 		&models.User{},
 		&models.SystemInfo{},
 		// 新增 OAuth 相关表
@@ -62,5 +74,26 @@ func AutoMigrate() error {
 		&models.OAuthAuthorizationCode{},
 		&models.OAuthAccessToken{},
 		&models.OAuthScope{},
+	}
+
+	logger.Info("开始迁移数据表结构",
+		zap.String("operation", "auto_migrate_tables"),
+		zap.Int("tables_count", len(modelsList)),
 	)
+
+	err := global.DB.AutoMigrate(modelsList...)
+	if err != nil {
+		logger.Error("数据表结构迁移失败",
+			zap.String("operation", "auto_migrate_tables"),
+			zap.Error(err),
+		)
+		return err
+	}
+
+	logger.Info("数据表结构迁移成功",
+		zap.String("operation", "auto_migrate_tables"),
+		zap.Strings("tables", []string{"User", "SystemInfo", "OAuthClient", "OAuthAuthorizationCode", "OAuthAccessToken", "OAuthScope"}),
+	)
+
+	return nil
 }
