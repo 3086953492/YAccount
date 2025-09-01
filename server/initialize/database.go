@@ -2,9 +2,12 @@ package initialize
 
 import (
 	"YAccount/global"
+	"YAccount/models"
+	"YAccount/pkg/apperrors"
 	"fmt"
 	"time"
 
+	"go.uber.org/zap"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -42,5 +45,22 @@ func InitDB() error {
 	sqlDB.SetMaxOpenConns(100)
 	sqlDB.SetConnMaxLifetime(time.Hour)
 
+	if err := AutoMigrate(); err != nil {
+		global.Logger.Error("failed to auto migrate", zap.Error(err))
+		return apperrors.ErrAutoMigrate
+	}
+
 	return nil
+}
+
+func AutoMigrate() error {
+	return global.DB.AutoMigrate(
+		&models.User{},
+		&models.SystemInfo{},
+		// 新增 OAuth 相关表
+		&models.OAuthClient{},
+		&models.OAuthAuthorizationCode{},
+		&models.OAuthAccessToken{},
+		&models.OAuthScope{},
+	)
 }

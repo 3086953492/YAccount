@@ -15,6 +15,7 @@ const (
 	TypeInternalError = "INTERNAL_ERROR"
 	TypeValidation    = "VALIDATION_ERROR"
 	TypeInvalidInput  = "INVALID_INPUT"
+	TypeAutoMigrate   = "AUTO_MIGRATE"
 )
 
 // 通用错误实例
@@ -25,6 +26,7 @@ var (
 	ErrInternalError = New(TypeInternalError, "系统内部错误")
 	ErrValidation    = New(TypeValidation, "数据验证失败")
 	ErrInvalidInput  = New(TypeInvalidInput, "输入参数错误")
+	ErrAutoMigrate   = New(TypeAutoMigrate, "自动迁移失败")
 )
 
 // 错误类型检查函数
