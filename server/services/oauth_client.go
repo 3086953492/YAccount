@@ -143,8 +143,8 @@ func GetOAuthClientByID(clientID string) (*models.OAuthClient, error) {
 }
 
 // 获取客户端列表
-func ListOAuthClients(page, pageSize int, query string) ([]models.PaginationResponse[models.OAuthClient], error) {
-	var clientsList []models.PaginationResponse[models.OAuthClient]
+func ListOAuthClients(page, pageSize int, query string) (models.PaginationResponse[models.OAuthClient], error) {
+	var clientsList models.PaginationResponse[models.OAuthClient]
 	if err := global.Cache.Once(&cache.Item{
 		Key:   "oauth_clients:" + fmt.Sprintf("%d:%d:%s", page, pageSize, query),
 		Value: &clientsList,
@@ -163,17 +163,17 @@ func ListOAuthClients(page, pageSize int, query string) ([]models.PaginationResp
 				}
 				return nil, err
 			}
-			clientsList = []models.PaginationResponse[models.OAuthClient]{{
+			clientsList = models.PaginationResponse[models.OAuthClient]{
 				Items:      clients,
 				Total:      total,
 				Page:       page,
 				PageSize:   pageSize,
 				TotalPages: int((total + int64(pageSize) - 1) / int64(pageSize)),
-			}}
+			}
 			return clientsList, nil
 		},
 	}); err != nil {
-		return nil, apperrors.ErrClientNotFound
+		return models.PaginationResponse[models.OAuthClient]{}, apperrors.ErrClientNotFound
 	}
 	return clientsList, nil
 }
