@@ -18,14 +18,8 @@
         </div>
       </template>
 
-      <el-form
-        ref="formRef"
-        :model="formData"
-        :rules="formRules"
-        label-width="120px"
-        class="oauth-form"
-        @submit.prevent
-      >
+      <el-form ref="formRef" :model="formData" :rules="formRules" label-width="120px" class="oauth-form"
+        @submit.prevent>
         <!-- 基本信息 -->
         <div class="form-section">
           <div class="section-title">
@@ -36,25 +30,12 @@
           </div>
 
           <el-form-item label="客户端名称" prop="name">
-            <el-input
-              v-model="formData.name"
-              placeholder="请输入客户端名称"
-              maxlength="255"
-              show-word-limit
-              clearable
-            />
+            <el-input v-model="formData.name" placeholder="请输入客户端名称" maxlength="255" show-word-limit clearable />
           </el-form-item>
 
           <el-form-item label="客户端描述" prop="description">
-            <el-input
-              v-model="formData.description"
-              type="textarea"
-              placeholder="请输入客户端描述（可选）"
-              :rows="3"
-              maxlength="500"
-              show-word-limit
-              clearable
-            />
+            <el-input v-model="formData.description" type="textarea" placeholder="请输入客户端描述（可选）" :rows="3"
+              maxlength="500" show-word-limit clearable />
           </el-form-item>
 
           <el-form-item label="客户端类型" prop="client_type">
@@ -115,11 +96,7 @@
 
           <el-form-item label="权限范围" prop="scopes">
             <el-checkbox-group v-model="formData.scopes">
-              <el-checkbox
-                v-for="scope in availableScopes"
-                :key="scope.value"
-                :value="scope.value"
-              >
+              <el-checkbox v-for="scope in availableScopes" :key="scope.value" :value="scope.value">
                 <div class="checkbox-option">
                   <div class="checkbox-title">{{ scope.label }}</div>
                   <div class="checkbox-desc">{{ scope.description }}</div>
@@ -130,22 +107,11 @@
 
           <el-form-item label="重定向URI" prop="redirect_uris">
             <div class="redirect-uris-container">
-              <div
-                v-for="(uri, index) in formData.redirect_uris"
-                :key="index"
-                class="uri-item"
-              >
-                <el-input
-                  v-model="formData.redirect_uris[index]"
-                  placeholder="https://example.com/callback"
-                  clearable
-                />
-                <el-button
-                  type="danger"
-                  text
-                  @click="removeRedirectUri(index)"
-                  :disabled="formData.redirect_uris.length <= 1"
-                >
+              <div v-for="(uri, index) in formData.redirect_uris" :key="index" class="uri-item">
+                <el-input v-model="formData.redirect_uris[index]" placeholder="https://example.com/callback"
+                  clearable />
+                <el-button type="danger" text @click="removeRedirectUri(index)"
+                  :disabled="formData.redirect_uris.length <= 1">
                   <el-icon>
                     <Delete />
                   </el-icon>
@@ -179,9 +145,9 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox, type FormInstance, type FormRules } from 'element-plus'
-import { 
-  createOAuthClient, 
-  updateOAuthClient, 
+import {
+  createOAuthClient,
+  updateOAuthClient,
   getOAuthClient,
   type CreateOAuthClientRequest,
   type UpdateOAuthClientRequest,
@@ -243,28 +209,28 @@ const formRules: FormRules = {
     { required: true, message: '请选择客户端类型', trigger: 'change' }
   ],
   grant_types: [
-    { 
-      type: 'array', 
-      required: true, 
-      message: '请至少选择一种授权类型', 
+    {
+      type: 'array',
+      required: true,
+      message: '请至少选择一种授权类型',
       trigger: 'change',
       min: 1
     }
   ],
   scopes: [
-    { 
-      type: 'array', 
-      required: true, 
-      message: '请至少选择一个权限范围', 
+    {
+      type: 'array',
+      required: true,
+      message: '请至少选择一个权限范围',
       trigger: 'change',
       min: 1
     }
   ],
   redirect_uris: [
-    { 
-      type: 'array', 
-      required: true, 
-      message: '请至少添加一个重定向URI', 
+    {
+      type: 'array',
+      required: true,
+      message: '请至少添加一个重定向URI',
       trigger: 'change',
       min: 1
     },
@@ -299,7 +265,7 @@ const removeRedirectUri = (index: number) => {
 
 // 返回列表页
 const handleBack = () => {
-  router.push('/oauth-clients')
+  router.push('/admin/oauth/clients')
 }
 
 // 加载客户端数据（编辑模式）
@@ -310,7 +276,7 @@ const loadClientData = async () => {
     const response = await getOAuthClient(clientId.value)
     if (response.data.success) {
       const client: OAuthClient = response.data.data
-      
+
       // 填充表单数据
       formData.name = client.name
       formData.description = client.description
@@ -341,7 +307,7 @@ const handleSubmit = async () => {
 
     // 过滤空的重定向URI
     const cleanRedirectUris = formData.redirect_uris.filter(uri => uri.trim())
-    
+
     const submitData = {
       name: formData.name,
       description: formData.description,
