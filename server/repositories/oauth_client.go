@@ -40,14 +40,6 @@ func GetOAuthClientsCount(query string) (int64, error) {
 	return count, nil
 }
 
-func GetOAuthClientDetail(clientID string, userID uint, role string) (models.OAuthClient, error) {
-	var client models.OAuthClient
-	if err := global.DB.Where("client_id = ? AND status = ?", clientID, "active").First(&client).Error; err != nil {
-		return models.OAuthClient{}, err
-	}
-	return client, nil
-}
-
 func UpdateOAuthClient(clientID string, updateData map[string]any) error {
 	if err := global.DB.Model(&models.OAuthClient{}).Where("client_id = ?", clientID).Updates(updateData).Error; err != nil {
 		return err

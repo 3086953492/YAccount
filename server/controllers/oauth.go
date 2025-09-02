@@ -182,10 +182,8 @@ func ListOAuthClientsHandler(c *gin.Context) {
 // 获取客户端详情
 func GetOAuthClientHandler(c *gin.Context) {
 	clientID := c.Param("client_id")
-	userID := c.GetUint("user_id")
-	role := c.GetString("role")
 
-	client, err := services.GetOAuthClientDetail(clientID, userID, role)
+	client, err := services.GetOAuthClientByID(clientID)
 	if err != nil {
 		response.Error(c, err)
 		return

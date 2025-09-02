@@ -178,18 +178,6 @@ func ListOAuthClients(page, pageSize int, query string) ([]models.PaginationResp
 	return clientsList, nil
 }
 
-// 获取客户端详情
-func GetOAuthClientDetail(clientID string, userID uint, role string) (*models.OAuthClient, error) {
-	client, err := repositories.GetOAuthClientDetail(clientID, userID, role)
-	if err != nil {
-		if !apperrors.IsNotFoundError(err) {
-			logger.LogError("GetOAuthClientDetail", "database", "获取OAuth客户端详情失败", err, zap.String("clientID", clientID))
-		}
-		return nil, apperrors.ErrClientNotFound
-	}
-	return &client, nil
-}
-
 func UpdateOAuthClient(clientID string, request models.UpdateOAuthClientRequest) error {
 	// 转换切片字段为数据库格式，就像创建时一样
 	redirectURIsJSON, _ := json.Marshal(request.RedirectURIs)
