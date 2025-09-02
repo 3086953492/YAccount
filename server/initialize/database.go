@@ -4,13 +4,14 @@ import (
 	"YAccount/global"
 	"YAccount/models"
 	"YAccount/pkg/apperrors"
-	"YAccount/utils/logger"
+	logger_utils "YAccount/utils/logger"
 	"fmt"
 	"time"
 
 	"go.uber.org/zap"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	logger_gorm "gorm.io/gorm/logger"
 )
 
 func InitDB() error {
@@ -29,9 +30,11 @@ func InitDB() error {
 	)
 
 	var err error
-	global.DB, err = gorm.Open(mysql.Open(userDsn), &gorm.Config{})
+	global.DB, err = gorm.Open(mysql.Open(userDsn), &gorm.Config{
+		Logger: logger_gorm.Default.LogMode(logger_gorm.Info),
+	})
 	if err != nil {
-		logger.Error("数据库连接失败",
+		logger_utils.Error("数据库连接失败",
 			zap.String("operation", "database_connection"),
 			zap.Error(err),
 			zap.String("host", userCfg.Host),
@@ -42,7 +45,7 @@ func InitDB() error {
 
 	sqlDB, err := global.DB.DB()
 	if err != nil {
-		logger.Error("获取底层数据库连接失败",
+		logger_utils.Error("获取底层数据库连接失败",
 			zap.String("operation", "get_sql_db"),
 			zap.Error(err),
 		)
@@ -55,7 +58,7 @@ func InitDB() error {
 	sqlDB.SetConnMaxLifetime(time.Hour)
 
 	if err := AutoMigrate(); err != nil {
-		logger.Error("数据库自动迁移失败",
+		logger_utils.Error("数据库自动迁移失败",
 			zap.String("operation", "auto_migrate"),
 			zap.Error(err),
 		)
@@ -76,21 +79,21 @@ func AutoMigrate() error {
 		&models.OAuthScope{},
 	}
 
-	logger.Info("开始迁移数据表结构",
+	logger_utils.Info("开始迁移数据表结构",
 		zap.String("operation", "auto_migrate_tables"),
 		zap.Int("tables_count", len(modelsList)),
 	)
 
 	err := global.DB.AutoMigrate(modelsList...)
 	if err != nil {
-		logger.Error("数据表结构迁移失败",
+		logger_utils.Error("数据表结构迁移失败",
 			zap.String("operation", "auto_migrate_tables"),
 			zap.Error(err),
 		)
 		return err
 	}
 
-	logger.Info("数据表结构迁移成功",
+	logger_utils.Info("数据表结构迁移成功",
 		zap.String("operation", "auto_migrate_tables"),
 		zap.Strings("tables", []string{"User", "SystemInfo", "OAuthClient", "OAuthAuthorizationCode", "OAuthAccessToken", "OAuthScope"}),
 	)
