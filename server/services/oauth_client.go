@@ -5,6 +5,7 @@ import (
 	"YAccount/models"
 	"YAccount/pkg/apperrors"
 	"YAccount/repositories"
+	cache_utils "YAccount/utils/cache"
 	"YAccount/utils/logger"
 	"context"
 	"crypto/rand"
@@ -64,6 +65,8 @@ func CreateOAuthClient(req *models.CreateOAuthClientRequest, ownerID uint) (*mod
 
 	// 在响应中包含未加密的客户端密钥（仅此一次）
 	client.ClientSecret = clientSecret
+
+	cache_utils.DeleteCacheKeysByPrefix("oauth_clients")
 
 	return client, nil
 }
@@ -140,15 +143,39 @@ func GetOAuthClientByID(clientID string) (*models.OAuthClient, error) {
 }
 
 // 获取客户端列表
-func ListOAuthClients() ([]models.OAuthClient, error) {
-	clients, err := repositories.ListOAuthClients()
-	if err != nil {
-		if !apperrors.IsNotFoundError(err) {
-			logger.LogError("ListOAuthClients", "database", "获取OAuth客户端列表失败", err)
-		}
+func ListOAuthClients(page, pageSize int, query string) ([]models.PaginationResponse[models.OAuthClient], error) {
+	var clientsList []models.PaginationResponse[models.OAuthClient]
+	if err := global.Cache.Once(&cache.Item{
+		Key:   "oauth_clients:" + fmt.Sprintf("%d:%d:%s", page, pageSize, query),
+		Value: &clientsList,
+		Do: func(*cache.Item) (any, error) {
+			clients, err := repositories.ListOAuthClients(page, pageSize, query)
+			if err != nil {
+				if !apperrors.IsNotFoundError(err) {
+					logger.LogError("ListOAuthClients", "database", "获取OAuth客户端列表失败", err)
+				}
+				return nil, err
+			}
+			total, err := repositories.GetOAuthClientsCount(query)
+			if err != nil {
+				if !apperrors.IsNotFoundError(err) {
+					logger.LogError("ListOAuthClients", "database", "获取OAuth客户端列表失败", err)
+				}
+				return nil, err
+			}
+			clientsList = []models.PaginationResponse[models.OAuthClient]{{
+				Items:      clients,
+				Total:      total,
+				Page:       page,
+				PageSize:   pageSize,
+				TotalPages: int((total + int64(pageSize) - 1) / int64(pageSize)),
+			}}
+			return clientsList, nil
+		},
+	}); err != nil {
 		return nil, apperrors.ErrInvalidClient
 	}
-	return clients, nil
+	return clientsList, nil
 }
 
 // 获取客户端详情
@@ -184,6 +211,7 @@ func UpdateOAuthClient(clientID string, request models.UpdateOAuthClientRequest)
 		return apperrors.ErrUpdateClientFailed
 	}
 	global.Cache.Delete(context.Background(), fmt.Sprintf("oauth_client:%s", clientID))
+	cache_utils.DeleteCacheKeysByPrefix("oauth_clients")
 	return nil
 }
 
@@ -193,5 +221,6 @@ func DeleteOAuthClient(clientID string) error {
 		return apperrors.ErrDeleteClientFailed
 	}
 	global.Cache.Delete(context.Background(), fmt.Sprintf("oauth_client:%s", clientID))
+	cache_utils.DeleteCacheKeysByPrefix("oauth_clients")
 	return nil
 }

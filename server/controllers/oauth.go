@@ -4,6 +4,7 @@ import (
 	"YAccount/models"
 	"YAccount/pkg/apperrors"
 	"YAccount/pkg/oauth"
+	"YAccount/pkg/pagination"
 	"YAccount/pkg/response"
 	"YAccount/pkg/validator"
 	"YAccount/services"
@@ -164,7 +165,13 @@ func OAuthAuthorizeConfirmHandler(c *gin.Context) {
 
 // 获取客户端列表
 func ListOAuthClientsHandler(c *gin.Context) {
-	clients, err := services.ListOAuthClients()
+	page, pageSize := pagination.GetPageAndPageSize(c)
+	var query string
+	name := c.Query("name")
+	if name != "" {
+		query += " AND name LIKE '%" + name + "%'"
+	}
+	clients, err := services.ListOAuthClients(page, pageSize, query)
 	if err != nil {
 		response.Error(c, err)
 		return

@@ -20,12 +20,24 @@ func GetOAuthClientByID(clientID string) (models.OAuthClient, error) {
 	return client, nil
 }
 
-func ListOAuthClients() ([]models.OAuthClient, error) {
+func ListOAuthClients(page, pageSize int, query string) ([]models.OAuthClient, error) {
 	var clients []models.OAuthClient
-	if err := global.DB.Where("status = ?", "active").Find(&clients).Error; err != nil {
+	if err := global.DB.Where("status = 'active' " + query).
+		Order("id ASC").
+		Offset((page - 1) * pageSize).
+		Limit(pageSize).
+		Find(&clients).Error; err != nil {
 		return nil, err
 	}
 	return clients, nil
+}
+
+func GetOAuthClientsCount(query string) (int64, error) {
+	var count int64
+	if err := global.DB.Model(&models.OAuthClient{}).Where("status = ?", "active"+query).Count(&count).Error; err != nil {
+		return 0, err
+	}
+	return count, nil
 }
 
 func GetOAuthClientDetail(clientID string, userID uint, role string) (models.OAuthClient, error) {
