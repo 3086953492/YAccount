@@ -39,6 +39,12 @@ const router = createRouter({
       name: 'system-management',
       component: () => import('@/views/SystemManagement.vue'),
       meta: { requiresAuth: true, requiresAdmin: true, title: '系统管理' }
+    },
+    {
+      path: '/admin/oauth/clients',
+      name: 'oauth-clients',
+      component: () => import('@/views/OAuthClients.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true, title: 'OAuth客户端管理' }
     }
   ],
 })

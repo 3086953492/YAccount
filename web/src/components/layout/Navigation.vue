@@ -36,6 +36,12 @@
           </el-icon>
           <span>系统管理</span>
         </el-menu-item>
+        <el-menu-item v-if="isAdmin" index="/admin/oauth/clients">
+          <el-icon>
+            <Key />
+          </el-icon>
+          <span>OAuth客户端</span>
+        </el-menu-item>
       </el-menu>
 
       <div class="nav-user">
@@ -83,7 +89,8 @@ import {
   Setting,
   ArrowDown,
   SwitchButton,
-  UserFilled
+  UserFilled,
+  Key
 } from '@element-plus/icons-vue'
 import { ElMessageBox } from 'element-plus'
 
