@@ -6,3 +6,10 @@ INSERT INTO `system_infos` (`config_key`, `config_value`, `config_type`, `descri
 ('system_icon', 'https://example.com/icon.png', 'string', '系统图标URL', 1, 1),
 ('system_logo', 'https://example.com/logo.png', 'string', '系统Logo URL', 1, 1),
 ('system_description', 'YAccount - 用户账户管理系统', 'string', '系统描述', 1, 1);
+
+-- 插入OAuth范围示例
+INSERT INTO `oauth_scopes` (`name`, `description`, `is_default`) VALUES
+		("read", "读取基本用户信息", true),
+		("write", "修改用户信息", false),
+		("profile", "访问完整用户资料", false),
+		("admin", "管理员权限", false);
