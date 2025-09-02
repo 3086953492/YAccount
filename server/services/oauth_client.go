@@ -150,3 +150,26 @@ func GetOAuthClientDetail(clientID string, userID uint, role string) (*models.OA
 	}
 	return &client, nil
 }
+
+func UpdateOAuthClient(clientID string, request models.UpdateOAuthClientRequest) error {
+	// 转换切片字段为数据库格式，就像创建时一样
+	redirectURIsJSON, _ := json.Marshal(request.RedirectURIs)
+	grantTypesStr := strings.Join(request.GrantTypes, ",")
+	scopesStr := strings.Join(request.Scopes, ",")
+
+	// 创建用于数据库更新的结构体，使用与OAuthClient模型相同的字段类型
+	updateData := map[string]any{
+		"name":          request.Name,
+		"description":   request.Description,
+		"redirect_uris": string(redirectURIsJSON),
+		"grant_types":   grantTypesStr,
+		"scopes":        scopesStr,
+		"client_type":   request.ClientType,
+	}
+
+	if err := repositories.UpdateOAuthClient(clientID, updateData); err != nil {
+		logger.LogError("UpdateOAuthClient", "database", "更新OAuth客户端失败", err, zap.String("clientID", clientID))
+		return apperrors.ErrUpdateClientFailed
+	}
+	return nil
+}

@@ -28,6 +28,7 @@ func LoadOAuthRouters(router *gin.Engine) {
 		clientGroup.POST("", m.Auth(), m.AdminPermission(), controllers.OAuthClientRegisterHandler)
 		clientGroup.GET("", m.Auth(), m.AdminPermission(), controllers.ListOAuthClientsHandler)
 		clientGroup.GET("/:client_id", m.Auth(), m.AdminPermission(), controllers.GetOAuthClientHandler)
+		clientGroup.PUT("/:client_id", m.Auth(), m.AdminPermission(), controllers.UpdateOAuthClientHandler)
 	}
 
 }

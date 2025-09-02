@@ -35,3 +35,10 @@ func GetOAuthClientDetail(clientID string, userID uint, role string) (models.OAu
 	}
 	return client, nil
 }
+
+func UpdateOAuthClient(clientID string, updateData map[string]any) error {
+	if err := global.DB.Model(&models.OAuthClient{}).Where("client_id = ?", clientID).Updates(updateData).Error; err != nil {
+		return err
+	}
+	return nil
+}

@@ -126,3 +126,12 @@ type OAuthAuthorizeConfirmRequest struct {
 	CodeChallengeMethod string `json:"code_challenge_method"`
 	Approved            bool   `json:"approved" binding:"required"`
 }
+
+type UpdateOAuthClientRequest struct {
+	Name         string   `json:"name" validate:"required,max=255"`
+	Description  string   `json:"description" validate:"max=500"`
+	RedirectURIs []string `json:"redirect_uris" validate:"required,min=1"`
+	GrantTypes   []string `json:"grant_types" validate:"required"`
+	Scopes       []string `json:"scopes" validate:"required"`
+	ClientType   string   `json:"client_type" validate:"required,oneof=public confidential"`
+}

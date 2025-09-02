@@ -185,3 +185,18 @@ func GetOAuthClientHandler(c *gin.Context) {
 	}
 	response.Success(c, "获取客户端详情成功", client)
 }
+
+func UpdateOAuthClientHandler(c *gin.Context) {
+	clientID := c.Param("client_id")
+	var req models.UpdateOAuthClientRequest
+	if !validator.ValidateStruct(c, &req) {
+		response.Error(c, apperrors.ErrInvalidInput)
+		return
+	}
+	err := services.UpdateOAuthClient(clientID, req)
+	if err != nil {
+		response.Error(c, err)
+		return
+	}
+	response.Success(c, "更新客户端成功", nil)
+}
