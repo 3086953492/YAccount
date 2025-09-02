@@ -128,12 +128,6 @@
           <el-table-column label="操作" width="200" fixed="right" align="center">
             <template #default="{ row }">
               <div class="action-buttons">
-                <el-button type="primary" link size="small" @click="handleView(row)">
-                  <el-icon>
-                    <View />
-                  </el-icon>
-                  查看
-                </el-button>
                 <el-dropdown @command="(command) => handleEditCommand(command, row)" trigger="click">
                   <el-button type="primary" link size="small">
                     <el-icon>
@@ -177,11 +171,8 @@
     </el-card>
 
     <!-- OAuth客户端表单对话框 -->
-    <OAuthClientFormDialog
-      v-model:visible="dialogVisible"
-      :client-data="currentClient"
-      @success="handleDialogSuccess"
-    />
+    <OAuthClientFormDialog v-model:visible="dialogVisible" :client-data="currentClient"
+      @success="handleDialogSuccess" />
   </div>
 </template>
 
@@ -309,12 +300,6 @@ const handleCreateCommand = (command: string) => {
 // 新建客户端（保留向后兼容）
 const handleCreate = () => {
   router.push('/admin/oauth/clients/new')
-}
-
-// 查看客户端详情
-const handleView = (row: OAuthClient) => {
-  // TODO: 实现查看客户端详情功能
-  ElMessage.info('查看客户端详情功能暂未实现')
 }
 
 // 处理编辑客户端命令
