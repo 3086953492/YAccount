@@ -19,9 +19,6 @@ func LoadOAuthRouters(router *gin.Engine) {
 		// 令牌端点（公开）
 		oauthGroup.POST("/token", controllers.OAuthTokenHandler)
 
-		// 用户信息端点（需要有效的访问令牌，由专门的中间件验证）
-		oauthGroup.GET("/userinfo", controllers.OAuthUserInfoHandler)
-
 		// 令牌内省端点（公开）
 		oauthGroup.POST("/introspect", controllers.OAuthIntrospectHandler)
 	}

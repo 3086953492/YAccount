@@ -61,64 +61,6 @@ func OAuthTokenHandler(c *gin.Context) {
 	response.Success(c, "令牌获取成功", tokenResponse)
 }
 
-// OAuth 用户信息端点
-func OAuthUserInfoHandler(c *gin.Context) {
-	// 从 Authorization 头中获取访问令牌
-	authHeader := c.GetHeader("Authorization")
-	if authHeader == "" {
-		response.Error(c, apperrors.ErrInvalidToken)
-		return
-	}
-
-	tokenParts := strings.Split(authHeader, " ")
-	if len(tokenParts) != 2 || strings.ToLower(tokenParts[0]) != "bearer" {
-		response.Error(c, apperrors.ErrInvalidToken)
-		return
-	}
-
-	accessToken := tokenParts[1]
-
-	// 解析和验证令牌
-	claims, err := oauth.ParseOAuthToken(accessToken)
-	if err != nil {
-		response.Error(c, err)
-		return
-	}
-
-	// 检查令牌类型
-	if claims.TokenType != "access_token" {
-		response.Error(c, apperrors.ErrInvalidToken)
-		return
-	}
-
-	// 获取用户信息
-	userInfo, err := services.GetUserProfile(claims.UserID)
-	if err != nil {
-		response.Error(c, err)
-		return
-	}
-
-	// 返回用户信息（根据权限范围过滤）
-	userInfoResponse := map[string]interface{}{
-		"sub":      claims.UserID,
-		"username": userInfo.Username,
-		"nickname": userInfo.Nickname,
-	}
-
-	// 根据权限范围添加额外信息
-	for _, scope := range claims.Scopes {
-		switch scope {
-		case "profile":
-			userInfoResponse["avatar"] = userInfo.Avatar
-			userInfoResponse["role"] = userInfo.Role
-		case "email":
-			// 如果有邮箱字段，在这里添加
-		}
-	}
-
-	response.Success(c, "获取用户信息成功", userInfoResponse)
-}
-
 // OAuth 令牌内省端点
 func OAuthIntrospectHandler(c *gin.Context) {
 	token := c.PostForm("token")
