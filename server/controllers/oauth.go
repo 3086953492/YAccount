@@ -200,3 +200,13 @@ func UpdateOAuthClientHandler(c *gin.Context) {
 	}
 	response.Success(c, "更新客户端成功", nil)
 }
+
+func DeleteOAuthClientHandler(c *gin.Context) {
+	clientID := c.Param("client_id")
+	err := services.DeleteOAuthClient(clientID)
+	if err != nil {
+		response.Error(c, err)
+		return
+	}
+	response.Success(c, "删除客户端成功", nil)
+}

@@ -173,3 +173,11 @@ func UpdateOAuthClient(clientID string, request models.UpdateOAuthClientRequest)
 	}
 	return nil
 }
+
+func DeleteOAuthClient(clientID string) error {
+	if err := repositories.DeleteOAuthClient(clientID); err != nil {
+		logger.LogError("DeleteOAuthClient", "database", "删除OAuth客户端失败", err, zap.String("clientID", clientID))
+		return apperrors.ErrDeleteClientFailed
+	}
+	return nil
+}

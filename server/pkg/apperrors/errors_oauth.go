@@ -13,6 +13,7 @@ const (
 	TypeInsufficientScope       = "INSUFFICIENT_SCOPE"
 	TypeClientNotFound          = "CLIENT_NOT_FOUND"
 	TypeUpdateClientFailed      = "UPDATE_CLIENT_FAILED"
+	TypeDeleteClientFailed      = "DELETE_CLIENT_FAILED"
 )
 
 var (
@@ -28,4 +29,5 @@ var (
 	ErrInsufficientScope       = New(TypeInsufficientScope, "权限范围不足")
 	ErrClientNotFound          = New(TypeClientNotFound, "客户端不存在")
 	ErrUpdateClientFailed      = New(TypeUpdateClientFailed, "更新客户端失败")
+	ErrDeleteClientFailed      = New(TypeDeleteClientFailed, "删除客户端失败")
 )

@@ -42,3 +42,10 @@ func UpdateOAuthClient(clientID string, updateData map[string]any) error {
 	}
 	return nil
 }
+
+func DeleteOAuthClient(clientID string) error {
+	if err := global.DB.Model(&models.OAuthClient{}).Where("client_id = ?", clientID).Delete(&models.OAuthClient{}).Error; err != nil {
+		return err
+	}
+	return nil
+}
