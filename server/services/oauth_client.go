@@ -1,6 +1,7 @@
 package services
 
 import (
+	"YAccount/global"
 	"YAccount/models"
 	"YAccount/pkg/apperrors"
 	"YAccount/repositories"
@@ -12,6 +13,7 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/go-redis/cache/v9"
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -117,11 +119,20 @@ func generateClientSecret() (string, error) {
 // 获取客户端信息
 func GetOAuthClientByID(clientID string) (*models.OAuthClient, error) {
 	var client models.OAuthClient
-	client, err := repositories.GetOAuthClientByID(clientID)
-	if err != nil {
-		if !apperrors.IsNotFoundError(err) {
-			logger.LogError("GetOAuthClientByID", "database", "获取OAuth客户端失败", err, zap.String("clientID", clientID))
-		}
+	if err := global.Cache.Once(&cache.Item{
+		Key:   fmt.Sprintf("oauth_client:%s", clientID),
+		Value: &client,
+		Do: func(*cache.Item) (any, error) {
+			client, err := repositories.GetOAuthClientByID(clientID)
+			if err != nil {
+				if !apperrors.IsNotFoundError(err) {
+					logger.LogError("GetOAuthClientByID", "database", "获取OAuth客户端失败", err, zap.String("clientID", clientID))
+				}
+				return nil, err
+			}
+			return client, nil
+		},
+	}); err != nil {
 		return nil, apperrors.ErrInvalidClient
 	}
 	return &client, nil
