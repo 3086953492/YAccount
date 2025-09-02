@@ -6,6 +6,7 @@ import (
 	"YAccount/pkg/apperrors"
 	"YAccount/repositories"
 	"YAccount/utils/logger"
+	"context"
 	"crypto/rand"
 	"encoding/base64"
 	"encoding/json"
@@ -182,6 +183,7 @@ func UpdateOAuthClient(clientID string, request models.UpdateOAuthClientRequest)
 		logger.LogError("UpdateOAuthClient", "database", "更新OAuth客户端失败", err, zap.String("clientID", clientID))
 		return apperrors.ErrUpdateClientFailed
 	}
+	global.Cache.Delete(context.Background(), fmt.Sprintf("oauth_client:%s", clientID))
 	return nil
 }
 
@@ -190,5 +192,6 @@ func DeleteOAuthClient(clientID string) error {
 		logger.LogError("DeleteOAuthClient", "database", "删除OAuth客户端失败", err, zap.String("clientID", clientID))
 		return apperrors.ErrDeleteClientFailed
 	}
+	global.Cache.Delete(context.Background(), fmt.Sprintf("oauth_client:%s", clientID))
 	return nil
 }
