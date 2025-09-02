@@ -137,7 +137,7 @@ func GetOAuthClientByID(clientID string) (*models.OAuthClient, error) {
 			return client, nil
 		},
 	}); err != nil {
-		return nil, apperrors.ErrInvalidClient
+		return nil, apperrors.ErrClientNotFound
 	}
 	return &client, nil
 }
@@ -173,7 +173,7 @@ func ListOAuthClients(page, pageSize int, query string) ([]models.PaginationResp
 			return clientsList, nil
 		},
 	}); err != nil {
-		return nil, apperrors.ErrInvalidClient
+		return nil, apperrors.ErrClientNotFound
 	}
 	return clientsList, nil
 }
@@ -185,7 +185,7 @@ func GetOAuthClientDetail(clientID string, userID uint, role string) (*models.OA
 		if !apperrors.IsNotFoundError(err) {
 			logger.LogError("GetOAuthClientDetail", "database", "获取OAuth客户端详情失败", err, zap.String("clientID", clientID))
 		}
-		return nil, apperrors.ErrInvalidClient
+		return nil, apperrors.ErrClientNotFound
 	}
 	return &client, nil
 }
