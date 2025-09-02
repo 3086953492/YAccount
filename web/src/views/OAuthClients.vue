@@ -9,12 +9,23 @@
             </el-icon>
             <span>OAuth客户端管理</span>
           </div>
-          <el-button type="primary" @click="handleCreate">
-            <el-icon>
-              <Plus />
-            </el-icon>
-            新建客户端
-          </el-button>
+          <el-dropdown @command="handleCreateCommand">
+            <el-button type="primary">
+              <el-icon>
+                <Plus />
+              </el-icon>
+              新建客户端
+              <el-icon class="el-icon--right">
+                <ArrowDown />
+              </el-icon>
+            </el-button>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item command="dialog">对话框模式</el-dropdown-item>
+                <el-dropdown-item command="page">页面模式</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
         </div>
       </template>
 
@@ -123,12 +134,23 @@
                   </el-icon>
                   查看
                 </el-button>
-                <el-button type="primary" link size="small" @click="handleEdit(row)">
-                  <el-icon>
-                    <Edit />
-                  </el-icon>
-                  编辑
-                </el-button>
+                <el-dropdown @command="(command) => handleEditCommand(command, row)" trigger="click">
+                  <el-button type="primary" link size="small">
+                    <el-icon>
+                      <Edit />
+                    </el-icon>
+                    编辑
+                    <el-icon class="el-icon--right" style="font-size: 10px;">
+                      <ArrowDown />
+                    </el-icon>
+                  </el-button>
+                  <template #dropdown>
+                    <el-dropdown-menu>
+                      <el-dropdown-item command="dialog">对话框模式</el-dropdown-item>
+                      <el-dropdown-item command="page">页面模式</el-dropdown-item>
+                    </el-dropdown-menu>
+                  </template>
+                </el-dropdown>
                 <el-popconfirm title="确定要删除这个OAuth客户端吗？" @confirm="handleDelete(row)" confirm-button-text="确定"
                   cancel-button-text="取消">
                   <template #reference>
@@ -153,6 +175,13 @@
           @size-change="handlePageSizeChange" @current-change="handlePageChange" />
       </div>
     </el-card>
+
+    <!-- OAuth客户端表单对话框 -->
+    <OAuthClientFormDialog
+      v-model:visible="dialogVisible"
+      :client-data="currentClient"
+      @success="handleDialogSuccess"
+    />
   </div>
 </template>
 
@@ -160,8 +189,9 @@
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { listOAuthClients, deleteOAuthClient, type OAuthClient } from '@/api/oauth'
+import { listOAuthClients, deleteOAuthClient, getOAuthClient, type OAuthClient } from '@/api/oauth'
 import { usePageMeta } from '@/composables/usePageMeta'
+import OAuthClientFormDialog from '@/components/ui/OAuthClientFormDialog.vue'
 import {
   Key,
   Plus,
@@ -170,7 +200,8 @@ import {
   CopyDocument,
   View,
   Edit,
-  Delete
+  Delete,
+  ArrowDown
 } from '@element-plus/icons-vue'
 
 const router = useRouter()
@@ -181,6 +212,10 @@ usePageMeta()
 // 响应式数据
 const loading = ref(false)
 const tableData = ref<OAuthClient[]>([])
+
+// 对话框状态
+const dialogVisible = ref(false)
+const currentClient = ref<OAuthClient | null>(null)
 
 // 搜索表单
 const searchForm = reactive({
@@ -261,10 +296,19 @@ const handleSortChange = ({ prop, order }: { prop: string; order: string }) => {
   fetchClientList()
 }
 
-// 新建客户端
+// 处理新建客户端命令
+const handleCreateCommand = (command: string) => {
+  if (command === 'dialog') {
+    currentClient.value = null
+    dialogVisible.value = true
+  } else if (command === 'page') {
+    router.push('/admin/oauth/clients/new')
+  }
+}
+
+// 新建客户端（保留向后兼容）
 const handleCreate = () => {
-  // TODO: 实现新建客户端功能
-  ElMessage.info('新建客户端功能暂未实现')
+  router.push('/admin/oauth/clients/new')
 }
 
 // 查看客户端详情
@@ -273,10 +317,29 @@ const handleView = (row: OAuthClient) => {
   ElMessage.info('查看客户端详情功能暂未实现')
 }
 
-// 编辑客户端
+// 处理编辑客户端命令
+const handleEditCommand = async (command: string, row: OAuthClient) => {
+  if (command === 'dialog') {
+    try {
+      const response = await getOAuthClient(row.client_id)
+      if (response.data.success) {
+        currentClient.value = response.data.data
+        dialogVisible.value = true
+      } else {
+        ElMessage.error(response.data.message || '获取客户端详情失败')
+      }
+    } catch (error: any) {
+      console.error('获取客户端详情失败:', error)
+      ElMessage.error(error.response?.data?.message || '获取客户端详情失败')
+    }
+  } else if (command === 'page') {
+    router.push(`/admin/oauth/clients/${row.client_id}/edit`)
+  }
+}
+
+// 编辑客户端（保留向后兼容）
 const handleEdit = (row: OAuthClient) => {
-  // TODO: 实现编辑客户端功能
-  ElMessage.info('编辑客户端功能暂未实现')
+  router.push(`/admin/oauth/clients/${row.client_id}/edit`)
 }
 
 // 删除客户端
@@ -340,6 +403,11 @@ const formatDateTime = (dateTime: string): string => {
     minute: '2-digit',
     second: '2-digit'
   })
+}
+
+// 对话框成功回调
+const handleDialogSuccess = () => {
+  fetchClientList()
 }
 
 // 页面初始化

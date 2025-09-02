@@ -45,6 +45,18 @@ const router = createRouter({
       name: 'oauth-clients',
       component: () => import('@/views/OAuthClients.vue'),
       meta: { requiresAuth: true, requiresAdmin: true, title: 'OAuth客户端管理' }
+    },
+    {
+      path: '/admin/oauth/clients/new',
+      name: 'oauth-client-create',
+      component: () => import('@/views/OAuthClientForm.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true, title: '新建OAuth客户端' }
+    },
+    {
+      path: '/admin/oauth/clients/:clientId/edit',
+      name: 'oauth-client-edit',
+      component: () => import('@/views/OAuthClientForm.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true, title: '编辑OAuth客户端' }
     }
   ],
 })
