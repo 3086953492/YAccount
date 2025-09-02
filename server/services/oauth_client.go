@@ -71,9 +71,9 @@ func CreateOAuthClient(req *models.CreateOAuthClientRequest, ownerID uint) (*mod
 // 验证客户端凭证
 func ValidateClientCredentials(clientID, clientSecret string) (*models.OAuthClient, error) {
 
-	var client models.OAuthClient
+	var client *models.OAuthClient
 
-	client, err := repositories.GetOAuthClientByID(clientID)
+	client, err := GetOAuthClientByID(clientID)
 	if err != nil {
 		if !apperrors.IsNotFoundError(err) {
 			logger.LogError("ValidateClientCredentials", "database", "获取OAuth客户端失败", err, zap.String("clientID", clientID))
@@ -86,7 +86,7 @@ func ValidateClientCredentials(clientID, clientSecret string) (*models.OAuthClie
 		return nil, apperrors.ErrInvalidClient
 	}
 
-	return &client, nil
+	return client, nil
 }
 
 // 验证重定向URI
