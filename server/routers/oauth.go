@@ -26,4 +26,11 @@ func LoadOAuthRouters(router *gin.Engine) {
 		oauthGroup.POST("/introspect", controllers.OAuthIntrospectHandler)
 	}
 
+	clientGroup := router.Group("/api/account/v1/oauth/clients")
+	{
+		clientGroup.POST("", m.Auth(), m.AdminPermission(), controllers.OAuthClientRegisterHandler)
+		clientGroup.GET("", m.Auth(), m.AdminPermission(), controllers.ListOAuthClientsHandler)
+		clientGroup.GET("/:client_id", m.Auth(), m.AdminPermission(), controllers.GetOAuthClientHandler)
+	}
+
 }

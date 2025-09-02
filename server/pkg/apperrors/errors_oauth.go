@@ -11,6 +11,7 @@ const (
 	TypeInvalidToken            = "INVALID_TOKEN"
 	TypeOAuthTokenExpired       = "TOKEN_EXPIRED"
 	TypeInsufficientScope       = "INSUFFICIENT_SCOPE"
+	TypeClientNotFound          = "CLIENT_NOT_FOUND"
 )
 
 var (
@@ -24,4 +25,5 @@ var (
 	ErrInvalidToken            = New(TypeInvalidToken, "访问令牌无效")
 	ErrOAuthTokenExpired       = New(TypeOAuthTokenExpired, "访问令牌已过期")
 	ErrInsufficientScope       = New(TypeInsufficientScope, "权限范围不足")
+	ErrClientNotFound          = New(TypeClientNotFound, "客户端不存在")
 )

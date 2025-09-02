@@ -126,3 +126,27 @@ func GetOAuthClientByID(clientID string) (*models.OAuthClient, error) {
 	}
 	return &client, nil
 }
+
+// 获取客户端列表
+func ListOAuthClients() ([]models.OAuthClient, error) {
+	clients, err := repositories.ListOAuthClients()
+	if err != nil {
+		if !apperrors.IsNotFoundError(err) {
+			logger.LogError("ListOAuthClients", "database", "获取OAuth客户端列表失败", err)
+		}
+		return nil, apperrors.ErrInvalidClient
+	}
+	return clients, nil
+}
+
+// 获取客户端详情
+func GetOAuthClientDetail(clientID string, userID uint, role string) (*models.OAuthClient, error) {
+	client, err := repositories.GetOAuthClientDetail(clientID, userID, role)
+	if err != nil {
+		if !apperrors.IsNotFoundError(err) {
+			logger.LogError("GetOAuthClientDetail", "database", "获取OAuth客户端详情失败", err, zap.String("clientID", clientID))
+		}
+		return nil, apperrors.ErrInvalidClient
+	}
+	return &client, nil
+}

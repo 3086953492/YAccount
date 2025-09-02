@@ -219,3 +219,27 @@ func OAuthAuthorizeConfirmHandler(c *gin.Context) {
 		"state":        req.State,
 	})
 }
+
+// 获取客户端列表
+func ListOAuthClientsHandler(c *gin.Context) {
+	clients, err := services.ListOAuthClients()
+	if err != nil {
+		response.Error(c, err)
+		return
+	}
+	response.Success(c, "获取客户端列表成功", clients)
+}
+
+// 获取客户端详情
+func GetOAuthClientHandler(c *gin.Context) {
+	clientID := c.Param("client_id")
+	userID := c.GetUint("user_id")
+	role := c.GetString("role")
+
+	client, err := services.GetOAuthClientDetail(clientID, userID, role)
+	if err != nil {
+		response.Error(c, err)
+		return
+	}
+	response.Success(c, "获取客户端详情成功", client)
+}
