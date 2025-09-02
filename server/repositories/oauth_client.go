@@ -34,7 +34,7 @@ func ListOAuthClients(page, pageSize int, query string) ([]models.OAuthClient, e
 
 func GetOAuthClientsCount(query string) (int64, error) {
 	var count int64
-	if err := global.DB.Model(&models.OAuthClient{}).Where("status = ?", "active"+query).Count(&count).Error; err != nil {
+	if err := global.DB.Model(&models.OAuthClient{}).Where("status = 'active' " + query).Count(&count).Error; err != nil {
 		return 0, err
 	}
 	return count, nil
