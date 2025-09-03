@@ -21,7 +21,9 @@ func LoginHandler(c *gin.Context) {
 		return
 	}
 
-	user, token, err := services.LoginService(&req)
+	clientID := c.GetHeader("X-Client-ID")
+
+	user, token, err := services.LoginService(&req, clientID)
 	if err != nil {
 		response.Error(c, err)
 		return

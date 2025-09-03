@@ -135,3 +135,11 @@ type UpdateOAuthClientRequest struct {
 	Scopes       []string `json:"scopes" validate:"required"`
 	ClientType   string   `json:"client_type" validate:"required,oneof=public confidential"`
 }
+
+type TokenResponse struct {
+	AccessToken  string `json:"access_token"`
+	TokenType    string `json:"token_type"`
+	ExpiresIn    int    `json:"expires_in"`
+	RefreshToken string `json:"refresh_token"`
+	Scope        string `json:"scope"`
+}
