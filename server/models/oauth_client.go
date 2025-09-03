@@ -14,7 +14,7 @@ type OAuthClient struct {
 
 	// 客户端基本信息
 	ClientID     string `gorm:"unique;not null;size:255" json:"client_id"`
-	ClientSecret string `gorm:"not null;size:255" json:"-"` // 不在 JSON 中返回
+	ClientSecret string `gorm:"not null;size:255" json:"client_secret"`
 	Name         string `gorm:"not null;size:255" json:"name"`
 	Description  string `gorm:"size:500" json:"description"`
 
