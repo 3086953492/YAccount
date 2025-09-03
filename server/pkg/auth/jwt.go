@@ -4,7 +4,7 @@ import (
 	"YAccount/global"
 	"YAccount/pkg/apperrors"
 	"YAccount/utils/logger"
-	"strings"
+	"errors"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -46,14 +46,26 @@ func ParseToken(tokenString string) (*Claims, error) {
 
 	if err != nil {
 		// 检查是否是token过期错误
-		if strings.Contains(err.Error(), "token is expired") {
+		if errors.Is(err, jwt.ErrTokenExpired) {
 			logger.LogError("ParseToken", "jwt.ParseWithClaims", "token已过期", err, zap.String("token", tokenString))
 			return nil, apperrors.ErrTokenExpired
 		}
 
-		// 检查是否是其他JWT相关错误
-		if strings.Contains(err.Error(), "token") {
-			logger.LogError("ParseToken", "jwt.ParseWithClaims", "token格式无效", err, zap.String("token", tokenString))
+		// 检查是否是token无效错误
+		if errors.Is(err, jwt.ErrTokenMalformed) {
+			logger.LogError("ParseToken", "jwt.ParseWithClaims", "token格式错误", err, zap.String("token", tokenString))
+			return nil, apperrors.ErrTokenInvalid
+		}
+
+		// 检查是否是token未生效错误
+		if errors.Is(err, jwt.ErrTokenNotValidYet) {
+			logger.LogError("ParseToken", "jwt.ParseWithClaims", "token还未生效", err, zap.String("token", tokenString))
+			return nil, apperrors.ErrTokenInvalid
+		}
+
+		// 检查是否是签名无效错误
+		if errors.Is(err, jwt.ErrTokenSignatureInvalid) {
+			logger.LogError("ParseToken", "jwt.ParseWithClaims", "token签名无效", err, zap.String("token", tokenString))
 			return nil, apperrors.ErrTokenInvalid
 		}
 
@@ -70,15 +82,35 @@ func ParseToken(tokenString string) (*Claims, error) {
 }
 
 func RefreshToken(tokenString string) (string, error) {
-	claims, err := ParseToken(tokenString)
+	// 尝试解析token，即使是过期的token也要能够解析出用户信息用于刷新
+	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (any, error) {
+		return []byte(global.Cfg.JWT.Secret), nil
+	})
+
+	var claims *Claims
 	if err != nil {
-		return "", err
+		// 只有token过期错误才允许刷新
+		if errors.Is(err, jwt.ErrTokenExpired) {
+			if c, ok := token.Claims.(*Claims); ok {
+				claims = c
+			} else {
+				logger.LogError("RefreshToken", "jwt.ParseWithClaims", "无法从过期token中提取claims", err, zap.String("token", tokenString))
+				return "", apperrors.ErrTokenInvalid
+			}
+		} else {
+			// 其他错误不允许刷新
+			logger.LogError("RefreshToken", "jwt.ParseWithClaims", "token无效，无法刷新", err, zap.String("token", tokenString))
+			return "", apperrors.ErrTokenInvalid
+		}
+	} else {
+		// token有效的情况
+		if c, ok := token.Claims.(*Claims); ok {
+			claims = c
+		} else {
+			return "", apperrors.ErrTokenInvalid
+		}
 	}
 
-	// 检查token是否即将过期（还有10分钟过期）
-	if time.Until(claims.ExpiresAt.Time) < 10*time.Minute {
-		return GenerateToken(claims.UserID, claims.Username, claims.Role)
-	}
-
-	return tokenString, apperrors.ErrTokenRefreshTooEarly
+	// 生成新的token
+	return GenerateToken(claims.UserID, claims.Username, claims.Role)
 }

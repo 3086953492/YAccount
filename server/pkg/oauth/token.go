@@ -6,8 +6,8 @@ import (
 	"YAccount/utils/logger"
 	"crypto/rand"
 	"encoding/base64"
+	"errors"
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -88,9 +88,32 @@ func ParseOAuthToken(tokenString string) (*OAuthClaims, error) {
 	})
 
 	if err != nil {
-		if strings.Contains(err.Error(), "token is expired") {
+		// 检查是否是token过期错误
+		if errors.Is(err, jwt.ErrTokenExpired) {
+			logger.LogError("ParseOAuthToken", "jwt.ParseWithClaims", "OAuth token已过期", err, zap.String("token", tokenString))
 			return nil, apperrors.ErrTokenExpired
 		}
+
+		// 检查是否是token无效错误
+		if errors.Is(err, jwt.ErrTokenMalformed) {
+			logger.LogError("ParseOAuthToken", "jwt.ParseWithClaims", "OAuth token格式错误", err, zap.String("token", tokenString))
+			return nil, apperrors.ErrInvalidToken
+		}
+
+		// 检查是否是token未生效错误
+		if errors.Is(err, jwt.ErrTokenNotValidYet) {
+			logger.LogError("ParseOAuthToken", "jwt.ParseWithClaims", "OAuth token还未生效", err, zap.String("token", tokenString))
+			return nil, apperrors.ErrInvalidToken
+		}
+
+		// 检查是否是签名无效错误
+		if errors.Is(err, jwt.ErrTokenSignatureInvalid) {
+			logger.LogError("ParseOAuthToken", "jwt.ParseWithClaims", "OAuth token签名无效", err, zap.String("token", tokenString))
+			return nil, apperrors.ErrInvalidToken
+		}
+
+		// 其他未知错误
+		logger.LogError("ParseOAuthToken", "jwt.ParseWithClaims", "解析OAuth token失败", err, zap.String("token", tokenString))
 		return nil, apperrors.ErrInvalidToken
 	}
 
