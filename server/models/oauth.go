@@ -86,8 +86,8 @@ type OAuthAccessToken struct {
 	UpdatedAt time.Time      `json:"updated_at"`
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
 
-	AccessToken      string    `gorm:"unique;not null;size:255" json:"access_token"`
-	RefreshToken     string    `gorm:"unique;size:255" json:"refresh_token"`
+	AccessToken      string    `gorm:"not null;type:text" json:"access_token"`
+	RefreshToken     string    `gorm:"type:text" json:"refresh_token"`
 	ClientID         string    `gorm:"not null;size:255;index" json:"client_id"`
 	UserID           uint      `gorm:"not null;index" json:"user_id"`
 	Scopes           string    `gorm:"size:255" json:"scopes"`
