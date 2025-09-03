@@ -5,7 +5,8 @@ INSERT INTO `system_infos` (`config_key`, `config_value`, `config_type`, `descri
 ('system_name', 'YAccount', 'string', '系统名称', 1, 1),
 ('system_icon', 'https://example.com/icon.png', 'string', '系统图标URL', 1, 1),
 ('system_logo', 'https://example.com/logo.png', 'string', '系统Logo URL', 1, 1),
-('system_description', 'YAccount - 用户账户管理系统', 'string', '系统描述', 1, 1);
+('system_description', 'YAccount - 用户账户管理系统', 'string', '系统描述', 1, 1),
+('system_client_id', 'client_dFhOnLNUYXXoybtqYcHL8w', 'string', '系统客户端ID', 1, 1);
 
 -- 插入OAuth范围示例
 INSERT INTO `oauth_scopes` (`name`, `description`, `is_default`) VALUES
