@@ -3,6 +3,7 @@ import api from './auth'
 export interface OAuthClient {
   id: number
   client_id: string
+  client_secret?: string // 只在创建时返回
   name: string
   description: string
   redirect_uris: string

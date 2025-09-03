@@ -117,6 +117,13 @@
       </div>
     </template>
   </el-dialog>
+
+  <!-- 客户端密钥显示弹窗 -->
+  <ClientSecretDisplay
+    v-model:visible="secretDialogVisible"
+    :client-data="createdClient"
+    @confirmed="handleSecretConfirmed"
+  />
 </template>
 
 <script setup lang="ts">
@@ -130,6 +137,7 @@ import {
   type OAuthClient
 } from '@/api/oauth'
 import { Plus, Delete } from '@element-plus/icons-vue'
+import ClientSecretDisplay from './ClientSecretDisplay.vue'
 
 interface Props {
   visible: boolean
@@ -181,6 +189,10 @@ const availableScopes = ref([
 
 // 提交状态
 const submitLoading = ref(false)
+
+// 密钥显示状态
+const secretDialogVisible = ref(false)
+const createdClient = ref<OAuthClient | null>(null)
 
 // 表单验证规则
 const formRules: FormRules = {
@@ -286,6 +298,14 @@ const handleClose = () => {
   resetForm()
 }
 
+// 密钥确认处理
+const handleSecretConfirmed = () => {
+  secretDialogVisible.value = false
+  createdClient.value = null
+  emit('success')
+  resetForm()
+}
+
 // 提交表单
 const handleSubmit = async () => {
   if (!formRef.value) return
@@ -316,9 +336,16 @@ const handleSubmit = async () => {
     }
 
     if (response.data.success) {
-      ElMessage.success(isEdit.value ? '客户端更新成功' : '客户端创建成功')
-      emit('success')
-      handleClose()
+      if (isEdit.value) {
+        ElMessage.success('客户端更新成功')
+        emit('success')
+        handleClose()
+      } else {
+        // 创建成功，显示密钥
+        createdClient.value = response.data.data
+        secretDialogVisible.value = true
+        dialogVisible.value = false // 关闭表单对话框
+      }
     } else {
       ElMessage.error(response.data.message || (isEdit.value ? '更新失败' : '创建失败'))
     }
