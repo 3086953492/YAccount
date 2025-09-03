@@ -12,6 +12,6 @@ func LoadSystemInfoRouters(r *gin.Engine) {
 	{
 		systemInfoRouters.GET("/infos", controllers.SystemInfoListHandler)
 		systemInfoRouters.GET("/infos/:key", controllers.SystemInfoByKeyHandler)
-		systemInfoRouters.POST("/infos", m.Auth(), m.AdminPermission(), controllers.BatchUpdateSystemInfoHandler)
+		systemInfoRouters.POST("/infos", m.OAuth(), m.RequiredScopes("admin"), controllers.BatchUpdateSystemInfoHandler)
 	}
 }

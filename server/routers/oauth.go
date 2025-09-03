@@ -14,7 +14,7 @@ func LoadOAuthRouters(router *gin.Engine) {
 	oauthGroup := router.Group("/api/account/v1/oauth")
 	{
 		// 授权端点（需要用户登录）
-		oauthGroup.GET("/authorize", m.Auth(), controllers.OAuthAuthorizeHandler)
+		oauthGroup.GET("/authorize", m.OAuth(), controllers.OAuthAuthorizeHandler)
 
 		// 令牌端点（公开）
 		oauthGroup.POST("/token", controllers.OAuthTokenHandler)
@@ -25,11 +25,11 @@ func LoadOAuthRouters(router *gin.Engine) {
 
 	clientGroup := router.Group("/api/account/v1/oauth/clients")
 	{
-		clientGroup.POST("", m.Auth(), m.AdminPermission(), controllers.OAuthClientRegisterHandler)
-		clientGroup.GET("", m.Auth(), m.AdminPermission(), controllers.ListOAuthClientsHandler)
-		clientGroup.GET("/:client_id", m.Auth(), m.AdminPermission(), controllers.GetOAuthClientHandler)
-		clientGroup.PUT("/:client_id", m.Auth(), m.AdminPermission(), controllers.UpdateOAuthClientHandler)
-		clientGroup.DELETE("/:client_id", m.Auth(), m.AdminPermission(), controllers.DeleteOAuthClientHandler)
+		clientGroup.POST("", m.OAuth(), m.RequiredScopes("admin"), controllers.OAuthClientRegisterHandler)
+		clientGroup.GET("", m.OAuth(), m.RequiredScopes("admin"), controllers.ListOAuthClientsHandler)
+		clientGroup.GET("/:client_id", m.OAuth(), m.RequiredScopes("admin"), controllers.GetOAuthClientHandler)
+		clientGroup.PUT("/:client_id", m.OAuth(), m.RequiredScopes("admin"), controllers.UpdateOAuthClientHandler)
+		clientGroup.DELETE("/:client_id", m.OAuth(), m.RequiredScopes("admin"), controllers.DeleteOAuthClientHandler)
 	}
 
 }

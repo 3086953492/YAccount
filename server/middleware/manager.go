@@ -61,3 +61,7 @@ func (m *Manager) CORS() gin.HandlerFunc {
 func (m *Manager) OAuth(requiredScopes ...string) gin.HandlerFunc {
 	return oauth.OAuthTokenMiddleware(requiredScopes...)
 }
+
+func (m *Manager) RequiredScopes(scopes ...string) gin.HandlerFunc {
+    return permission.RequiredScopes(scopes...)
+}

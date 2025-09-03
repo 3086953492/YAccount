@@ -11,8 +11,8 @@ func LoadUserRouters(router *gin.Engine) {
 	m := middleware.NewManager()
 	userRouters := router.Group("/api/account/v1/users")
 	{
-		userRouters.PUT("/:user_id", m.Auth(), controllers.UpdateHandler)
-		userRouters.GET("", m.Auth(), m.AdminPermission(), controllers.UserListHandler)
-		userRouters.GET("/:user_id", m.Auth(), controllers.UserProfileHandler)
+		userRouters.PUT("/:user_id", m.OAuth(), controllers.UpdateHandler)
+		userRouters.GET("", m.OAuth(),m.RequiredScopes("admin"), controllers.UserListHandler)
+		userRouters.GET("/:user_id", m.OAuth(), controllers.UserProfileHandler)
 	}
 }
