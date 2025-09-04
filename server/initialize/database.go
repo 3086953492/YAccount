@@ -3,7 +3,7 @@ package initialize
 import (
 	"YAccount/global"
 	"YAccount/models"
-	"YAccount/pkg/apperrors"
+	apperrors "github.com/3086953492/YaBase/errors"
 	logger_utils "YAccount/utils/logger"
 	"fmt"
 	"time"

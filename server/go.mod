@@ -15,11 +15,12 @@ require (
 	golang.org/x/crypto v0.41.0
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 	gorm.io/driver/mysql v1.6.0
-	gorm.io/gorm v1.30.1
+	gorm.io/gorm v1.30.2
 )
 
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
+	github.com/3086953492/YaBase v0.0.0-20250904092157-5da74147f4f5
 	github.com/bytedance/sonic v1.11.6 // indirect
 	github.com/bytedance/sonic/loader v0.1.1 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect

@@ -3,7 +3,7 @@ package services
 import (
 	"YAccount/global"
 	"YAccount/models"
-	"YAccount/pkg/apperrors"
+	apperrors "github.com/3086953492/YaBase/errors"
 	"YAccount/repositories"
 	cache_utils "YAccount/utils/cache"
 	"YAccount/utils/logger"

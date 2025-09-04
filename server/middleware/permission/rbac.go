@@ -1,7 +1,7 @@
 package permission
 
 import (
-	"YAccount/pkg/apperrors"
+	apperrors "github.com/3086953492/YaBase/errors"
 	"YAccount/pkg/response"
 
 	"github.com/gin-gonic/gin"

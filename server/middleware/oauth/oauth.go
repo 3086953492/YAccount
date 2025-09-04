@@ -1,7 +1,7 @@
 package oauth
 
 import (
-	"YAccount/pkg/apperrors"
+	apperrors "github.com/3086953492/YaBase/errors"
 	"YAccount/pkg/oauth"
 	"YAccount/pkg/response"
 	"strings"

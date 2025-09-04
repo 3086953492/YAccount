@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"YAccount/models"
-	"YAccount/pkg/apperrors"
+	apperrors "github.com/3086953492/YaBase/errors"
 	"YAccount/pkg/pagination"
 	"YAccount/pkg/response"
 	"YAccount/pkg/validator"
