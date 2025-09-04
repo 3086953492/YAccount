@@ -42,7 +42,11 @@ api.interceptors.response.use(
 
 // 登录接口
 export const login = (data: { username: string; password: string }) => {
-  return api.post('/auth/login', data)
+  return api.post('/auth/login', data, {
+    headers: {
+      'X-Client-ID': import.meta.env.VITE_CLIENT_ID || ''
+    }
+  })
 }
 
 // 注册接口
