@@ -1,11 +1,13 @@
 package configs
 
+import "github.com/3086953492/YaBase/configs"
+
 type Config struct {
-	Server     ServerConfig     `mapstructure:"server"`
-	Database   DatabaseConfig   `mapstructure:"database"`
-	Redis      RedisConfig      `mapstructure:"redis"`
-	JWT        JWTConfig        `mapstructure:"jwt"`
-	Log        LogConfig        `mapstructure:"log"`
-	Middleware MiddlewareConfig `mapstructure:"middleware"`
-	OAuth      OAuthConfig      `mapstructure:"oauth"`
+	Server     configs.ServerConfig     `mapstructure:"server"`
+	Database   configs.DatabaseConfig   `mapstructure:"database"`
+	Redis      configs.RedisConfig      `mapstructure:"redis"`
+	JWT        configs.JWTConfig        `mapstructure:"jwt"`
+	Log        configs.LogConfig        `mapstructure:"log"`
+	Middleware configs.MiddlewareConfig `mapstructure:"middleware"`
+	OAuth      configs.OAuthConfig      `mapstructure:"oauth"`
 }
