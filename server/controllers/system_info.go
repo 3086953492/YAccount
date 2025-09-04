@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"YAccount/models"
-	"YAccount/pkg/response"
+	"github.com/3086953492/YaBase/response"
 	"YAccount/services"
 
 	"github.com/gin-gonic/gin"

@@ -20,7 +20,7 @@ require (
 
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
-	github.com/3086953492/YaBase v0.0.0-20250904092157-5da74147f4f5
+	github.com/3086953492/YaBase v0.0.0-20250904093523-e2845d47ece5
 	github.com/bytedance/sonic v1.11.6 // indirect
 	github.com/bytedance/sonic/loader v0.1.1 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect

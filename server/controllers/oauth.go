@@ -5,7 +5,7 @@ import (
 	apperrors "github.com/3086953492/YaBase/errors"
 	"YAccount/pkg/oauth"
 	"YAccount/pkg/pagination"
-	"YAccount/pkg/response"
+	"github.com/3086953492/YaBase/response"
 	"YAccount/pkg/validator"
 	"YAccount/services"
 	"net/http"
