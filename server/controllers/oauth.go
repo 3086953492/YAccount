@@ -215,3 +215,34 @@ func DeleteOAuthClientHandler(c *gin.Context) {
 	}
 	response.Success(c, "删除客户端成功", nil)
 }
+
+// OAuth刷新令牌处理器
+func OAuthRefreshHandler(c *gin.Context) {
+    var req models.RefreshTokenRequest
+    if !validator.ValidateStruct(c, &req) {
+        response.Error(c, apperrors.ErrInvalidInput)
+        return
+    }
+
+	clinetSecret, err := services.GetSystemInfoByKey("system_client_secret")
+	if err != nil {
+		response.Error(c, err)
+		return
+	}
+
+    // 构建标准OAuth刷新请求
+    tokenReq := services.TokenRequest{
+        GrantType:    "refresh_token",
+        RefreshToken: req.RefreshToken,
+        ClientID:     req.ClientID,
+        ClientSecret: clinetSecret.ConfigValue,
+    }
+
+    tokenResponse, err := services.HandleTokenRequest(&tokenReq)
+    if err != nil {
+        response.Error(c, err)
+        return
+    }
+
+    response.Success(c, "刷新令牌成功", tokenResponse)
+}

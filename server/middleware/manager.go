@@ -3,7 +3,6 @@ package middleware
 import (
 	"YAccount/configs"
 	"YAccount/global"
-	"YAccount/middleware/auth"
 	"YAccount/middleware/oauth"
 	"YAccount/middleware/permission"
 	"YAccount/middleware/security"
@@ -38,16 +37,6 @@ func (m *Manager) LoadGlobal(engine *gin.Engine) {
 	// engine.Use(m.Logger())
 }
 
-// 获取认证中间件
-func (m *Manager) Auth() gin.HandlerFunc {
-	return auth.NewAuthMiddleware(m.config)
-}
-
-// 获取管理员权限中间件
-func (m *Manager) AdminPermission() gin.HandlerFunc {
-	return permission.NewAdminPermissionMiddleware()
-}
-
 // CORS中间件
 func (m *Manager) CORS() gin.HandlerFunc {
 	return security.NewCORSMiddleware(security.CORSConfig{
@@ -63,5 +52,5 @@ func (m *Manager) OAuth(requiredScopes ...string) gin.HandlerFunc {
 }
 
 func (m *Manager) RequiredScopes(scopes ...string) gin.HandlerFunc {
-    return permission.RequiredScopes(scopes...)
+	return permission.RequiredScopes(scopes...)
 }

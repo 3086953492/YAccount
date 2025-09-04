@@ -13,6 +13,6 @@ func LoadAuthRouters(router *gin.Engine) {
 	{
 		authRouters.POST("/login", controllers.LoginHandler)
 		authRouters.POST("/register", controllers.RegisterHandler)
-		authRouters.PUT("/token", m.OAuth(), controllers.RefreshHandler)
+		authRouters.PUT("/token", m.OAuth(), controllers.OAuthRefreshHandler)
 	}
 }

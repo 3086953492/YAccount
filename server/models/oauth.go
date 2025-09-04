@@ -143,3 +143,8 @@ type TokenResponse struct {
 	RefreshToken string `json:"refresh_token"`
 	Scope        string `json:"scope"`
 }
+
+type RefreshTokenRequest struct {
+	RefreshToken string `json:"refresh_token" binding:"required"`
+	ClientID     string `json:"client_id"`
+}
