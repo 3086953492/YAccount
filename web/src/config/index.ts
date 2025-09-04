@@ -6,9 +6,12 @@ export const config = {
   // 请求超时时间（毫秒）
   requestTimeout: 10000,
   
+  // OAuth客户端ID
+  clientId: import.meta.env.VITE_CLIENT_ID || '',
+  
   // 本地存储键名
   storageKeys: {
-    token: 'token',
+    token: 'oauth_token',  // 改为oauth_token以区分
     user: 'user'
   }
 }

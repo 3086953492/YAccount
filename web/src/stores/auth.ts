@@ -13,23 +13,31 @@ export interface User {
   updated_at?: string
 }
 
+export interface TokenData {
+  access_token: string
+  token_type: string
+  expires_in: number
+  refresh_token: string
+  scope: string
+}
+
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<User | null>(null)
-  const token = ref<string | null>(null)
+  const tokenData = ref<TokenData | null>(null)
   const isAuthenticated = ref(false)
 
   // 初始化状态
   const initAuth = () => {
-    const storedToken = localStorage.getItem(config.storageKeys.token)
+    const storedTokenData = localStorage.getItem(config.storageKeys.token)
     const storedUser = localStorage.getItem(config.storageKeys.user)
 
-    if (storedToken && storedUser) {
+    if (storedTokenData && storedUser) {
       try {
-        token.value = storedToken
+        tokenData.value = JSON.parse(storedTokenData)
         user.value = JSON.parse(storedUser)
         isAuthenticated.value = true
       } catch (error) {
-        console.error('解析用户信息失败:', error)
+        console.error('解析认证信息失败:', error)
         clearAuth()
       }
     }
@@ -50,16 +58,26 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  // 设置token
-  const setToken = (tokenData: string) => {
-    token.value = tokenData
-    localStorage.setItem(config.storageKeys.token, tokenData)
+  // 设置token数据
+  const setTokenData = (token: TokenData) => {
+    tokenData.value = token
+    localStorage.setItem(config.storageKeys.token, JSON.stringify(token))
+  }
+
+  // 获取访问令牌
+  const getAccessToken = () => {
+    return tokenData.value?.access_token || null
+  }
+
+  // 获取刷新令牌
+  const getRefreshToken = () => {
+    return tokenData.value?.refresh_token || null
   }
 
   // 清除认证信息
   const clearAuth = () => {
     user.value = null
-    token.value = null
+    tokenData.value = null
     isAuthenticated.value = false
     localStorage.removeItem(config.storageKeys.token)
     localStorage.removeItem(config.storageKeys.user)
@@ -82,11 +100,13 @@ export const useAuthStore = defineStore('auth', () => {
 
   return {
     user,
-    token,
+    tokenData,
     isAuthenticated,
     initAuth,
     setUser,
-    setToken,
+    setTokenData,
+    getAccessToken,
+    getRefreshToken,
     updateUser,
     clearAuth,
     logout,

@@ -90,9 +90,9 @@ const handleLogin = async () => {
     const response = await login(loginForm)
 
     if (response.data.success) {
-      // 保存用户信息和token
+      // 保存用户信息和OAuth令牌数据
       authStore.setUser(response.data.data.user)
-      authStore.setToken(response.data.data.token)
+      authStore.setTokenData(response.data.data.token)
 
       // 显示成功消息
       ElMessage.success('登录成功')
