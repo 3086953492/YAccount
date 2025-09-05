@@ -5,7 +5,7 @@ import (
 	"YAccount/models"
 	apperrors "github.com/3086953492/YaBase/errors"
 	"YAccount/repositories"
-	"YAccount/utils/logger"
+	"github.com/3086953492/YaBase/logger"
 	cache_utils "YAccount/utils/cache"
 
 	"github.com/go-redis/cache/v9"

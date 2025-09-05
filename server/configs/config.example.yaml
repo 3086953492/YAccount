@@ -25,11 +25,13 @@ jwt:
 log:
   level: info
   filename: logs/example.log
-  maxSize: 10
-  maxBackups: 3
-  maxAge: 7
+  max_size: 10
+  max_backups: 3
+  max_age: 7
   compress: true
-  rotateDaily: true
+  rotate_daily: true
+  console: true
+  logs_dir: logs
 
 middleware:
   jwt:

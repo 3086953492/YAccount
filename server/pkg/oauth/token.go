@@ -3,7 +3,7 @@ package oauth
 import (
 	"YAccount/global"
 	apperrors "github.com/3086953492/YaBase/errors"
-	"YAccount/utils/logger"
+	"github.com/3086953492/YaBase/logger"
 	"crypto/rand"
 	"encoding/base64"
 	"errors"

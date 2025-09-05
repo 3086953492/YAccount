@@ -4,7 +4,7 @@ import (
 	"YAccount/global"
 	"YAccount/models"
 	apperrors "github.com/3086953492/YaBase/errors"
-	logger_utils "YAccount/utils/logger"
+	logger_utils "github.com/3086953492/YaBase/logger"
 	"fmt"
 	"time"
 

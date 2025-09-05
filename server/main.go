@@ -3,7 +3,7 @@ package main
 import (
 	"YAccount/global"
 	"YAccount/initialize"
-	"YAccount/utils/logger"
+	"github.com/3086953492/YaBase/logger"
 	"fmt"
 	"log"
 	"os"
@@ -19,7 +19,7 @@ func main() {
 	}
 
 	// 初始化日志
-	if err := initialize.InitLogger(); err != nil {
+	if err := logger.InitWithConfig(global.Cfg.Log); err != nil {
 		log.Fatalf("初始化日志失败: %v", err)
 	}
 

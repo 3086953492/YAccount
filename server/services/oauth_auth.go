@@ -6,7 +6,7 @@ import (
 	apperrors "github.com/3086953492/YaBase/errors"
 	"YAccount/pkg/oauth"
 	"YAccount/repositories"
-	"YAccount/utils/logger"
+	"github.com/3086953492/YaBase/logger"
 	"fmt"
 	"strings"
 	"time"
