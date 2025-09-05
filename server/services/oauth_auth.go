@@ -3,11 +3,11 @@ package services
 import (
 	"YAccount/global"
 	"YAccount/models"
-	apperrors "github.com/3086953492/YaBase/errors"
 	"YAccount/pkg/oauth"
 	"YAccount/repositories"
-	"github.com/3086953492/YaBase/logger"
 	"fmt"
+	apperrors "github.com/3086953492/YaBase/errors"
+	"github.com/3086953492/YaBase/logger"
 	"strings"
 	"time"
 
@@ -292,4 +292,76 @@ func handleClientCredentialsGrant(req *TokenRequest) (map[string]any, error) {
 		"expires_in":   int(global.Cfg.OAuth.AccessTokenTTL.Seconds()),
 		"scope":        strings.Join(requestedScopes, " "),
 	}, nil
+}
+
+func LoginService(req *models.LoginRequest, clientID string) (*models.UserResponse, *models.TokenResponse, error) {
+
+	_, err := GetOAuthClientByID(clientID)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	user, err := repositories.VerifyUserPassword(req)
+	if err != nil {
+		if !apperrors.IsNotFoundError(err) {
+			logger.LogError("LoginService", "database query", "从数据库中获取用户失败", err, zap.String("username", req.Username))
+		}
+		return nil, nil, apperrors.ErrUsernameOrPasswordError
+	}
+
+	// 根据用户角色确定授权范围
+	scopes := []string{"read"}
+	if user.Role == "admin" {
+		scopes = append(scopes, "write", "admin")
+	}
+
+	// 生成访问令牌和刷新令牌
+	accessToken, err := oauth.GenerateAccessToken(user.ID, clientID, scopes)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	refreshToken, err := oauth.GenerateRefreshToken(user.ID, clientID, scopes)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// 保存令牌记录
+	tokenRecord := &models.OAuthAccessToken{
+		AccessToken:      accessToken,
+		RefreshToken:     refreshToken,
+		ClientID:         clientID,
+		UserID:           user.ID,
+		Scopes:           strings.Join(scopes, " "),
+		ExpiresAt:        time.Now().Add(global.Cfg.OAuth.AccessTokenTTL),
+		RefreshExpiresAt: time.Now().Add(global.Cfg.OAuth.RefreshTokenTTL),
+	}
+
+	if err := repositories.CreateOAuthAccessToken(tokenRecord); err != nil {
+		logger.LogError("OAuthLoginService", "database", "保存令牌失败", err)
+		return nil, nil, apperrors.ErrServerInternal
+	}
+
+	logger.Info("用户登录成功", zap.String("username", user.Username))
+
+	userResponse := &models.UserResponse{
+		ID:        user.ID,
+		Username:  user.Username,
+		Role:      user.Role,
+		Nickname:  user.Nickname,
+		Avatar:    user.Avatar,
+		Status:    user.Status,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+	}
+
+	tokenResponse := &models.TokenResponse{
+		AccessToken:  accessToken,
+		TokenType:    "Bearer",
+		ExpiresIn:    int(global.Cfg.OAuth.AccessTokenTTL.Seconds()),
+		RefreshToken: refreshToken,
+		Scope:        strings.Join(scopes, " "),
+	}
+
+	return userResponse, tokenResponse, nil
 }

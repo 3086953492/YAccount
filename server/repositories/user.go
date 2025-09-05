@@ -31,7 +31,7 @@ func Register(req *models.RegisterRequest) (*models.User, error) {
 	return user, nil
 }
 
-func Login(req *models.LoginRequest) (*models.User, error) {
+func VerifyUserPassword(req *models.LoginRequest) (*models.User, error) {
 	var user models.User
 	if err := global.DB.Where("username = ? AND status = 1", req.Username).First(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
