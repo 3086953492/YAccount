@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"github.com/3086953492/YaBase/configs"
+	"github.com/3086953492/YaBase/configs/types"
 	"YAccount/global"
 	"YAccount/middleware/oauth"
 	"YAccount/middleware/permission"
@@ -12,7 +12,7 @@ import (
 
 // 中间件管理器 - 先做个简单版本
 type Manager struct {
-	config *configs.MiddlewareConfig
+	config *types.MiddlewareConfig
 }
 
 // 创建管理器

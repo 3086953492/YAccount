@@ -1,3 +1,2 @@
 server/logs/*
-server/configs/config.json
-server/configs/config.yaml
+server/configs/*

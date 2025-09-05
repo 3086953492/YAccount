@@ -1,7 +1,7 @@
 package initialize
 
 import (
-	"YAccount/configs"
+	"github.com/3086953492/YaBase/configs"
 	"YAccount/global"
 	"flag"
 	"fmt"
