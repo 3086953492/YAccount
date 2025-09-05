@@ -1,12 +1,9 @@
 package services
 
 import (
-	"YAccount/global"
 	"YAccount/models"
-	apperrors "github.com/3086953492/YaBase/errors"
 	"YAccount/repositories"
 	cache_utils "YAccount/utils/cache"
-	"github.com/3086953492/YaBase/logger"
 	"context"
 	"crypto/rand"
 	"encoding/base64"
@@ -15,10 +12,19 @@ import (
 	"slices"
 	"strings"
 
+	apperrors "github.com/3086953492/YaBase/errors"
+	"github.com/3086953492/YaBase/global"
+	"github.com/3086953492/YaBase/logger"
+
 	"github.com/go-redis/cache/v9"
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 )
+
+// clientCache 优雅地获取客户端缓存实例
+func clientCache() *cache.Cache {
+	return global.GetGlobalCache()
+}
 
 // 创建 OAuth 客户端
 func CreateOAuthClient(req *models.CreateOAuthClientRequest, ownerID uint) (*models.OAuthClient, error) {
@@ -123,7 +129,7 @@ func generateClientSecret() (string, error) {
 // 获取客户端信息
 func GetOAuthClientByID(clientID string) (*models.OAuthClient, error) {
 	var client models.OAuthClient
-	if err := global.Cache.Once(&cache.Item{
+	if err := clientCache().Once(&cache.Item{
 		Key:   fmt.Sprintf("oauth_client:%s", clientID),
 		Value: &client,
 		Do: func(*cache.Item) (any, error) {
@@ -145,7 +151,7 @@ func GetOAuthClientByID(clientID string) (*models.OAuthClient, error) {
 // 获取客户端列表
 func ListOAuthClients(page, pageSize int, query string) (models.PaginationResponse[models.OAuthClient], error) {
 	var clientsList models.PaginationResponse[models.OAuthClient]
-	if err := global.Cache.Once(&cache.Item{
+	if err := clientCache().Once(&cache.Item{
 		Key:   "oauth_clients:" + fmt.Sprintf("%d:%d:%s", page, pageSize, query),
 		Value: &clientsList,
 		Do: func(*cache.Item) (any, error) {
@@ -198,7 +204,7 @@ func UpdateOAuthClient(clientID string, request models.UpdateOAuthClientRequest)
 		logger.LogError("UpdateOAuthClient", "database", "更新OAuth客户端失败", err, zap.String("clientID", clientID))
 		return apperrors.ErrUpdateClientFailed
 	}
-	global.Cache.Delete(context.Background(), fmt.Sprintf("oauth_client:%s", clientID))
+	clientCache().Delete(context.Background(), fmt.Sprintf("oauth_client:%s", clientID))
 	cache_utils.DeleteCacheKeysByPrefix("oauth_clients")
 	return nil
 }
@@ -208,7 +214,7 @@ func DeleteOAuthClient(clientID string) error {
 		logger.LogError("DeleteOAuthClient", "database", "删除OAuth客户端失败", err, zap.String("clientID", clientID))
 		return apperrors.ErrDeleteClientFailed
 	}
-	global.Cache.Delete(context.Background(), fmt.Sprintf("oauth_client:%s", clientID))
+	clientCache().Delete(context.Background(), fmt.Sprintf("oauth_client:%s", clientID))
 	cache_utils.DeleteCacheKeysByPrefix("oauth_clients")
 	return nil
 }

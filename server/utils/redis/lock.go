@@ -1,14 +1,19 @@
 package redis
 
 import (
-	"YAccount/global"
 	"context"
 	"fmt"
 	"time"
 
-	"github.com/redis/go-redis/v9"
+	"github.com/3086953492/YaBase/global"
 	"github.com/google/uuid"
+	"github.com/redis/go-redis/v9"
 )
+
+// redisInstance 优雅地获取Redis实例
+func redisInstance() *redis.Client {
+	return global.GetGlobalRedis()
+}
 
 type DistributedLock struct {
 	client *redis.Client
@@ -19,7 +24,7 @@ type DistributedLock struct {
 
 func NewDistributedLock(key string, expire time.Duration) *DistributedLock {
 	return &DistributedLock{
-		client: global.Redis,
+		client: redisInstance(),
 		key:    key,
 		value:  uuid.New().String(), // UUID
 		expire: expire,

@@ -3,19 +3,26 @@ package services
 import (
 	"YAccount/global"
 	"YAccount/models"
-	apperrors "github.com/3086953492/YaBase/errors"
 	"YAccount/pkg/oauth"
 	"YAccount/repositories"
-	"github.com/3086953492/YaBase/logger"
 	"YAccount/utils/redis"
 	"context"
 	"fmt"
 	"strings"
 	"time"
 
+	apperrors "github.com/3086953492/YaBase/errors"
+	ybase_global "github.com/3086953492/YaBase/global"
+	"github.com/3086953492/YaBase/logger"
+
 	"github.com/go-redis/cache/v9"
 	"go.uber.org/zap"
 )
+
+// userCache 优雅地获取用户缓存实例
+func userCache() *cache.Cache {
+	return ybase_global.GetGlobalCache()
+}
 
 func LoginService(req *models.LoginRequest, clientID string) (*models.UserResponse, *models.TokenResponse, error) {
 
@@ -117,7 +124,7 @@ func UpdateService(req *models.UpdateUserRequest, userID uint) error {
 		return apperrors.ErrUpdateFailed
 	}
 
-	global.Cache.Delete(context.Background(), fmt.Sprintf("user:profile:%d", userID))
+	userCache().Delete(context.Background(), fmt.Sprintf("user:profile:%d", userID))
 
 	logger.Info("用户信息更新成功", zap.Uint("userID", userID))
 
@@ -126,7 +133,7 @@ func UpdateService(req *models.UpdateUserRequest, userID uint) error {
 
 func ListUsersPage(query string, page, pageSize int) (models.PaginationResponse[models.UserList], error) {
 	var paginationResponse models.PaginationResponse[models.UserList]
-	if err := global.Cache.Once(&cache.Item{
+	if err := userCache().Once(&cache.Item{
 		Key:   fmt.Sprintf("users:list:%s:%d:%d", query, page, pageSize),
 		Value: &paginationResponse,
 		Do: func(*cache.Item) (any, error) {
@@ -162,7 +169,7 @@ func ListUsersPage(query string, page, pageSize int) (models.PaginationResponse[
 
 func GetUserProfile(userID uint) (*models.UserResponse, error) {
 	var user models.UserResponse
-	if err := global.Cache.Once(&cache.Item{
+	if err := userCache().Once(&cache.Item{
 		Key:   fmt.Sprintf("user:profile:%d", userID),
 		Value: &user,
 		Do: func(*cache.Item) (any, error) {

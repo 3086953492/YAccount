@@ -3,8 +3,9 @@ package main
 import (
 	"YAccount/global"
 	"YAccount/initialize"
-	"github.com/3086953492/YaBase/logger"
 	"fmt"
+	ybase_global "github.com/3086953492/YaBase/global"
+	"github.com/3086953492/YaBase/logger"
 	"log"
 	"os"
 	"strconv"
@@ -36,13 +37,13 @@ func main() {
 	}
 
 	// 初始化 Redis
-	if err := initialize.InitRedis(); err != nil {
+	if err := ybase_global.InitRedisWithConfig(global.Cfg.Redis); err != nil {
 		logger.Error("初始化 Redis 失败", zap.Error(err))
 		return
 	}
 
 	// 初始化缓存
-	if err := initialize.InitCache(); err != nil {
+	if err := ybase_global.InitCache(); err != nil {
 		logger.Error("初始化缓存失败", zap.Error(err))
 		return
 	}

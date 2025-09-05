@@ -3,7 +3,7 @@ module YAccount
 go 1.23.4
 
 require (
-	github.com/3086953492/YaBase v0.0.6
+	github.com/3086953492/YaBase v0.0.9
 	github.com/fsnotify/fsnotify v1.9.0
 	github.com/gin-gonic/gin v1.10.1
 	github.com/go-playground/validator/v10 v10.27.0

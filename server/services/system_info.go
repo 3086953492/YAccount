@@ -3,18 +3,25 @@ package services
 import (
 	"YAccount/global"
 	"YAccount/models"
-	apperrors "github.com/3086953492/YaBase/errors"
 	"YAccount/repositories"
-	"github.com/3086953492/YaBase/logger"
 	cache_utils "YAccount/utils/cache"
+
+	apperrors "github.com/3086953492/YaBase/errors"
+	ybase_global "github.com/3086953492/YaBase/global"
+	"github.com/3086953492/YaBase/logger"
 
 	"github.com/go-redis/cache/v9"
 )
 
+// systemInfoCache 优雅地获取系统信息缓存实例
+func systemInfoCache() *cache.Cache {
+	return ybase_global.GetGlobalCache()
+}
+
 func GetSystemInfoList() ([]models.SystemInfoList, error) {
 	var systemInfoList []models.SystemInfoList
 
-	if err := global.Cache.Once(&cache.Item{
+	if err := systemInfoCache().Once(&cache.Item{
 		Key:   "system:info:list",
 		Value: &systemInfoList,
 		Do: func(*cache.Item) (any, error) {
@@ -46,7 +53,7 @@ func GetSystemInfoList() ([]models.SystemInfoList, error) {
 func GetSystemInfoByKey(key string) (*models.SystemInfo, error) {
 	var systemInfo models.SystemInfo
 
-	if err := global.Cache.Once(&cache.Item{
+	if err := systemInfoCache().Once(&cache.Item{
 		Key:   "system:info:" + key,
 		Value: &systemInfo,
 		Do: func(*cache.Item) (any, error) {
