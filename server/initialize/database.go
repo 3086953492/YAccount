@@ -17,17 +17,17 @@ import (
 
 func InitDB() error {
 
-	cfg := ybase_global.GetGlobalConfig()
+	cfg := ybase_global.GetGlobalConfig().Database
 
 	userDsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s&parseTime=%t&loc=%s",
-		cfg.Database.User,
-		cfg.Database.Password,
-		cfg.Database.Host,
-		cfg.Database.Port,
-		cfg.Database.DBName,
-		cfg.Database.Charset,
-		cfg.Database.ParseTime,
-		cfg.Database.Loc,
+		cfg.User,
+		cfg.Password,
+		cfg.Host,
+		cfg.Port,
+		cfg.DBName,
+		cfg.Charset,
+		cfg.ParseTime,
+		cfg.Loc,
 	)
 
 	var err error
@@ -38,8 +38,8 @@ func InitDB() error {
 		logger_utils.Error("数据库连接失败",
 			zap.String("operation", "database_connection"),
 			zap.Error(err),
-			zap.String("host", cfg.Database.Host),
-			zap.Int("port", cfg.Database.Port),
+			zap.String("host", cfg.Host),
+			zap.Int("port", cfg.Port),
 		)
 		return fmt.Errorf("failed to connect database: %w", err)
 	}
