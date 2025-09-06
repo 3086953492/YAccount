@@ -3,9 +3,10 @@ package initialize
 import (
 	"YAccount/global"
 	"YAccount/models"
-	apperrors "github.com/3086953492/YaBase/errors"
-	logger_utils "github.com/3086953492/YaBase/logger"
 	"fmt"
+	apperrors "github.com/3086953492/YaBase/errors"
+	ybase_global "github.com/3086953492/YaBase/global"
+	logger_utils "github.com/3086953492/YaBase/logger"
 	"time"
 
 	"go.uber.org/zap"
@@ -16,17 +17,17 @@ import (
 
 func InitDB() error {
 
-	userCfg := global.Cfg.Database
+	cfg := ybase_global.GetGlobalConfig()
 
 	userDsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s&parseTime=%t&loc=%s",
-		userCfg.User,
-		userCfg.Password,
-		userCfg.Host,
-		userCfg.Port,
-		userCfg.DBName,
-		userCfg.Charset,
-		userCfg.ParseTime,
-		userCfg.Loc,
+		cfg.Database.User,
+		cfg.Database.Password,
+		cfg.Database.Host,
+		cfg.Database.Port,
+		cfg.Database.DBName,
+		cfg.Database.Charset,
+		cfg.Database.ParseTime,
+		cfg.Database.Loc,
 	)
 
 	var err error
@@ -37,8 +38,8 @@ func InitDB() error {
 		logger_utils.Error("数据库连接失败",
 			zap.String("operation", "database_connection"),
 			zap.Error(err),
-			zap.String("host", userCfg.Host),
-			zap.Int("port", userCfg.Port),
+			zap.String("host", cfg.Database.Host),
+			zap.Int("port", cfg.Database.Port),
 		)
 		return fmt.Errorf("failed to connect database: %w", err)
 	}

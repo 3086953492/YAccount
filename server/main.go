@@ -1,10 +1,9 @@
 package main
 
 import (
-	"YAccount/global"
 	"YAccount/initialize"
 	"fmt"
-	ybase_global "github.com/3086953492/YaBase/global"
+	"github.com/3086953492/YaBase/global"
 	"github.com/3086953492/YaBase/logger"
 	"log"
 	"os"
@@ -15,12 +14,14 @@ import (
 
 func main() {
 	// 初始化配置
-	if err := initialize.InitConfig(); err != nil {
+	if err := global.InitConfig(); err != nil {
 		log.Fatalf("初始化配置失败: %v", err)
 	}
 
+	cfg := global.GetGlobalConfig()
+
 	// 初始化日志
-	if err := logger.InitWithConfig(global.Cfg.Log); err != nil {
+	if err := logger.InitWithConfig(cfg.Log); err != nil {
 		log.Fatalf("初始化日志失败: %v", err)
 	}
 
@@ -37,19 +38,19 @@ func main() {
 	}
 
 	// 初始化 Redis
-	if err := ybase_global.InitRedisWithConfig(global.Cfg.Redis); err != nil {
+	if err := global.InitRedisWithConfig(cfg.Redis); err != nil {
 		logger.Error("初始化 Redis 失败", zap.Error(err))
 		return
 	}
 
 	// 初始化缓存
-	if err := ybase_global.InitCache(); err != nil {
+	if err := global.InitCache(); err != nil {
 		logger.Error("初始化缓存失败", zap.Error(err))
 		return
 	}
 
 	// 获取端口号，优先使用命令行参数
-	port := global.Cfg.Server.Port
+	port := cfg.Server.Port
 	if len(os.Args) > 1 {
 		argPort, err := strconv.Atoi(os.Args[1])
 		if err == nil {

@@ -1,14 +1,16 @@
 package oauth
 
 import (
-	"YAccount/global"
-	apperrors "github.com/3086953492/YaBase/errors"
-	"github.com/3086953492/YaBase/logger"
 	"crypto/rand"
 	"encoding/base64"
 	"errors"
 	"fmt"
 	"time"
+
+	"github.com/3086953492/YaBase/configs"
+	apperrors "github.com/3086953492/YaBase/errors"
+	"github.com/3086953492/YaBase/global"
+	"github.com/3086953492/YaBase/logger"
 
 	"github.com/golang-jwt/jwt/v5"
 	"go.uber.org/zap"
@@ -20,6 +22,10 @@ type OAuthClaims struct {
 	Scopes    []string `json:"scope"`
 	TokenType string   `json:"token_type"` // access_token, refresh_token
 	jwt.RegisteredClaims
+}
+
+func cfg() *configs.Config {
+	return global.GetGlobalConfig()
 }
 
 // 生成授权码
@@ -39,16 +45,16 @@ func GenerateAccessToken(userID uint, clientID string, scopes []string) (string,
 		Scopes:    scopes,
 		TokenType: "access_token",
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(global.Cfg.OAuth.AccessTokenTTL)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(cfg().OAuth.AccessTokenTTL)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			NotBefore: jwt.NewNumericDate(time.Now()),
-			Issuer:    global.Cfg.OAuth.Issuer,
+			Issuer:    cfg().OAuth.Issuer,
 			Subject:   fmt.Sprintf("%d", userID),
 		},
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString([]byte(global.Cfg.JWT.Secret))
+	tokenString, err := token.SignedString([]byte(cfg().JWT.Secret))
 	if err != nil {
 		logger.LogError("GenerateAccessToken", "jwt.NewWithClaims", "生成访问令牌失败", err, zap.Any("claims", claims))
 		return "", apperrors.ErrTokenGenerateFailed
@@ -64,16 +70,16 @@ func GenerateRefreshToken(userID uint, clientID string, scopes []string) (string
 		Scopes:    scopes,
 		TokenType: "refresh_token",
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(global.Cfg.OAuth.RefreshTokenTTL)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(cfg().OAuth.RefreshTokenTTL)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			NotBefore: jwt.NewNumericDate(time.Now()),
-			Issuer:    global.Cfg.OAuth.Issuer,
+			Issuer:    cfg().OAuth.Issuer,
 			Subject:   fmt.Sprintf("%d", userID),
 		},
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString([]byte(global.Cfg.JWT.Secret))
+	tokenString, err := token.SignedString([]byte(cfg().JWT.Secret))
 	if err != nil {
 		logger.LogError("GenerateRefreshToken", "jwt.NewWithClaims", "生成刷新令牌失败", err, zap.Any("claims", claims))
 		return "", apperrors.ErrTokenGenerateFailed
@@ -84,7 +90,7 @@ func GenerateRefreshToken(userID uint, clientID string, scopes []string) (string
 // 解析 OAuth 令牌
 func ParseOAuthToken(tokenString string) (*OAuthClaims, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &OAuthClaims{}, func(token *jwt.Token) (any, error) {
-		return []byte(global.Cfg.JWT.Secret), nil
+		return []byte(cfg().JWT.Secret), nil
 	})
 
 	if err != nil {

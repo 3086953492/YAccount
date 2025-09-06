@@ -1,15 +1,17 @@
 package services
 
 import (
-	"YAccount/global"
 	"YAccount/models"
 	"YAccount/pkg/oauth"
 	"YAccount/repositories"
 	"fmt"
-	apperrors "github.com/3086953492/YaBase/errors"
-	"github.com/3086953492/YaBase/logger"
 	"strings"
 	"time"
+
+	"github.com/3086953492/YaBase/configs/types"
+	apperrors "github.com/3086953492/YaBase/errors"
+	"github.com/3086953492/YaBase/global"
+	"github.com/3086953492/YaBase/logger"
 
 	"go.uber.org/zap"
 )
@@ -37,6 +39,10 @@ type TokenRequest struct {
 	CodeVerifier string `form:"code_verifier"`
 }
 
+func oauthCfg() *types.OAuthConfig {
+	return &global.GetGlobalConfig().OAuth
+}
+
 // 处理授权请求
 func HandleAuthorizeRequest(req *AuthorizeRequest, userID uint) (string, error) {
 	// 验证响应类型
@@ -58,7 +64,7 @@ func HandleAuthorizeRequest(req *AuthorizeRequest, userID uint) (string, error) 
 	// 验证权限范围
 	requestedScopes := strings.Fields(req.Scope)
 	if len(requestedScopes) == 0 {
-		requestedScopes = global.Cfg.OAuth.DefaultScopes
+		requestedScopes = oauthCfg().DefaultScopes
 	}
 
 	clientScopes := strings.Split(client.Scopes, ",")
@@ -79,7 +85,7 @@ func HandleAuthorizeRequest(req *AuthorizeRequest, userID uint) (string, error) 
 		UserID:              userID,
 		RedirectURI:         req.RedirectURI,
 		Scopes:              strings.Join(requestedScopes, " "),
-		ExpiresAt:           time.Now().Add(global.Cfg.OAuth.AuthorizationCodeTTL),
+		ExpiresAt:           time.Now().Add(oauthCfg().AuthorizationCodeTTL),
 		CodeChallenge:       req.CodeChallenge,
 		CodeChallengeMethod: req.CodeChallengeMethod,
 	}
@@ -164,8 +170,8 @@ func handleAuthorizationCodeGrant(req *TokenRequest) (map[string]any, error) {
 		ClientID:         authCode.ClientID,
 		UserID:           authCode.UserID,
 		Scopes:           authCode.Scopes,
-		ExpiresAt:        time.Now().Add(global.Cfg.OAuth.AccessTokenTTL),
-		RefreshExpiresAt: time.Now().Add(global.Cfg.OAuth.RefreshTokenTTL),
+		ExpiresAt:        time.Now().Add(oauthCfg().AccessTokenTTL),
+		RefreshExpiresAt: time.Now().Add(oauthCfg().RefreshTokenTTL),
 	}
 
 	if err := repositories.CreateOAuthAccessToken(tokenRecord); err != nil {
@@ -176,7 +182,7 @@ func handleAuthorizationCodeGrant(req *TokenRequest) (map[string]any, error) {
 	return map[string]any{
 		"access_token":  accessToken,
 		"token_type":    "Bearer",
-		"expires_in":    int(global.Cfg.OAuth.AccessTokenTTL.Seconds()),
+		"expires_in":    int(oauthCfg().AccessTokenTTL.Seconds()),
 		"refresh_token": refreshToken,
 		"scope":         authCode.Scopes,
 	}, nil
@@ -229,8 +235,8 @@ func handleRefreshTokenGrant(req *TokenRequest) (map[string]any, error) {
 		ClientID:         tokenRecord.ClientID,
 		UserID:           tokenRecord.UserID,
 		Scopes:           tokenRecord.Scopes,
-		ExpiresAt:        time.Now().Add(global.Cfg.OAuth.AccessTokenTTL),
-		RefreshExpiresAt: time.Now().Add(global.Cfg.OAuth.RefreshTokenTTL),
+		ExpiresAt:        time.Now().Add(oauthCfg().AccessTokenTTL),
+		RefreshExpiresAt: time.Now().Add(oauthCfg().RefreshTokenTTL),
 	}
 
 	if err := repositories.CreateOAuthAccessToken(newTokenRecord); err != nil {
@@ -241,7 +247,7 @@ func handleRefreshTokenGrant(req *TokenRequest) (map[string]any, error) {
 	return map[string]any{
 		"access_token":  accessToken,
 		"token_type":    "Bearer",
-		"expires_in":    int(global.Cfg.OAuth.AccessTokenTTL.Seconds()),
+		"expires_in":    int(oauthCfg().AccessTokenTTL.Seconds()),
 		"refresh_token": refreshToken,
 		"scope":         tokenRecord.Scopes,
 	}, nil
@@ -258,7 +264,7 @@ func handleClientCredentialsGrant(req *TokenRequest) (map[string]any, error) {
 	// 验证权限范围
 	requestedScopes := strings.Fields(req.Scope)
 	if len(requestedScopes) == 0 {
-		requestedScopes = global.Cfg.OAuth.DefaultScopes
+		requestedScopes = oauthCfg().DefaultScopes
 	}
 
 	clientScopes := strings.Split(client.Scopes, ",")
@@ -278,7 +284,7 @@ func handleClientCredentialsGrant(req *TokenRequest) (map[string]any, error) {
 		ClientID:    client.ClientID,
 		UserID:      0, // 客户端凭证模式没有用户
 		Scopes:      strings.Join(requestedScopes, " "),
-		ExpiresAt:   time.Now().Add(global.Cfg.OAuth.AccessTokenTTL),
+		ExpiresAt:   time.Now().Add(oauthCfg().AccessTokenTTL),
 	}
 
 	if err := repositories.CreateOAuthAccessToken(tokenRecord); err != nil {
@@ -289,7 +295,7 @@ func handleClientCredentialsGrant(req *TokenRequest) (map[string]any, error) {
 	return map[string]any{
 		"access_token": accessToken,
 		"token_type":   "Bearer",
-		"expires_in":   int(global.Cfg.OAuth.AccessTokenTTL.Seconds()),
+		"expires_in":   int(oauthCfg().AccessTokenTTL.Seconds()),
 		"scope":        strings.Join(requestedScopes, " "),
 	}, nil
 }
@@ -333,8 +339,8 @@ func LoginService(req *models.LoginRequest, clientID string) (*models.UserRespon
 		ClientID:         clientID,
 		UserID:           user.ID,
 		Scopes:           strings.Join(scopes, " "),
-		ExpiresAt:        time.Now().Add(global.Cfg.OAuth.AccessTokenTTL),
-		RefreshExpiresAt: time.Now().Add(global.Cfg.OAuth.RefreshTokenTTL),
+		ExpiresAt:        time.Now().Add(oauthCfg().AccessTokenTTL),
+		RefreshExpiresAt: time.Now().Add(oauthCfg().RefreshTokenTTL),
 	}
 
 	if err := repositories.CreateOAuthAccessToken(tokenRecord); err != nil {
@@ -358,7 +364,7 @@ func LoginService(req *models.LoginRequest, clientID string) (*models.UserRespon
 	tokenResponse := &models.TokenResponse{
 		AccessToken:  accessToken,
 		TokenType:    "Bearer",
-		ExpiresIn:    int(global.Cfg.OAuth.AccessTokenTTL.Seconds()),
+		ExpiresIn:    int(oauthCfg().AccessTokenTTL.Seconds()),
 		RefreshToken: refreshToken,
 		Scope:        strings.Join(scopes, " "),
 	}
