@@ -2,12 +2,15 @@ package main
 
 import (
 	"YAccount/initialize"
+	"YAccount/models"
 	"fmt"
-	"github.com/3086953492/YaBase/global"
-	"github.com/3086953492/YaBase/logger"
 	"log"
 	"os"
 	"strconv"
+
+	"github.com/3086953492/YaBase/global"
+	"github.com/3086953492/YaBase/logger"
+	"gorm.io/driver/mysql"
 
 	"go.uber.org/zap"
 )
@@ -26,8 +29,14 @@ func main() {
 	}
 
 	// 初始化数据库
-	if err := initialize.InitDB(); err != nil {
+	dsn := global.BuildMySQLDSN(cfg.Database)
+	if err := global.InitDBWithDialector(mysql.Open(dsn)); err != nil {
 		logger.Error("初始化数据库失败", zap.Error(err))
+		return
+	}
+
+	if err := global.AutoMigrateModels(models.User{}, models.OAuthClient{}, models.OAuthAccessToken{}, models.OAuthAuthorizationCode{}, models.OAuthScope{}, models.SystemInfo{}); err != nil {
+		logger.Error("自动迁移数据库失败", zap.Error(err))
 		return
 	}
 
@@ -67,4 +76,10 @@ func main() {
 	if err := r.Run(fmt.Sprintf(":%d", port)); err != nil {
 		logger.Error("启动服务失败", zap.Error(err))
 	}
+
+	defer func() {
+		if err := global.CloseDB(); err != nil {
+			logger.Error("关闭数据库失败", zap.Error(err))
+		}
+	}()
 }

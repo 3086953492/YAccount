@@ -1,7 +1,6 @@
 package services
 
 import (
-	"YAccount/global"
 	"YAccount/models"
 	"YAccount/repositories"
 	cache_utils "YAccount/utils/cache"
@@ -9,9 +8,14 @@ import (
 	apperrors "github.com/3086953492/YaBase/errors"
 	ybase_global "github.com/3086953492/YaBase/global"
 	"github.com/3086953492/YaBase/logger"
+	"gorm.io/gorm"
 
 	"github.com/go-redis/cache/v9"
 )
+
+func systemInfoDB() *gorm.DB {
+	return ybase_global.GetGlobalDB()
+}
 
 // systemInfoCache 优雅地获取系统信息缓存实例
 func systemInfoCache() *cache.Cache {
@@ -74,7 +78,7 @@ func GetSystemInfoByKey(key string) (*models.SystemInfo, error) {
 
 func BatchUpdateSystemInfo(req *models.BatchUpdateSystemInfoRequest) error {
 	// 开启数据库事务
-	tx := global.DB.Begin()
+	tx := systemInfoDB().Begin()
 	if tx.Error != nil {
 		return tx.Error
 	}

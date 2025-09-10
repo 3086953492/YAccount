@@ -1,13 +1,17 @@
 package repositories
 
 import (
-	"YAccount/global"
 	"YAccount/models"
 	"errors"
 
+	"github.com/3086953492/YaBase/global"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
+
+func userDB() *gorm.DB {
+	return global.GetGlobalDB()
+}
 
 func Register(req *models.RegisterRequest) (*models.User, error) {
 
@@ -24,7 +28,7 @@ func Register(req *models.RegisterRequest) (*models.User, error) {
 		Nickname: req.Nickname,
 	}
 
-	if err := global.DB.Create(user).Error; err != nil {
+	if err := userDB().Create(user).Error; err != nil {
 		return nil, err
 	}
 
@@ -33,7 +37,7 @@ func Register(req *models.RegisterRequest) (*models.User, error) {
 
 func VerifyUserPassword(req *models.LoginRequest) (*models.User, error) {
 	var user models.User
-	if err := global.DB.Where("username = ? AND status = 1", req.Username).First(&user).Error; err != nil {
+	if err := userDB().Where("username = ? AND status = 1", req.Username).First(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, err
 		}
@@ -50,7 +54,7 @@ func VerifyUserPassword(req *models.LoginRequest) (*models.User, error) {
 
 func GetUserByID(id uint) (*models.User, error) {
 	var user models.User
-	if err := global.DB.Where("id = ? AND status = 1", id).First(&user).Error; err != nil {
+	if err := userDB().Where("id = ? AND status = 1", id).First(&user).Error; err != nil {
 		return nil, err
 	}
 	return &user, nil
@@ -58,7 +62,7 @@ func GetUserByID(id uint) (*models.User, error) {
 
 func UpdateUser(id uint, req *models.UpdateUserRequest) (*models.User, error) {
 	var user models.User
-	if err := global.DB.Where("id = ? AND status = 1", id).First(&user).Error; err != nil {
+	if err := userDB().Where("id = ? AND status = 1", id).First(&user).Error; err != nil {
 		return nil, err
 	}
 
@@ -85,7 +89,7 @@ func UpdateUser(id uint, req *models.UpdateUserRequest) (*models.User, error) {
 
 	// 更新用户表
 	if len(userUpdates) > 0 {
-		if err := global.DB.Model(&user).Updates(userUpdates).Error; err != nil {
+		if err := userDB().Model(&user).Updates(userUpdates).Error; err != nil {
 			return nil, err
 		}
 	}
@@ -94,7 +98,7 @@ func UpdateUser(id uint, req *models.UpdateUserRequest) (*models.User, error) {
 }
 
 func DeleteUser(id uint) error {
-	return global.DB.Delete(&models.User{}, id).Error
+	return userDB().Delete(&models.User{}, id).Error
 }
 
 func GetUsers(page, pageSize int) ([]*models.User, int64, error) {
@@ -103,11 +107,11 @@ func GetUsers(page, pageSize int) ([]*models.User, int64, error) {
 
 	offset := (page - 1) * pageSize
 
-	if err := global.DB.Model(&models.User{}).Where("status = 1").Count(&total).Error; err != nil {
+	if err := userDB().Model(&models.User{}).Where("status = 1").Count(&total).Error; err != nil {
 		return nil, 0, err
 	}
 
-	if err := global.DB.Where("status = 1").Offset(offset).Limit(pageSize).Find(&users).Error; err != nil {
+	if err := userDB().Where("status = 1").Offset(offset).Limit(pageSize).Find(&users).Error; err != nil {
 		return nil, 0, err
 	}
 
@@ -116,7 +120,7 @@ func GetUsers(page, pageSize int) ([]*models.User, int64, error) {
 
 func GetUserByUsername(username string) (*models.User, error) {
 	var user models.User
-	if err := global.DB.Where("username =? AND status = 1", username).First(&user).Error; err != nil {
+	if err := userDB().Where("username =? AND status = 1", username).First(&user).Error; err != nil {
 		return nil, err
 	}
 	return &user, nil
@@ -124,7 +128,7 @@ func GetUserByUsername(username string) (*models.User, error) {
 
 func GetUserList(page, pageSize int, query string) ([]models.User, int64, error) {
 	var users []models.User
-	if err := global.DB.Where("status = 1 " + query).
+	if err := userDB().Where("status = 1 " + query).
 		Order("id ASC").
 		Offset((page - 1) * pageSize).
 		Limit(pageSize).
@@ -133,7 +137,7 @@ func GetUserList(page, pageSize int, query string) ([]models.User, int64, error)
 	}
 
 	var total int64
-	if err := global.DB.Model(&models.User{}).Where("status = 1 " + query).Count(&total).Error; err != nil {
+	if err := userDB().Model(&models.User{}).Where("status = 1 " + query).Count(&total).Error; err != nil {
 		return nil, 0, err
 	}
 

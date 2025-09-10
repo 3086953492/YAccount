@@ -1,15 +1,19 @@
 package repositories
 
 import (
-	"YAccount/global"
 	"YAccount/models"
 
+	"github.com/3086953492/YaBase/global"
 	"gorm.io/gorm"
 )
 
+func systemInfoDB() *gorm.DB {
+	return global.GetGlobalDB()
+}
+
 func GetSystemInfo(key string) (*models.SystemInfo, error) {
 	var system models.SystemInfo
-	if err := global.DB.Where("config_key = ?", key).First(&system).Error; err != nil {
+	if err := systemInfoDB().Where("config_key = ?", key).First(&system).Error; err != nil {
 		return nil, err
 	}
 	return &system, nil
@@ -17,7 +21,7 @@ func GetSystemInfo(key string) (*models.SystemInfo, error) {
 
 func GetSystemInfoList() ([]models.SystemInfo, error) {
 	var system []models.SystemInfo
-	if err := global.DB.Find(&system).Error; err != nil {
+	if err := systemInfoDB().Find(&system).Error; err != nil {
 		return nil, err
 	}
 	return system, nil
@@ -25,7 +29,7 @@ func GetSystemInfoList() ([]models.SystemInfo, error) {
 
 func UpdateSystemInfo(req *models.UpdateSystemInfoRequest, tx *gorm.DB) error {
 	if tx == nil {
-		tx = global.DB
+		tx = systemInfoDB()
 	}
 	if err := tx.Model(&models.SystemInfo{}).Where("id = ?", req.ID).Updates(req).Error; err != nil {
 		return err

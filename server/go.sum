@@ -4,6 +4,10 @@ github.com/3086953492/YaBase v0.3.0 h1:D1a8ldOMbfZZUaJG7Bn4lr7yjyINgzcC3zLznZ6e3
 github.com/3086953492/YaBase v0.3.0/go.mod h1:+KB9t/wxiojI4PPpfNYCuaCtguI1AgdZKnWBfR6YlMg=
 github.com/3086953492/YaBase v0.4.0 h1:CCvuvNMR/VfwYjJrPan+568SCQjzyXTXoCNadi65Oag=
 github.com/3086953492/YaBase v0.4.0/go.mod h1:+KB9t/wxiojI4PPpfNYCuaCtguI1AgdZKnWBfR6YlMg=
+github.com/3086953492/YaBase v0.5.0 h1:2UDB32/TfeX8g2viwZxQ9m6OOl2m90ougMXYTlv0SJ0=
+github.com/3086953492/YaBase v0.5.0/go.mod h1:+KB9t/wxiojI4PPpfNYCuaCtguI1AgdZKnWBfR6YlMg=
+github.com/3086953492/YaBase v0.6.0 h1:dQwCfYRkvwxqOOlZseeqPD7yRXgfbtbphsTfB+KBi1U=
+github.com/3086953492/YaBase v0.6.0/go.mod h1:+KB9t/wxiojI4PPpfNYCuaCtguI1AgdZKnWBfR6YlMg=
 github.com/bsm/ginkgo/v2 v2.12.0 h1:Ny8MWAHyOepLGlLKYmXG4IEkioBysk6GpaRTLC8zwWs=
 github.com/bsm/ginkgo/v2 v2.12.0/go.mod h1:SwYbGRRDovPVboqFv0tPTcG1sN61LM1Z4ARdbAV9g4c=
 github.com/bsm/gomega v1.27.10 h1:yeMWxP2pV2fG3FgAODIY8EiRE3dy0aeFYt4l7wh6yKA=
