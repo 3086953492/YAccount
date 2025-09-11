@@ -2,7 +2,6 @@ package services
 
 import (
 	"YAccount/models"
-	"YAccount/pkg/oauth"
 	"YAccount/repositories"
 	"fmt"
 	"strings"
@@ -12,6 +11,7 @@ import (
 	"github.com/3086953492/YaBase/config/types"
 	apperrors "github.com/3086953492/YaBase/errors"
 	"github.com/3086953492/YaBase/logger"
+	"github.com/3086953492/YaBase/oauth"
 
 	"go.uber.org/zap"
 )

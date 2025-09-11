@@ -2,16 +2,15 @@ package controllers
 
 import (
 	"YAccount/models"
-	apperrors "github.com/3086953492/YaBase/errors"
-	"YAccount/pkg/oauth"
 	"YAccount/pkg/pagination"
-	"github.com/3086953492/YaBase/response"
 	"YAccount/pkg/validator"
 	"YAccount/services"
+	apperrors "github.com/3086953492/YaBase/errors"
+	"github.com/3086953492/YaBase/oauth"
+	"github.com/3086953492/YaBase/response"
+	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"
-
-	"github.com/gin-gonic/gin"
 )
 
 // OAuth 授权端点
@@ -218,11 +217,11 @@ func DeleteOAuthClientHandler(c *gin.Context) {
 
 // OAuth刷新令牌处理器
 func OAuthRefreshHandler(c *gin.Context) {
-    var req models.RefreshTokenRequest
-    if !validator.ValidateStruct(c, &req) {
-        response.Error(c, apperrors.ErrInvalidInput)
-        return
-    }
+	var req models.RefreshTokenRequest
+	if !validator.ValidateStruct(c, &req) {
+		response.Error(c, apperrors.ErrInvalidInput)
+		return
+	}
 
 	clinetSecret, err := services.GetSystemInfoByKey("system_client_secret")
 	if err != nil {
@@ -230,19 +229,19 @@ func OAuthRefreshHandler(c *gin.Context) {
 		return
 	}
 
-    // 构建标准OAuth刷新请求
-    tokenReq := services.TokenRequest{
-        GrantType:    "refresh_token",
-        RefreshToken: req.RefreshToken,
-        ClientID:     req.ClientID,
-        ClientSecret: clinetSecret.ConfigValue,
-    }
+	// 构建标准OAuth刷新请求
+	tokenReq := services.TokenRequest{
+		GrantType:    "refresh_token",
+		RefreshToken: req.RefreshToken,
+		ClientID:     req.ClientID,
+		ClientSecret: clinetSecret.ConfigValue,
+	}
 
-    tokenResponse, err := services.HandleTokenRequest(&tokenReq)
-    if err != nil {
-        response.Error(c, err)
-        return
-    }
+	tokenResponse, err := services.HandleTokenRequest(&tokenReq)
+	if err != nil {
+		response.Error(c, err)
+		return
+	}
 
-    response.Success(c, "刷新令牌成功", tokenResponse)
+	response.Success(c, "刷新令牌成功", tokenResponse)
 }
