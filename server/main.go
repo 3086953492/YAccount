@@ -10,6 +10,7 @@ import (
 
 	"github.com/3086953492/YaBase/global"
 	"github.com/3086953492/YaBase/logger"
+	"github.com/3086953492/YaBase/config"
 	"gorm.io/driver/mysql"
 
 	"go.uber.org/zap"
@@ -17,11 +18,11 @@ import (
 
 func main() {
 	// 初始化配置
-	if err := global.InitConfig(); err != nil {
+	if err := config.InitConfig("./configs"); err != nil {
 		log.Fatalf("初始化配置失败: %v", err)
 	}
 
-	cfg := global.GetGlobalConfig()
+	cfg := config.GetGlobalConfig()
 
 	// 初始化日志
 	if err := logger.InitWithConfig(cfg.Log); err != nil {

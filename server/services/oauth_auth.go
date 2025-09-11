@@ -8,9 +8,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/3086953492/YaBase/configs/types"
+	"github.com/3086953492/YaBase/config"
+	"github.com/3086953492/YaBase/config/types"
 	apperrors "github.com/3086953492/YaBase/errors"
-	"github.com/3086953492/YaBase/global"
 	"github.com/3086953492/YaBase/logger"
 
 	"go.uber.org/zap"
@@ -40,7 +40,7 @@ type TokenRequest struct {
 }
 
 func oauthCfg() *types.OAuthConfig {
-	return &global.GetGlobalConfig().OAuth
+	return &config.GetGlobalConfig().OAuth
 }
 
 // 处理授权请求

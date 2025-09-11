@@ -7,9 +7,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/3086953492/YaBase/configs"
+	"github.com/3086953492/YaBase/config"
 	apperrors "github.com/3086953492/YaBase/errors"
-	"github.com/3086953492/YaBase/global"
 	"github.com/3086953492/YaBase/logger"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -24,8 +23,8 @@ type OAuthClaims struct {
 	jwt.RegisteredClaims
 }
 
-func cfg() *configs.Config {
-	return global.GetGlobalConfig()
+func cfg() *config.Config {
+	return config.GetGlobalConfig()
 }
 
 // 生成授权码

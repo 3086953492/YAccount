@@ -4,8 +4,8 @@ import (
 	"YAccount/middleware/oauth"
 	"YAccount/middleware/permission"
 	"YAccount/middleware/security"
-	"github.com/3086953492/YaBase/configs/types"
-	"github.com/3086953492/YaBase/global"
+	"github.com/3086953492/YaBase/config"
+	"github.com/3086953492/YaBase/config/types"
 
 	"github.com/gin-gonic/gin"
 )
@@ -18,7 +18,7 @@ type Manager struct {
 // 创建管理器
 func NewManager() *Manager {
 
-	config := global.GetGlobalConfig().Middleware
+	config := config.GetGlobalConfig().Middleware
 
 	return &Manager{
 		config: &config,
