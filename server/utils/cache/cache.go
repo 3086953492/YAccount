@@ -3,19 +3,20 @@ package cache
 import (
 	"context"
 
-	"github.com/3086953492/YaBase/global"
+	cache_manager "github.com/3086953492/YaBase/cache"
+	redis_manager "github.com/3086953492/YaBase/redis"
 	"github.com/go-redis/cache/v9"
 	"github.com/redis/go-redis/v9"
 )
 
 // redisInstance 优雅地获取Redis实例
 func redisInstance() *redis.Client {
-	return global.GetGlobalRedis()
+	return redis_manager.GetGlobalRedis()
 }
 
 // cacheInstance 优雅地获取缓存实例
 func cacheInstance() *cache.Cache {
-	return global.GetGlobalCache()
+	return cache_manager.GetGlobalCache()
 }
 
 func GetCacheKeysByPrefix(prefix string) ([]string, error) {

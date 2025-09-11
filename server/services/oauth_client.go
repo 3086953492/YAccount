@@ -12,8 +12,8 @@ import (
 	"slices"
 	"strings"
 
+	cache_manager "github.com/3086953492/YaBase/cache"
 	apperrors "github.com/3086953492/YaBase/errors"
-	"github.com/3086953492/YaBase/global"
 	"github.com/3086953492/YaBase/logger"
 
 	"github.com/go-redis/cache/v9"
@@ -23,7 +23,7 @@ import (
 
 // clientCache 优雅地获取客户端缓存实例
 func clientCache() *cache.Cache {
-	return global.GetGlobalCache()
+	return cache_manager.GetGlobalCache()
 }
 
 // 创建 OAuth 客户端

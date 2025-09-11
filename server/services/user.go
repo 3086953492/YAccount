@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"time"
 
+	cache_manager "github.com/3086953492/YaBase/cache"
 	apperrors "github.com/3086953492/YaBase/errors"
-	"github.com/3086953492/YaBase/global"
 	"github.com/3086953492/YaBase/logger"
 
 	"github.com/go-redis/cache/v9"
@@ -18,7 +18,7 @@ import (
 
 // userCache 优雅地获取用户缓存实例
 func userCache() *cache.Cache {
-	return global.GetGlobalCache()
+	return cache_manager.GetGlobalCache()
 }
 
 func RegisterService(req *models.RegisterRequest) (*models.User, error) {

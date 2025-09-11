@@ -5,9 +5,9 @@ import (
 	"YAccount/repositories"
 	cache_utils "YAccount/utils/cache"
 
+	cache_manager "github.com/3086953492/YaBase/cache"
 	"github.com/3086953492/YaBase/database"
 	apperrors "github.com/3086953492/YaBase/errors"
-	"github.com/3086953492/YaBase/global"
 	"github.com/3086953492/YaBase/logger"
 	"gorm.io/gorm"
 
@@ -20,7 +20,7 @@ func systemInfoDB() *gorm.DB {
 
 // systemInfoCache 优雅地获取系统信息缓存实例
 func systemInfoCache() *cache.Cache {
-	return global.GetGlobalCache()
+	return cache_manager.GetGlobalCache()
 }
 
 func GetSystemInfoList() ([]models.SystemInfoList, error) {

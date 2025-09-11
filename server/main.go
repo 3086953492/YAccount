@@ -8,10 +8,11 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/3086953492/YaBase/global"
-	"github.com/3086953492/YaBase/logger"
+	"github.com/3086953492/YaBase/cache"
 	"github.com/3086953492/YaBase/config"
 	"github.com/3086953492/YaBase/database"
+	"github.com/3086953492/YaBase/logger"
+	"github.com/3086953492/YaBase/redis"
 	"gorm.io/driver/mysql"
 
 	"go.uber.org/zap"
@@ -49,13 +50,13 @@ func main() {
 	}
 
 	// 初始化 Redis
-	if err := global.InitRedisWithConfig(cfg.Redis); err != nil {
+	if err := redis.InitRedisWithConfig(cfg.Redis); err != nil {
 		logger.Error("初始化 Redis 失败", zap.Error(err))
 		return
 	}
 
 	// 初始化缓存
-	if err := global.InitCache(); err != nil {
+	if err := cache.InitCache(); err != nil {
 		logger.Error("初始化缓存失败", zap.Error(err))
 		return
 	}
