@@ -4,13 +4,13 @@ import (
 	"YAccount/models"
 	"errors"
 
-	"github.com/3086953492/YaBase/global"
+	"github.com/3086953492/YaBase/database"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
 func userDB() *gorm.DB {
-	return global.GetGlobalDB()
+	return database.GetGlobalDB()
 }
 
 func Register(req *models.RegisterRequest) (*models.User, error) {

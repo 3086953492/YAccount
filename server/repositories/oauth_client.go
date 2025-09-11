@@ -3,12 +3,12 @@ package repositories
 import (
 	"YAccount/models"
 
-	"github.com/3086953492/YaBase/global"
+	"github.com/3086953492/YaBase/database"
 	"gorm.io/gorm"
 )
 
 func oauthClientDB() *gorm.DB {
-	return global.GetGlobalDB()
+	return database.GetGlobalDB()
 }
 
 func CreateOAuthClient(client *models.OAuthClient) error {

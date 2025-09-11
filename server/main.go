@@ -11,6 +11,7 @@ import (
 	"github.com/3086953492/YaBase/global"
 	"github.com/3086953492/YaBase/logger"
 	"github.com/3086953492/YaBase/config"
+	"github.com/3086953492/YaBase/database"
 	"gorm.io/driver/mysql"
 
 	"go.uber.org/zap"
@@ -30,13 +31,13 @@ func main() {
 	}
 
 	// 初始化数据库
-	dsn := global.BuildMySQLDSN(cfg.Database)
-	if err := global.InitDBWithDialector(mysql.Open(dsn)); err != nil {
+	dsn := database.BuildMySQLDSN(cfg.Database)
+	if err := database.InitDBWithDialector(mysql.Open(dsn)); err != nil {
 		logger.Error("初始化数据库失败", zap.Error(err))
 		return
 	}
 
-	if err := global.AutoMigrateModels(models.User{}, models.OAuthClient{}, models.OAuthAccessToken{}, models.OAuthAuthorizationCode{}, models.OAuthScope{}, models.SystemInfo{}); err != nil {
+	if err := database.AutoMigrateModels(models.User{}, models.OAuthClient{}, models.OAuthAccessToken{}, models.OAuthAuthorizationCode{}, models.OAuthScope{}, models.SystemInfo{}); err != nil {
 		logger.Error("自动迁移数据库失败", zap.Error(err))
 		return
 	}
@@ -79,7 +80,7 @@ func main() {
 	}
 
 	defer func() {
-		if err := global.CloseDB(); err != nil {
+		if err := database.CloseDB(); err != nil {
 			logger.Error("关闭数据库失败", zap.Error(err))
 		}
 	}()

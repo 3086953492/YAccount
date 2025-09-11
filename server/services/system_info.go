@@ -5,6 +5,7 @@ import (
 	"YAccount/repositories"
 	cache_utils "YAccount/utils/cache"
 
+	"github.com/3086953492/YaBase/database"
 	apperrors "github.com/3086953492/YaBase/errors"
 	"github.com/3086953492/YaBase/global"
 	"github.com/3086953492/YaBase/logger"
@@ -14,7 +15,7 @@ import (
 )
 
 func systemInfoDB() *gorm.DB {
-	return global.GetGlobalDB()
+	return database.GetGlobalDB()
 }
 
 // systemInfoCache 优雅地获取系统信息缓存实例
