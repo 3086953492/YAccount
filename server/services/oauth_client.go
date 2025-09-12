@@ -14,9 +14,8 @@ import (
 	"github.com/3086953492/YaBase/cache"
 	apperrors "github.com/3086953492/YaBase/errors"
 	"github.com/3086953492/YaBase/logger"
-	redis_manager "github.com/3086953492/YaBase/redis"
+	"github.com/3086953492/YaBase/redis"
 
-	"github.com/redis/go-redis/v9"
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -28,7 +27,7 @@ func clientCache() *cache.Cache {
 
 // redisInstance 优雅地获取Redis实例
 func redisInstance() *redis.Client {
-	return redis_manager.GetGlobalRedis()
+	return redis.GetGlobalRedis()
 }
 
 // 创建 OAuth 客户端

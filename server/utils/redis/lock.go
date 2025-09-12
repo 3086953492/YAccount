@@ -5,14 +5,13 @@ import (
 	"fmt"
 	"time"
 
-	redis_manager "github.com/3086953492/YaBase/redis"
+	"github.com/3086953492/YaBase/redis"
 	"github.com/google/uuid"
-	"github.com/redis/go-redis/v9"
 )
 
 // redisInstance 优雅地获取Redis实例
 func redisInstance() *redis.Client {
-	return redis_manager.GetGlobalRedis()
+	return redis.GetGlobalRedis()
 }
 
 type DistributedLock struct {

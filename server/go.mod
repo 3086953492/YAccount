@@ -5,10 +5,9 @@ go 1.24.0
 toolchain go1.24.7
 
 require (
-	github.com/3086953492/YaBase v0.17.1
+	github.com/3086953492/YaBase v0.17.2
 	github.com/gin-gonic/gin v1.10.1
 	github.com/google/uuid v1.6.0
-	github.com/redis/go-redis/v9 v9.14.0
 	go.uber.org/zap v1.27.0
 	golang.org/x/crypto v0.42.0
 	gorm.io/driver/mysql v1.6.0
@@ -44,6 +43,7 @@ require (
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.4 // indirect
+	github.com/redis/go-redis/v9 v9.13.0 // indirect
 	github.com/sagikazarmark/locafero v0.11.0 // indirect
 	github.com/sourcegraph/conc v0.3.1-0.20240121214520-5f936abd7ae8 // indirect
 	github.com/spf13/afero v1.15.0 // indirect

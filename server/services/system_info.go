@@ -8,8 +8,8 @@ import (
 	"github.com/3086953492/YaBase/database"
 	apperrors "github.com/3086953492/YaBase/errors"
 	"github.com/3086953492/YaBase/logger"
-	redis_manager "github.com/3086953492/YaBase/redis"
-	"github.com/redis/go-redis/v9"
+	"github.com/3086953492/YaBase/redis"
+
 	"gorm.io/gorm"
 )
 
@@ -24,7 +24,7 @@ func systemInfoCache() *cache.Cache {
 
 // redisInstance 优雅地获取Redis实例
 func systemInfoRedis() *redis.Client {
-	return redis_manager.GetGlobalRedis()
+	return redis.GetGlobalRedis()
 }
 
 func GetSystemInfoList() ([]models.SystemInfoList, error) {
