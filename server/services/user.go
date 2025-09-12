@@ -3,7 +3,6 @@ package services
 import (
 	"YAccount/models"
 	"YAccount/repositories"
-	"YAccount/utils/redis"
 	"context"
 	"fmt"
 	"time"
@@ -11,6 +10,7 @@ import (
 	"github.com/3086953492/YaBase/cache"
 	apperrors "github.com/3086953492/YaBase/errors"
 	"github.com/3086953492/YaBase/logger"
+	"github.com/3086953492/YaBase/redis"
 
 	"go.uber.org/zap"
 )
