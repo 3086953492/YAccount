@@ -1,7 +1,7 @@
 filippo.io/edwards25519 v1.1.0 h1:FNf4tywRC1HmFuKW5xopWpigGjJKiJSV0Cqo0cJWDaA=
 filippo.io/edwards25519 v1.1.0/go.mod h1:BxyFTGdWcka3PhytdK4V28tE5sGfRvvvRV7EaN4VDT4=
-github.com/3086953492/YaBase v0.17.0 h1:coH1W70txHe3VCLWjN8IUIcu4vgk5R1dVfpOJ7bPGlY=
-github.com/3086953492/YaBase v0.17.0/go.mod h1:baLmYB+sj85WqAN3BAhI1d2/F7JGwV8KZv9j3Q23w5w=
+github.com/3086953492/YaBase v0.17.1 h1:XgxIPFU4dQRR0aYeiUjvNeQkjegLtmJKKwng7DFHRyA=
+github.com/3086953492/YaBase v0.17.1/go.mod h1:baLmYB+sj85WqAN3BAhI1d2/F7JGwV8KZv9j3Q23w5w=
 github.com/bsm/ginkgo/v2 v2.12.0 h1:Ny8MWAHyOepLGlLKYmXG4IEkioBysk6GpaRTLC8zwWs=
 github.com/bsm/ginkgo/v2 v2.12.0/go.mod h1:SwYbGRRDovPVboqFv0tPTcG1sN61LM1Z4ARdbAV9g4c=
 github.com/bsm/gomega v1.27.10 h1:yeMWxP2pV2fG3FgAODIY8EiRE3dy0aeFYt4l7wh6yKA=

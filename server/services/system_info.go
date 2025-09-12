@@ -4,15 +4,13 @@ import (
 	"YAccount/models"
 	"YAccount/repositories"
 
-	cache_manager "github.com/3086953492/YaBase/cache"
+	"github.com/3086953492/YaBase/cache"
 	"github.com/3086953492/YaBase/database"
 	apperrors "github.com/3086953492/YaBase/errors"
 	"github.com/3086953492/YaBase/logger"
 	redis_manager "github.com/3086953492/YaBase/redis"
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
-
-	"github.com/go-redis/cache/v9"
 )
 
 func systemInfoDB() *gorm.DB {
@@ -21,7 +19,7 @@ func systemInfoDB() *gorm.DB {
 
 // systemInfoCache 优雅地获取系统信息缓存实例
 func systemInfoCache() *cache.Cache {
-	return cache_manager.GetGlobalCache()
+	return cache.GetGlobalCache()
 }
 
 // redisInstance 优雅地获取Redis实例
@@ -116,7 +114,7 @@ func BatchUpdateSystemInfo(req *models.BatchUpdateSystemInfoRequest) error {
 	}
 
 	// 清空缓存
-	cache_manager.DeleteCacheKeysByPrefix("system:info", systemInfoRedis(), systemInfoCache())
+	cache.DeleteCacheKeysByPrefix("system:info", systemInfoRedis(), systemInfoCache())
 
 	return nil
 }
