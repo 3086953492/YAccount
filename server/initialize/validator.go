@@ -1,18 +1,29 @@
+// server/initialize/validator.go
 package initialize
 
 import (
-	"YAccount/global"
-	validator_pkg "YAccount/pkg/validator"
+	"fmt"
 
-	"github.com/go-playground/validator/v10"
+	"YAccount/validations/user"
+
+	"github.com/3086953492/YaBase/validator"
 )
 
 func InitValidator() error {
+	registry := validator.NewAutoRegistry()
 
-	global.Validate = validator.New()
+	err := registry.
+		RegisterPackage("user", &user.Validators{}).
+		Apply()
 
-	if err := global.Validate.RegisterValidation("usernameUnique", validator_pkg.VerifyUsernameUnique); err != nil {
-		return err
+	if err != nil {
+		return fmt.Errorf("验证器注册失败: %w", err)
+	}
+
+	// 手动测试验证器是否注册成功
+	v := validator.GetValidator()
+	if v == nil {
+		return fmt.Errorf("获取验证器实例失败")
 	}
 
 	return nil

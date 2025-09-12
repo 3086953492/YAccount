@@ -24,7 +24,7 @@ func (User) TableName() string {
 }
 
 type RegisterRequest struct {
-	Username        string `json:"username" validate:"required,min=3,max=15,usernameUnique"`
+	Username        string `json:"username" validate:"required,min=3,max=15,username_unique"`
 	Password        string `json:"password" validate:"required,min=6"`
 	ConfirmPassword string `json:"confirm_password" validate:"required,eqfield=Password"`
 	Nickname        string `json:"nickname" validate:"required,max=50"`
@@ -36,7 +36,7 @@ type LoginRequest struct {
 }
 
 type UpdateUserRequest struct {
-	Username        string `json:"username" validate:"omitempty,min=3,max=15,usernameUnique"`
+	Username        string `json:"username" validate:"omitempty,min=3,max=15,username_unique"`
 	Password        string `json:"password" validate:"omitempty,min=6"`
 	ConfirmPassword string `json:"confirm_password" validate:"omitempty,eqfield=Password"`
 	Nickname        string `json:"nickname" validate:"omitempty,max=50"`

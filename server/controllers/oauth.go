@@ -2,12 +2,12 @@ package controllers
 
 import (
 	"YAccount/models"
-	"YAccount/pkg/validator"
 	"YAccount/services"
 	apperrors "github.com/3086953492/YaBase/errors"
 	"github.com/3086953492/YaBase/oauth"
 	"github.com/3086953492/YaBase/pagination"
 	"github.com/3086953492/YaBase/response"
+	"github.com/3086953492/YaBase/validator"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"
@@ -16,7 +16,7 @@ import (
 // OAuth 授权端点
 func OAuthAuthorizeHandler(c *gin.Context) {
 	var req services.AuthorizeRequest
-	if !validator.ValidateStruct(c, &req) {
+	if err := validator.BindAndValidate(c, &req); err != nil {
 		response.Error(c, apperrors.ErrInvalidInput)
 		return
 	}
@@ -46,7 +46,7 @@ func OAuthAuthorizeHandler(c *gin.Context) {
 // OAuth 令牌端点
 func OAuthTokenHandler(c *gin.Context) {
 	var req services.TokenRequest
-	if !validator.ValidateStruct(c, &req) {
+	if err := validator.BindAndValidate(c, &req); err != nil {
 		response.Error(c, apperrors.ErrInvalidInput)
 		return
 	}
@@ -96,7 +96,7 @@ func OAuthIntrospectHandler(c *gin.Context) {
 // 客户端注册端点
 func OAuthClientRegisterHandler(c *gin.Context) {
 	var req models.CreateOAuthClientRequest
-	if !validator.ValidateStruct(c, &req) {
+	if err := validator.BindAndValidate(c, &req); err != nil {
 		response.Error(c, apperrors.ErrInvalidInput)
 		return
 	}
@@ -120,7 +120,7 @@ func OAuthClientRegisterHandler(c *gin.Context) {
 func OAuthAuthorizeConfirmHandler(c *gin.Context) {
 	var req models.OAuthAuthorizeConfirmRequest
 
-	if !validator.ValidateStruct(c, &req) {
+	if err := validator.BindAndValidate(c, &req); err != nil {
 		response.Error(c, apperrors.ErrInvalidInput)
 		return
 	}
@@ -193,7 +193,7 @@ func GetOAuthClientHandler(c *gin.Context) {
 func UpdateOAuthClientHandler(c *gin.Context) {
 	clientID := c.Param("client_id")
 	var req models.UpdateOAuthClientRequest
-	if !validator.ValidateStruct(c, &req) {
+	if err := validator.BindAndValidate(c, &req); err != nil {
 		response.Error(c, apperrors.ErrInvalidInput)
 		return
 	}
@@ -218,7 +218,7 @@ func DeleteOAuthClientHandler(c *gin.Context) {
 // OAuth刷新令牌处理器
 func OAuthRefreshHandler(c *gin.Context) {
 	var req models.RefreshTokenRequest
-	if !validator.ValidateStruct(c, &req) {
+	if err := validator.BindAndValidate(c, &req); err != nil {
 		response.Error(c, apperrors.ErrInvalidInput)
 		return
 	}

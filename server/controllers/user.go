@@ -2,11 +2,11 @@ package controllers
 
 import (
 	"YAccount/models"
-	"YAccount/pkg/validator"
 	"YAccount/services"
 	apperrors "github.com/3086953492/YaBase/errors"
 	"github.com/3086953492/YaBase/pagination"
 	"github.com/3086953492/YaBase/response"
+	"github.com/3086953492/YaBase/validator"
 	"github.com/gin-gonic/gin"
 	"strconv"
 )
@@ -15,7 +15,7 @@ func LoginHandler(c *gin.Context) {
 
 	var req models.LoginRequest
 
-	if !validator.ValidateStruct(c, &req) {
+	if err := validator.BindAndValidate(c, &req); err != nil {
 		response.Error(c, apperrors.ErrInvalidInput)
 		return
 	}
@@ -37,7 +37,7 @@ func LoginHandler(c *gin.Context) {
 func RegisterHandler(c *gin.Context) {
 
 	var req models.RegisterRequest
-	if !validator.ValidateStruct(c, &req) {
+	if err := validator.BindAndValidate(c, &req); err != nil {
 		response.Error(c, apperrors.ErrInvalidInput)
 		return
 	}
@@ -75,7 +75,7 @@ func UpdateHandler(c *gin.Context) {
 
 	// 解析请求参数
 	var req models.UpdateUserRequest
-	if !validator.ValidateStruct(c, &req) {
+	if err := validator.BindAndValidate(c, &req); err != nil {
 		response.Error(c, apperrors.ErrInvalidInput)
 		return
 	}
