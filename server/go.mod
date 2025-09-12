@@ -5,7 +5,7 @@ go 1.24.0
 toolchain go1.24.7
 
 require (
-	github.com/3086953492/YaBase v0.18.0
+	github.com/3086953492/YaBase v0.19.0
 	github.com/gin-gonic/gin v1.10.1
 	go.uber.org/zap v1.27.0
 	golang.org/x/crypto v0.42.0

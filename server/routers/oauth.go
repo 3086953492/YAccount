@@ -2,8 +2,7 @@ package routers
 
 import (
 	"YAccount/controllers"
-	"YAccount/middleware"
-
+	"github.com/3086953492/YaBase/middleware"
 	"github.com/gin-gonic/gin"
 )
 

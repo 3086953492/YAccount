@@ -1,9 +1,8 @@
 package initialize
 
 import (
-	"YAccount/middleware"
 	"YAccount/routers"
-
+	"github.com/3086953492/YaBase/middleware"
 	"github.com/gin-gonic/gin"
 )
 
