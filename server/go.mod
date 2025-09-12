@@ -5,7 +5,7 @@ go 1.24.0
 toolchain go1.24.7
 
 require (
-	github.com/3086953492/YaBase v0.16.2
+	github.com/3086953492/YaBase v0.17.0
 	github.com/gin-gonic/gin v1.10.1
 	github.com/go-playground/validator/v10 v10.27.0
 	github.com/go-redis/cache/v9 v9.0.0

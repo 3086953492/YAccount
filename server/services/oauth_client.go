@@ -3,7 +3,6 @@ package services
 import (
 	"YAccount/models"
 	"YAccount/repositories"
-	cache_utils "YAccount/utils/cache"
 	"context"
 	"crypto/rand"
 	"encoding/base64"
@@ -15,8 +14,10 @@ import (
 	cache_manager "github.com/3086953492/YaBase/cache"
 	apperrors "github.com/3086953492/YaBase/errors"
 	"github.com/3086953492/YaBase/logger"
+	redis_manager "github.com/3086953492/YaBase/redis"
 
 	"github.com/go-redis/cache/v9"
+	"github.com/redis/go-redis/v9"
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -24,6 +25,11 @@ import (
 // clientCache 优雅地获取客户端缓存实例
 func clientCache() *cache.Cache {
 	return cache_manager.GetGlobalCache()
+}
+
+// redisInstance 优雅地获取Redis实例
+func redisInstance() *redis.Client {
+	return redis_manager.GetGlobalRedis()
 }
 
 // 创建 OAuth 客户端
@@ -72,7 +78,7 @@ func CreateOAuthClient(req *models.CreateOAuthClientRequest, ownerID uint) (*mod
 	// 在响应中包含未加密的客户端密钥（仅此一次）
 	client.ClientSecret = clientSecret
 
-	cache_utils.DeleteCacheKeysByPrefix("oauth_clients")
+	cache_manager.DeleteCacheKeysByPrefix("oauth_clients", redisInstance(), clientCache())
 
 	return client, nil
 }
@@ -205,7 +211,7 @@ func UpdateOAuthClient(clientID string, request models.UpdateOAuthClientRequest)
 		return apperrors.ErrUpdateClientFailed
 	}
 	clientCache().Delete(context.Background(), fmt.Sprintf("oauth_client:%s", clientID))
-	cache_utils.DeleteCacheKeysByPrefix("oauth_clients")
+	cache_manager.DeleteCacheKeysByPrefix("oauth_clients", redisInstance(), clientCache())
 	return nil
 }
 
@@ -215,6 +221,6 @@ func DeleteOAuthClient(clientID string) error {
 		return apperrors.ErrDeleteClientFailed
 	}
 	clientCache().Delete(context.Background(), fmt.Sprintf("oauth_client:%s", clientID))
-	cache_utils.DeleteCacheKeysByPrefix("oauth_clients")
+	cache_manager.DeleteCacheKeysByPrefix("oauth_clients", redisInstance(), clientCache())
 	return nil
 }
